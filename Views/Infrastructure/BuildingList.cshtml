@@ -1,0 +1,72 @@
+﻿@using Anandashram.Models;
+@using Anandashram.Shared;
+
+@model PaginatedList<Building>
+
+@{
+    ViewData["Title"] = "Building";
+}
+
+<h2 style="text-align:center">Building</h2>
+<p>
+    <button asp-action="Create" type="button" class="bi bi-plus-circle-fill btn btn-primary">Add New</button>
+</p>
+
+@{
+    var prevDisabled = !Model.HasPreviousPage ? "disabled" : "";
+    var nextDisabled = !Model.HasNextPage ? "disabled" : "";
+}
+<div class="dashboard">
+    <table class="table">
+        <thead>
+            <tr>
+                <td>
+                    <form asp-action="Index">
+                        <div class="d-flex">
+                            <input class="form-control" placeholder="Search..." value="@ViewData["CurrentFilter"]" type="text"
+                                   autocomplete="off" name="SearchText" />
+                        </div>
+                    </form>
+                </td>
+                <td class="right-align">
+                    <a asp-action="Index" asp-route-sortOrder="@ViewData["CurrentSort"]" asp-route-pageNumber="@(Model.PageIndex - 1)"
+                       asp-route-currentFilter="@ViewData["CurrentFilter"]" class="btn btn-default fa-solid fa-circle-arrow-left @prevDisabled">
+
+                    </a>
+                    <a asp-action="Index" asp-route-sortOrder="@ViewData["CurrentSort"]" asp-route-pageNumber="@(Model.PageIndex + 1)"
+                       asp-route-currentFilter="@ViewData["CurrentFilter"]" class="btn btn-default fa-solid fa-circle-arrow-right @nextDisabled">
+
+                    </a>
+                </td>
+            </tr>
+    </table>
+    <table class="table">
+        <thead>
+            <tr>
+                <th style="text-align: center;">
+                    <a asp-action="Index" asp-route-sortOrder="@ViewData["CurrentSort"]"
+                       asp-route-currentFilter="@ViewData["CurrentFilter"]">
+                        @Html.DisplayNameFor(model => model[0].Name)
+                    </a>
+                </th>
+                <th style="text-align: center;">
+                    Actions
+                </th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in Model)
+            {
+                <tr>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.Name)
+                    </td>
+                    <td>
+                        <a asp-action="Edit" asp-route-id="@item.Id">Edit</a> |
+                        <a asp-action="Delete" class="fa-trash" label="Delete" asp-route-id="@item.Id">Delete</a>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>
