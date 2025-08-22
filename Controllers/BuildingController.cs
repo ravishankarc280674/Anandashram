@@ -69,8 +69,8 @@ namespace Anandashram.Controllers
             //return Json(new { success = false, message = "Product not found." });
 
             return View();
-        //}
-}
+            //}
+        }
         // GET: BuildingController/Edit/5
         public ActionResult Edit(int id)
         {
