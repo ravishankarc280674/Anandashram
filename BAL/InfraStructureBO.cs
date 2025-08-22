@@ -26,5 +26,15 @@ namespace Anandashram.BAL
 
             return await _InfraStructure.GetBlockList(sortOrder, currentFilter, searchString, pageNumber, pageSize);
         }
+        public async Task<PaginatedList<Floor>> GetFloorList(string sortOrder, string currentFilter, string searchString, int? pageNumber, int pageSize)
+        {
+
+            return await _InfraStructure.GetFloorList(sortOrder, currentFilter, searchString, pageNumber, pageSize);
+        }
+        public async Task<PaginatedList<Room>> GetRoomList(string sortOrder, string currentFilter, string searchString, int? pageNumber, int pageSize)
+        {
+
+            return await _InfraStructure.GetRoomList(sortOrder, currentFilter, searchString, pageNumber, pageSize);
+        }
     }
 }

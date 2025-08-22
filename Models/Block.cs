@@ -42,7 +42,7 @@ public partial class Block
 
     public virtual ICollection<HotelReservationLine> HotelReservationLines { get; set; } = new List<HotelReservationLine>();
 
-    public virtual ICollection<HotelRoom> HotelRooms { get; set; } = new List<HotelRoom>();
+    public virtual ICollection<Room> HotelRooms { get; set; } = new List<Room>();
 
     public virtual ResUser? WriteU { get; set; }
 }

@@ -14,5 +14,5 @@ public partial class TempTab
 
     public virtual HotelRoomAmenity Rcateg { get; set; } = null!;
 
-    public virtual HotelRoom RoomAmenitiesNavigation { get; set; } = null!;
+    public virtual Room RoomAmenitiesNavigation { get; set; } = null!;
 }

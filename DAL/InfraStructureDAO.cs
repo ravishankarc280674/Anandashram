@@ -59,5 +59,51 @@ namespace Anandashram.DAL
             };
             return await PaginatedList<Block>.CreateAsync(blockList, pageNumber ?? 1, pageSize);
         }
+
+        public async Task<PaginatedList<Floor>> GetFloorList(string sortOrder, string currentFilter, string searchText, int? pageNumber, int pageSize)
+        {
+            if (searchText != null)
+            {
+                pageNumber = 1;
+            }
+            else
+            {
+                searchText = currentFilter;
+            }
+            var floorList = from m in _context.HotelFloors select m;
+            if (!String.IsNullOrEmpty(searchText))
+            {
+                floorList = floorList.Where(s => s.Name.ToLower().Contains(searchText.ToLower()));
+            }
+            floorList = sortOrder switch
+            {
+                "name_desc" => floorList.OrderByDescending(s => s.Name),
+                _ => floorList.OrderBy(s => s.Name),
+            };
+            return await PaginatedList<Floor>.CreateAsync(floorList, pageNumber ?? 1, pageSize);
+        }
+
+        public async Task<PaginatedList<Room>> GetRoomList(string sortOrder, string currentFilter, string searchText, int? pageNumber, int pageSize)
+        {
+            if (searchText != null)
+            {
+                pageNumber = 1;
+            }
+            else
+            {
+                searchText = currentFilter;
+            }
+            var roomList = from m in _context.HotelRooms select m;
+            //if (!String.IsNullOrEmpty(searchText))
+            //{
+            //    roomList = roomList.Where(s => s.r.ToLower().Contains(searchText.ToLower()));
+            //}
+            //roomList = sortOrder switch
+            //{
+            //    "name_desc" => roomList.OrderByDescending(s => s.Name),
+            //    _ => roomList.OrderBy(s => s.Name),
+            //};
+            return await PaginatedList<Room>.CreateAsync(roomList, pageNumber ?? 1, pageSize);
+        }
     }
 }

@@ -1,15 +1,16 @@
-﻿@using Anandashram.Models;
-@using Anandashram.Shared;
+﻿@using Anandashram.Models
+@using Anandashram.Shared
 
-@model PaginatedList<Building>
+@model PaginatedList<Floor>
 
 @{
-    ViewData["Title"] = "Building";
+    ViewData["Title"] = "Floor";
+    Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
-<h2 style="text-align:center">Building</h2>
+<h4>Floors</h4>
 <p>
-    <button asp-action="Create" type="button" class="bi bi-plus-circle-fill btn btn-primary">Add New</button>
+    <button asp-action="Create" type="button" class="fa fa fa-plus fa-2x" title="Add New" aria-hidden="true"></button>
 </p>
 
 @{
@@ -30,11 +31,11 @@
                 </td>
                 <td class="right-align">
                     <a asp-action="Index" asp-route-sortOrder="@ViewData["CurrentSort"]" asp-route-pageNumber="@(Model.PageIndex - 1)"
-                       asp-route-currentFilter="@ViewData["CurrentFilter"]" class="btn btn-default fa-solid fa-circle-arrow-left @prevDisabled">
+                       asp-route-currentFilter="@ViewData["CurrentFilter"]" title="Previous" class="fa-solid fa-circle-arrow-left fa-2x @prevDisabled">
 
                     </a>
                     <a asp-action="Index" asp-route-sortOrder="@ViewData["CurrentSort"]" asp-route-pageNumber="@(Model.PageIndex + 1)"
-                       asp-route-currentFilter="@ViewData["CurrentFilter"]" class="btn btn-default fa-solid fa-circle-arrow-right @nextDisabled">
+                       asp-route-currentFilter="@ViewData["CurrentFilter"]" title="Next" class="fa-solid fa-circle-arrow-right fa-2x @nextDisabled">
 
                     </a>
                 </td>
@@ -44,9 +45,9 @@
         <thead>
             <tr>
                 <th style="text-align: center;">
-                    <a asp-action="Index" asp-route-sortOrder="@ViewData["CurrentSort"]"
+                    <a asp-action="Index" asp-route-sortOrder="@ViewData["TitleSortParm"]"
                        asp-route-currentFilter="@ViewData["CurrentFilter"]">
-                        @Html.DisplayNameFor(model => model[0].Name)
+                        Name
                     </a>
                 </th>
                 <th style="text-align: center;">
@@ -62,8 +63,8 @@
                         @Html.DisplayFor(modelItem => item.Name)
                     </td>
                     <td>
-                        <a asp-action="Edit" asp-route-id="@item.Id">Edit</a> |
-                        <a asp-action="Delete" class="fa-trash" label="Delete" asp-route-id="@item.Id">Delete</a>
+                        <a asp-action="Edit" class="fa fa-edit" title="Edit" aria-hidden="true" asp-route-id="@item.Id"></a> |
+                        <a asp-action="Delete" class="fa fa-trash" title="Delete" asp-route-id="@item.Id" aria-hidden="true"></a>
                     </td>
                 </tr>
             }

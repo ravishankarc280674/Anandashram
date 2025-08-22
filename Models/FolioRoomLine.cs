@@ -47,7 +47,7 @@ public partial class FolioRoomLine
 
     public virtual ResUser? CreateU { get; set; }
 
-    public virtual HotelRoom? Room { get; set; }
+    public virtual Room? Room { get; set; }
 
     public virtual ResUser? WriteU { get; set; }
 }

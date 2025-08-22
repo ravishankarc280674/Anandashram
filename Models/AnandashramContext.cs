@@ -119,7 +119,7 @@ public partial class AnandashramContext : DbContext
 
     public virtual DbSet<Building> HotelBuildings { get; set; }
 
-    public virtual DbSet<HotelFloor> HotelFloors { get; set; }
+    public virtual DbSet<Floor> HotelFloors { get; set; }
 
     public virtual DbSet<HotelReservation> HotelReservations { get; set; }
 
@@ -127,7 +127,7 @@ public partial class AnandashramContext : DbContext
 
     public virtual DbSet<HotelReservationLineRoomRel> HotelReservationLineRoomRels { get; set; }
 
-    public virtual DbSet<HotelRoom> HotelRooms { get; set; }
+    public virtual DbSet<Room> HotelRooms { get; set; }
 
     public virtual DbSet<HotelRoomAmenitiesType> HotelRoomAmenitiesTypes { get; set; }
 
@@ -3212,7 +3212,7 @@ public partial class AnandashramContext : DbContext
                 .HasConstraintName("hotel_building_write_uid_fkey");
         });
 
-        modelBuilder.Entity<HotelFloor>(entity =>
+        modelBuilder.Entity<Floor>(entity =>
         {
             entity.HasKey(e => e.Id).HasName("hotel_floor_pkey");
 
@@ -3492,7 +3492,7 @@ public partial class AnandashramContext : DbContext
                 .HasConstraintName("hotel_reservation_line_room_rel_room_id_fkey");
         });
 
-        modelBuilder.Entity<HotelRoom>(entity =>
+        modelBuilder.Entity<Room>(entity =>
         {
             entity.HasKey(e => e.Id).HasName("hotel_room_pkey");
 

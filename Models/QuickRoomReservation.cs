@@ -104,7 +104,7 @@ public partial class QuickRoomReservation
 
     public virtual ProductPricelist1 Pricelist { get; set; } = null!;
 
-    public virtual HotelRoom Room { get; set; } = null!;
+    public virtual Room Room { get; set; } = null!;
 
     public virtual StockWarehouse Warehouse { get; set; } = null!;
 

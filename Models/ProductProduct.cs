@@ -84,7 +84,7 @@ public partial class ProductProduct
 
     public virtual ICollection<HotelRoomAmenity> HotelRoomAmenities { get; set; } = new List<HotelRoomAmenity>();
 
-    public virtual ICollection<HotelRoom> HotelRooms { get; set; } = new List<HotelRoom>();
+    public virtual ICollection<Room> HotelRooms { get; set; } = new List<Room>();
 
     public virtual ICollection<HotelService> HotelServices { get; set; } = new List<HotelService>();
 

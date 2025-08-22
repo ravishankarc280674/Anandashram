@@ -14,5 +14,5 @@ public partial class HotelReservationLineRoomRel
 
     public virtual HotelReservationLine HotelReservationLine { get; set; } = null!;
 
-    public virtual HotelRoom Room { get; set; } = null!;
+    public virtual Room Room { get; set; } = null!;
 }

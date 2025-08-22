@@ -1,18 +1,21 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Anandashram.Models;
 
 /// <summary>
 /// Floor
 /// </summary>
-public partial class HotelFloor
+    [Table("HotelFloor")]
+public partial class Floor
 {
     public int Id { get; set; }
 
     /// <summary>
     /// Created by
     /// </summary>
+    /// 
     public int? CreateUid { get; set; }
 
     /// <summary>
@@ -44,7 +47,7 @@ public partial class HotelFloor
 
     public virtual ICollection<HotelReservationLine> HotelReservationLines { get; set; } = new List<HotelReservationLine>();
 
-    public virtual ICollection<HotelRoom> HotelRooms { get; set; } = new List<HotelRoom>();
+    public virtual ICollection<Room> HotelRooms { get; set; } = new List<Room>();
 
     public virtual ResUser? WriteU { get; set; }
 }

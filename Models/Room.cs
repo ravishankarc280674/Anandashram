@@ -6,7 +6,7 @@ namespace Anandashram.Models;
 /// <summary>
 /// Hotel Room
 /// </summary>
-public partial class HotelRoom
+public partial class Room
 {
     public int Id { get; set; }
 
@@ -76,7 +76,7 @@ public partial class HotelRoom
 
     public virtual ResUser? CreateU { get; set; }
 
-    public virtual HotelFloor? Floor { get; set; }
+    public virtual Floor? Floor { get; set; }
 
     public virtual ICollection<FolioRoomLine> FolioRoomLines { get; set; } = new List<FolioRoomLine>();
 

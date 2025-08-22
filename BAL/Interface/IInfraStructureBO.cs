@@ -8,6 +8,8 @@ namespace Anandashram.BAL.Interface
     {
         Task<PaginatedList<Building>> GetBuildingList(string sortOrder, string currentFilter, string searchString, int? pageNumber,int pageSize);
         Task<PaginatedList<Block>> GetBlockList(string sortOrder, string currentFilter, string searchString, int? pageNumber, int pageSize);
+        Task<PaginatedList<Floor>> GetFloorList(string sortOrder, string currentFilter, string searchString, int? pageNumber, int pageSize);
+        Task<PaginatedList<Room>> GetRoomList(string sortOrder, string currentFilter, string searchString, int? pageNumber, int pageSize);
 
     }
 }

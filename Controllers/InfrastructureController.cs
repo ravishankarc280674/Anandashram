@@ -16,16 +16,16 @@ namespace Anandashram.Controllers
         }
 
 
-        public async Task<IActionResult> BuildingList(string sortOrder, string currentFilter, string searchText, int? pageNumber)
-        {
-            ViewData["CurrentFilter"] = searchText;
-            ViewData["TitleSortParm"] = String.IsNullOrEmpty(sortOrder) || sortOrder.Equals("Name") ? "name_desc" : "";
+        //public async Task<IActionResult> BuildingList(string sortOrder, string currentFilter, string searchText, int? pageNumber)
+        //{
+        //    ViewData["CurrentFilter"] = searchText;
+        //    ViewData["TitleSortParm"] = String.IsNullOrEmpty(sortOrder) || sortOrder.Equals("Name") ? "name_desc" : "";
 
-            ViewData["CurrentFilter"] = searchText;
-            ViewData["CurrentSort"] = sortOrder;
+        //    ViewData["CurrentFilter"] = searchText;
+        //    ViewData["CurrentSort"] = sortOrder;
 
-            return View(await infraStructure.GetBuildingList(sortOrder, currentFilter, searchText, pageNumber, PAGESIZE));
-        }
+        //    return View(await infraStructure.GetBuildingList(sortOrder, currentFilter, searchText, pageNumber, PAGESIZE));
+        //}
 
         public IActionResult FloorList()
         {

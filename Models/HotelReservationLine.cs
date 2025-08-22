@@ -83,11 +83,11 @@ public partial class HotelReservationLine
 
     public virtual ResUser? CreateU { get; set; }
 
-    public virtual HotelFloor? Floor { get; set; }
+    public virtual Floor? Floor { get; set; }
 
     public virtual HotelReservation? Line { get; set; }
 
-    public virtual HotelRoom RoomNavigation { get; set; } = null!;
+    public virtual Room RoomNavigation { get; set; } = null!;
 
     public virtual ResUser? WriteU { get; set; }
 }

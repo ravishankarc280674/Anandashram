@@ -290,9 +290,9 @@ public partial class ResUser
 
     public virtual ICollection<Building> HotelBuildingWriteUs { get; set; } = new List<Building>();
 
-    public virtual ICollection<HotelFloor> HotelFloorCreateUs { get; set; } = new List<HotelFloor>();
+    public virtual ICollection<Floor> HotelFloorCreateUs { get; set; } = new List<Floor>();
 
-    public virtual ICollection<HotelFloor> HotelFloorWriteUs { get; set; } = new List<HotelFloor>();
+    public virtual ICollection<Floor> HotelFloorWriteUs { get; set; } = new List<Floor>();
 
     public virtual ICollection<HotelReservation> HotelReservationCreateUs { get; set; } = new List<HotelReservation>();
 
@@ -310,7 +310,7 @@ public partial class ResUser
 
     public virtual ICollection<HotelRoomAmenity> HotelRoomAmenityWriteUs { get; set; } = new List<HotelRoomAmenity>();
 
-    public virtual ICollection<HotelRoom> HotelRoomCreateUs { get; set; } = new List<HotelRoom>();
+    public virtual ICollection<Room> HotelRoomCreateUs { get; set; } = new List<Room>();
 
     public virtual ICollection<HotelRoomReservationLine> HotelRoomReservationLineCreateUs { get; set; } = new List<HotelRoomReservationLine>();
 
@@ -320,7 +320,7 @@ public partial class ResUser
 
     public virtual ICollection<HotelRoomType> HotelRoomTypeWriteUs { get; set; } = new List<HotelRoomType>();
 
-    public virtual ICollection<HotelRoom> HotelRoomWriteUs { get; set; } = new List<HotelRoom>();
+    public virtual ICollection<Room> HotelRoomWriteUs { get; set; } = new List<Room>();
 
     public virtual ICollection<HotelService> HotelServiceCreateUs { get; set; } = new List<HotelService>();
 

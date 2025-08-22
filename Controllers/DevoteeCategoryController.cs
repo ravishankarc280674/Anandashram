@@ -25,5 +25,6 @@ namespace Anandashram.Controllers
 
             return View(await _devotee.GetDevoteeCategoryList(sortOrder, currentFilter, searchText, pageNumber, PAGESIZE));
         }
+
     }
 }
