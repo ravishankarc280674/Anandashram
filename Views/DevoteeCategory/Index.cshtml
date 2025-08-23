@@ -16,8 +16,8 @@
     var nextDisabled = !Model.HasNextPage ? "disabled" : "";
 }
 <div class="dashboard">
-    <table class="table table-striped" id="myTable">
-        <thead class="thead-grey">
+    <table class="table">
+        <thead >
         <tr>
             <td>
                 <form asp-action="Index">
@@ -39,9 +39,10 @@
             </td>
             </tr>
     </table>
-<table class="table">
+    <table id="dcTable" class="table">
     <thead>
         <tr>
+            <th></th>
             <th style="text-align: center;">
                 <a asp-action="Index" asp-route-sortOrder="@ViewData["TitleSortParm"]"
                    asp-route-currentFilter="@ViewData["CurrentFilter"]">
@@ -57,10 +58,15 @@
     <tbody>
         @foreach (var item in Model)
         {
-                <tr data-id="@item.Id">
+                <tr id=@item.Id>
+                    <td>@item.Id</td>
                     <td class="editable-name">@item.Name</td>
                     <td>
-                        <button class="edit-btn fa fa-edit" title="Edit" style="border:none"></button> ||
+                        <button class="edit-btn fa fa-edit" title="Edit" style="border:none"></button>
+                        <div class="edit-buttons">
+                            <button class="update-btn fa fa-update">Update</button>
+                            <button class="cancel-btn fa fa-cancel">Cancel</button>
+                        </div>||
                         <button class="delete-btn fa fa-trash" style="border:none;"></button>
                     </td>
                 </tr>
@@ -73,31 +79,35 @@
 @section scripts {
     <script>
     $(document).ready(function () {
-        alert('test');
+        
         // Inline Edit
-        $('#myTable').on('click', '.edit-btn', function () {
+        $('#dcTable').on('click', '.edit-btn', function () {
+                
             var row = $(this).closest('tr');
-            var id = row.data('id');
+                row.find('.editable').each(function () {
+                        const value = $(this).text();
+                        $(this).html(`<input type="text" value="${value}" />`);
+                    });
             var name = row.find('.editable-name').text();
-
-            row.find('.editable-name').html('<input type="text" class="edit-input-name" value="' + name + '">');
-            $(this).text('Save').removeClass('edit-btn').addClass('save-btn');
+                alert("Name: " + name);
+                row.find('.editable-name').html('<input type="text" class="edit-input-name" label="Update" value="' + name + '">');
+                row.find('.edit-btn').hide();
+                row.find('.edit-buttons').show();
         });
 
-        $('#myTable').on('click', '.save-btn', function () {
+            $('#dcTable').on('click', '.save-btn', function () {
             var row = $(this).closest('tr');
             var id = row.data('id');
             var newName = row.find('.edit-input-name').val();
-            var newEmail = row.find('.edit-input-email').val();
+           
 
             $.ajax({
-                url: '/YourController/UpdateItem', // Replace with your controller action
+                url: '/DevoteeCategoy/UpdateDevoteeCategory', // Replace with your controller action
                 type: 'POST',
-                data: { id: id, name: newName, email: newEmail },
+                data: { id: id, name: newName },
                 success: function (response) {
                     if (response.success) {
                         row.find('.editable-name').text(newName);
-                        row.find('.editable-email').text(newEmail);
                         row.find('.save-btn').text('Edit').removeClass('save-btn').addClass('edit-btn');
                     } else {
                         alert('Error updating item.');
