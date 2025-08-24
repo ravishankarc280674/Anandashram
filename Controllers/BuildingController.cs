@@ -57,7 +57,7 @@ namespace Anandashram.Controllers
 
 
         [HttpPost]
-        public IActionResult UpdateDevoteeCaegory(int id, string name)
+        public IActionResult UpdateBuilding(int id, string name)
         {
             //var product = _.FirstOrDefault(p => p.Id == id);
             //if (product != null)

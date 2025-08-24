@@ -15,10 +15,15 @@ namespace Anandashram.BAL
         {
             _Devotee = Devotee;
         }
-        public async Task<PaginatedList<DevoteeCategory>> GetDevoteeCategoryList(string sortOrder, string currentFilter, string searchString, int? pageNumber, int pageSize)
+        public async Task<List<DevoteeCategory>> GetDevoteeCategoryList()
         {
 
-            return await _Devotee.GetDevoteeCategoryList(sortOrder, currentFilter, searchString, pageNumber,pageSize);
+            return await _Devotee.GetDevoteeCategoryList();
+        }
+
+        public async Task<List<DevoteeCategory>> UpdateDevoteeCategory(int Id, string Name)
+        {
+            return await _Devotee.UpdateDevoteeCategory(Id, Name);
         }
     }
 }

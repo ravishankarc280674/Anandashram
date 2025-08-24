@@ -1,10 +1,12 @@
 ﻿using Anandashram.Models;
 using Anandashram.Shared;
+using Microsoft.AspNetCore.Mvc;
 
 namespace Anandashram.DAL.Interface
 {
     public interface IDevoteeDAO
     {
-        Task<PaginatedList<DevoteeCategory>> GetDevoteeCategoryList(string sortOrder, string currentFilter, string searchString, int? pageNumber, int pageSize);
+        Task<List<DevoteeCategory>> GetDevoteeCategoryList();
+        Task<List<DevoteeCategory>> UpdateDevoteeCategory(int Id, string Name);
     }
 }

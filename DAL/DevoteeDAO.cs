@@ -14,27 +14,25 @@ namespace Anandashram.DAL
         {
             _context = dbcontext;
         } 
-        public async Task<PaginatedList<DevoteeCategory>> GetDevoteeCategoryList(string sortOrder, string currentFilter, string searchText, int? pageNumber, int pageSize)
+        public async Task<List<DevoteeCategory>> GetDevoteeCategoryList()
         {
-            if (searchText != null)
+            return (await _context.AshramDevoteeCategories.ToListAsync());
+        }
+
+
+        public async Task<List<DevoteeCategory>> UpdateDevoteeCategory(int Id, string Name)
+        {
+            var devoteeCategory = _context.AshramDevoteeCategories.FirstOrDefault(p => p.Id == Id);
+            if (devoteeCategory != null)
             {
-                pageNumber = 1;
+                devoteeCategory.Name = Name;
+                _context.AshramDevoteeCategories.Update(devoteeCategory);
+                _context.SaveChanges();
             }
-            else
-            {
-                searchText = currentFilter;
-            }
-            var devoteeCategoryList = from m in _context.AshramDevoteeCategories select m;
-            if (!String.IsNullOrEmpty(searchText))
-            {
-                devoteeCategoryList = devoteeCategoryList.Where(s => s.Name.ToLower().Contains(searchText.ToLower()));
-            }
-            devoteeCategoryList = sortOrder switch
-            {
-                "name_desc" => devoteeCategoryList.OrderByDescending(s => s.Name),
-                                _ => devoteeCategoryList.OrderBy(s => s.Name),
-            };
-            return await PaginatedList<DevoteeCategory>.CreateAsync(devoteeCategoryList, pageNumber ?? 1, pageSize);
+           
+            return (await GetDevoteeCategoryList());
+
+
         }
     }
 }
