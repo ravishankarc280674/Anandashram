@@ -1,9 +1,11 @@
 ﻿using Anandashram.BAL.Interface;
 using Anandashram.DAL.Interface;
+using Anandashram.Core.Enums;
 using Anandashram.Models;
 using Anandashram.Shared;
 using Microsoft.AspNetCore.Mvc;
 using System.Drawing.Printing;
+using Anandashram.Core.Models;
 
 namespace Anandashram.BAL
 {
@@ -15,15 +17,15 @@ namespace Anandashram.BAL
         {
             _Devotee = Devotee;
         }
-        public async Task<List<DevoteeCategory>> GetDevoteeCategoryList()
+        public List<DevoteeCategory> GetDevoteeCategoryList(SortModel sortModel)
         {
 
-            return await _Devotee.GetDevoteeCategoryList();
+            return _Devotee.GetDevoteeCategoryList(sortModel);
         }
 
-        public async Task<List<DevoteeCategory>> UpdateDevoteeCategory(int Id, string Name)
-        {
-            return await _Devotee.UpdateDevoteeCategory(Id, Name);
-        }
+        //public async Task<List<DevoteeCategory>> UpdateDevoteeCategory(int Id, string Name)
+        //{
+        //    return await _Devotee.UpdateDevoteeCategory(Id, Name);
+        //}
     }
 }

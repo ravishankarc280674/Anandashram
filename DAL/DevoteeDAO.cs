@@ -1,8 +1,11 @@
-﻿using Anandashram.DAL.Interface;
+﻿using Anandashram.Core.Enums;
+using Anandashram.Core.Models;
+using Anandashram.DAL.Interface;
 using Anandashram.Models;
 using Anandashram.Shared;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.EntityFrameworkCore;
+using System.Collections.Generic;
 
 namespace Anandashram.DAL
 {
@@ -14,25 +17,33 @@ namespace Anandashram.DAL
         {
             _context = dbcontext;
         } 
-        public async Task<List<DevoteeCategory>> GetDevoteeCategoryList()
+        public List<DevoteeCategory> GetDevoteeCategoryList(SortModel sortModel)
         {
-            return (await _context.AshramDevoteeCategories.ToListAsync());
-        }
-
-
-        public async Task<List<DevoteeCategory>> UpdateDevoteeCategory(int Id, string Name)
-        {
-            var devoteeCategory = _context.AshramDevoteeCategories.FirstOrDefault(p => p.Id == Id);
-            if (devoteeCategory != null)
+            List<DevoteeCategory> devoteeCategoryList = _context.AshramDevoteeCategories.ToList();
+            if (sortModel.SortedProperty.ToLower() == "name")
             {
-                devoteeCategory.Name = Name;
-                _context.AshramDevoteeCategories.Update(devoteeCategory);
-                _context.SaveChanges();
+                if (sortModel.SortedOrder == SortOrder.Ascending)
+                    devoteeCategoryList.OrderBy(m => m.Name);
+                else
+                    devoteeCategoryList.OrderByDescending(m => m.Name);
             }
-           
-            return (await GetDevoteeCategoryList());
-
-
+            return (devoteeCategoryList);
         }
+
+
+        //public async Task<List<DevoteeCategory>> UpdateDevoteeCategory(int Id, string Name)
+        //{
+        //    var devoteeCategory = _context.AshramDevoteeCategories.FirstOrDefault(p => p.Id == Id);
+        //    if (devoteeCategory != null)
+        //    {
+        //        devoteeCategory.Name = Name;
+        //        _context.AshramDevoteeCategories.Update(devoteeCategory);
+        //        _context.SaveChanges();
+        //    }
+           
+        //    return (await GetDevoteeCategoryList());
+
+
+        //}
     }
 }

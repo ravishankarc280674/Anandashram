@@ -1,4 +1,6 @@
-﻿using Anandashram.Models;
+﻿using Anandashram.Core.Enums;
+using Anandashram.Core.Models;
+using Anandashram.Models;
 using Anandashram.Shared;
 using Microsoft.AspNetCore.Mvc;
 
@@ -6,7 +8,6 @@ namespace Anandashram.BAL.Interface
 {
     public interface IDevoteeBO
     {
-        Task<List<DevoteeCategory>> GetDevoteeCategoryList();
-        Task<List<DevoteeCategory>> UpdateDevoteeCategory(int Id, string Name);
+        List<DevoteeCategory> GetDevoteeCategoryList(SortModel sortModel);
     }
 }
