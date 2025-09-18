@@ -1,0 +1,19 @@
+﻿@{
+    ViewData["Title"] = "Home Page";
+}
+
+<div class="IndexDiv">
+    <p>
+        <h1 class="text-center font-weight-bolder">Devotee Management</h1>
+    </p>
+    <div class="row m-2">
+        <div class="col-4">
+            <img src="~/images/company_logo.png" class="img-fluid" />
+        </div>
+    </div>
+</div>
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+}

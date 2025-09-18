@@ -1,0 +1,60 @@
+﻿@using Anandashram.UI.Tools.Core.Models
+
+@model PageModel
+<style>
+    .page-link {
+        color: black !important;
+    }
+
+    .page-item.active .page-link {
+        z-index: 3;
+        color: #fff;
+        background-color: red !important;
+        border-color: red;
+    }
+</style>
+
+<div class="container btn-group" style="background-color:black; border-radius:10px; height:45px;">
+   	<div class="col-4 p-0 justify-content-end mt-1">
+		<form asp-action="index">
+			<span class="btn-group">
+				<input class="form-control" type="text"
+					   name="SearchText"
+					   value="@ViewBag.SearchText"
+					   placeholder="Search Key" />
+				<span class="ml-2 btn-group btn-danger" style="border-radius:10px;">
+					<i class="pl-2 fa fa-search align-self-center" aria-hidden="true"></i>
+					<input class="btn btn-sm font-weight-bold text-white"
+						   type="submit" value="Search" />
+				</span>
+			</span>
+		</form>
+	</div>
+    <div class="container mt-1 justify-content-end">
+        <ul class="pagination justify-content-end">
+            @if(Model.ViewType !="Tile")
+            {
+            <li class="page-item">
+                <a class="" asp-controller="@Model.Controller" asp-action="@Model.Action" aria-hidden="true"
+                       asp-route-SearchText="@Model.SearchText" asp-route-view="Tile" title="Tile View">
+                        <span class="btn btn-sm btn-outline-secondary">
+                            <i class="fa fa-id-card" aria-hidden="true" title="Tile View"></i>
+                        </span>
+                    </a>
+            </li>
+            }
+            else
+            {
+            <li class="page-item">
+                <a class="" asp-controller="@Model.Controller" asp-action="@Model.Action" aria-hidden="true"
+                    asp-route-SearchText="@Model.SearchText" asp-route-view="Grid" title="Grid View">
+                        <span class="btn btn-sm btn-outline-secondary">
+                            <i class="fa fa-grid-horizontal" aria-hidden="true" title="Grid View"></i>
+                        </span>
+                    </a>
+            </li>
+            }
+    </div>
+</div>
+
+

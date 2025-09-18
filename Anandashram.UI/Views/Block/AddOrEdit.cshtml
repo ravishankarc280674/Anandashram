@@ -1,0 +1,48 @@
+﻿@model Anandashram.Models.Block
+
+@{
+    ViewData["Title"] = "Block - Edit";
+    Layout = null;
+}
+
+<div class="row">
+    <div class="col-md-12">
+        <form asp-action="AddOrEdit" asp-route-id="@Model.Id" onsubmit="return jQueryAjaxPost(this);" autocomplete="off">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <input type="hidden" asp-for="Id" />
+            <input type="hidden" asp-for="CreatedBy" />
+            <input type="hidden" asp-for="CreatedDate" />
+            <input type="hidden" asp-for="ModifiedBy" />
+            <input type="hidden" asp-for="ModifiedDate" />
+            <dl class="row">
+                <dt class="col-md-3">
+                    <label asp-for="Name" class="control-label"></label>
+                </dt>
+                <dd class="col-md-9">
+                    <div class="form-group">
+                        <input asp-for="Name" class="form-control" />
+                        <span asp-validation-for="Name" class="text-danger"></span>
+                    </div>
+                </dd>
+                <dt class="col-md-3">
+                    <label asp-for="Description" class="control-label"></label>
+                </dt>
+                <dd class="col-md-9">
+                    <div class="form-group">
+                        <input asp-for="Description" class="form-control" />
+                        <span asp-validation-for="Description" class="text-danger"></span>
+                    </div>
+                </dd>
+            </dl>
+            <div class="col-md-12">
+                <input type="submit" value="Submit" class="btn btn-primary btn-block" />
+            </div>
+        </form>
+    </div>
+</div>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+}

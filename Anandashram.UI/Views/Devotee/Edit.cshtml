@@ -1,0 +1,256 @@
+﻿@model Anandashram.Models.Devotee
+
+@{
+    string currentModel = Helper.GetTypeNames(Model.GetType().ToString());
+    ViewData["Title"] = currentModel + " - Edit";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    AddFile addFile = ViewBag.AddFile;
+    addFile.DevoteeCode = Model.Code;
+
+}
+
+<h4>@currentModel - Edit</h4>
+<hr />
+
+<div class="row">
+    <dd class="col-md-12">
+        <form asp-action="Edit">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <input type="hidden" asp-for="Id" />
+            <input type="hidden" asp-for="CreatedBy" />
+            <input type="hidden" asp-for="CreatedDate" />
+            <input type="hidden" asp-for="ModifiedBy" />
+            <input type="hidden" asp-for="ModifiedDate" />
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <input type="hidden" asp-for="Id" />
+               <table>
+                    <tr>
+                    <td rowspan="2"><img src="@Url.Action("GetImage", "Devotee", new { fileName = Model.Code })" width="100" height="100" class="img-thumbnail rounded" target="_blank" /></td>
+                        <td><div><label class="fs-4 fw-bold" style="color: purple">@Html.DisplayFor(model => model.Name)</label></div></td>
+                    </tr>
+                <tr class="row">
+                        <td>
+                            <div>
+                                <label class="fs-4 fw-bold" style="color: purple">@Html.DisplayFor(model => model.Code)</label>
+                                <a data-bs-toggle="modal" data-bs-target="#webcamModal">
+                                    <span class="btn btn-sm btn-outline-primary">
+                                        <i class="fa-solid fa-display" aria-hidden="true" title="Show Camera"></i>
+                                      
+                                    <a data-bs-toggle="modal" data-bs-target="#uploadModal" class=" align-self-end">
+                                        <span class="btn btn-sm btn-outline-danger">
+                                            <i class="fa fa-add" aria-hidden="true" title="Add"></i>
+                                        </span>
+                                    </a>
+                                    </span>
+                                </a>
+                            </div>
+                        </td>
+                    </tr>
+                </table>
+            <br />
+            <dl class="row">
+                <dt class="col-md-1">
+                    <label asp-for="Name" class="control-label"></label>
+                </dt>
+                <dd class="col-md-4">
+                        <input asp-for="Name" class="form-control" />
+                        <span asp-validation-for="Name" class="text-danger"></span>
+                </dd>
+                <dt class="col-md-1">
+                    <label asp-for="DevoteeCategoryId" class="control-label"></label>
+                </dt>
+                <dd class="col-md-4">
+                        <select asp-for="DevoteeCategoryId" class="form-control" asp-items="ViewBag.DevoteeCategoryId"></select>
+                </dd>
+            </dl>
+
+            <dl class="row">
+                <dt class="col-md-1">
+                    <label asp-for="AddressLine1" class="control-label"></label>
+                </dt>
+                <dd class="col-md-4">
+                        <input asp-for="AddressLine1" class="form-control" />
+                        <span asp-validation-for="AddressLine1" class="text-danger"></span>
+                    </dd>
+                </dl>
+
+                <dl class="row">
+                <dt class="col-md-1">
+                    
+                </dt>
+                <dd class="col-md-4">
+                        <input asp-for="AddressLine2" class="form-control" />
+                        <span asp-validation-for="AddressLine2" class="text-danger"></span>
+                    </dd>
+                </dl>
+            <dl class="row">
+                <dt class="col-md-1">
+                    <label asp-for="State" class="control-label"></label>
+                </dt>
+                <dd class="col-md-4">
+                    <input asp-for="State" class="form-control" />
+                    <span asp-validation-for="State" class="text-danger"></span>
+                </dd>
+                <dt class="col-md-1">
+                        <label asp-for="Country" class="control-label"></label>
+                </dt>
+                <dd class="col-md-4">
+                    <input asp-for="Country" class="form-control" />
+                    <span asp-validation-for="Country" class="text-danger"></span>
+                </dd>
+            </dl>
+              <dl class="row">
+                <dt class="col-md-1">
+                        <label asp-for="PinCode" class="control-label"></label>
+                </dt>
+                <dd class="col-md-4">
+                    <input asp-for="PinCode" class="form-control" />
+                    <span asp-validation-for="PinCode" class="text-danger"></span>
+                </dd>
+            </dl>
+              <dl class="row">
+                <dt class="col-md-1">
+                      <label asp-for="Mobile" class="control-label"></label>
+                </dt>
+                <dd class="col-md-4">
+                    <input asp-for="Mobile" class="form-control" />
+                    <span asp-validation-for="Mobile" class="text-danger"></span>
+                </dd>
+                <dt class="col-md-1">
+                        <label asp-for="Email" class="control-label"></label>
+                </dt>
+                <dd class="col-md-4">
+                    <input asp-for="Email" class="form-control" />
+                    <span asp-validation-for="Email" class="text-danger"></span>
+                </dd>
+            </dl>
+            <br />
+            <div class="row">
+                <div class="form-group btn-group">
+                    <input type="submit" value="Save" class="btn btn-primary" />&nbsp;
+                </div>
+            </div>
+        </form>
+    </div>
+              
+               
+               @* modal 1 starts here*@
+        <div id="uploadModal" class="modal" tabindex="-1" role="dialog">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title">Upload Document / Picture</h5>
+                        <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        <partial name="_ImageUpload" model="@addFile" />
+                    </div>
+                    <div class="modal-footer">
+                        <button type="submit" class="btn btn-primary">Save changes</button>
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        @* modal 2 starts here*@
+        <div id="webcamModal" class="modal" tabindex="-1" role="dialog">
+            <div class="modal-dialog custom-modal" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title">Upload Profile Picture</h5>
+                        <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                                <table border="0" cellpadding="0" cellspacing="0">
+
+                                    <tr>
+                                        <td><div id="my_camera" style="width: 100%; height: auto;"></div></td>
+                                        <td><div id="results" style="display: none;"></div></td>
+                                    </tr>
+                                    <tr>
+                                        <td align="center">
+                                            <span id="btnCaptureSpan" class="btn btn-sm btn-outline-primary"  onclick="takeSnapshot()">
+                                                <i id="btnCapture" class="fa fa-camera" aria-hidden="true" title="Capture"></i>
+                                            </span>
+                                        </td>
+                                        <td align="center">
+                                    <span id="btnUploadSpan" style="width: 100% display:none" ; class="btn btn-sm btn-outline-primary">
+                                                <i id="btnUpload" class="fa fa-upload" title="Upload" onclick="saveImage(@Model.Id,@Model.Code)"></i>
+                                            </span>
+                                        </td>
+                                    </tr>
+                                </table>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+       </div>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+    <script>
+        // Configure Webcam.js
+        Webcam.set({
+            width: 320,
+            height: 240,
+            image_format: 'jpeg',
+            jpeg_quality: 90
+        });
+
+        // Attach webcam to the div when modal opens
+        document.getElementById('webcamModal').addEventListener('shown.bs.modal', function () {
+            Webcam.attach('#my_camera');
+        });
+
+        // Detach webcam when modal closes
+        document.getElementById('webcamModal').addEventListener('hidden.bs.modal', function () {
+            Webcam.reset();
+        });
+
+        // Capture snapshot
+        function takeSnapshot() {
+            Webcam.snap(function (data_uri) {
+                // Display captured image
+                document.getElementById('results').style.display = 'block';
+                document.getElementById('btnUploadSpan').style.display = 'block';
+                document.getElementById('results').innerHTML = '<img src="' + data_uri + '"/>';
+            });
+        }
+
+            function saveImage(Id,code) {
+              
+
+            Webcam.snap(function (data_uri) {
+                 var addFilemodel = {
+                   DevoteeId:Id,
+                    DevoteeCode:code,
+                    ImageData:data_uri
+               };
+
+                // Send image data to server
+                $.ajax({
+                    type: "POST",
+                    url: '/Devotee/SaveImage',
+                    data:JSON.stringify(addFilemodel),
+                    success: function (response) {
+                        alert('Image saved successfully!');
+                    },
+                    error: function () {
+                        alert('Error saving image.');
+                    },
+                    
+                });
+            });
+        }
+    </script>
+}

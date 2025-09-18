@@ -1,0 +1,102 @@
+﻿namespace Anandashram.Repositories
+{
+    public class RoomRepository : IRoom
+    {
+        private readonly ApplicationDbContext _context; // for connecting to efcore.
+        public RoomRepository(ApplicationDbContext context) // will be passed by dependency injection.
+        {
+            _context = context;
+        }
+        public async Task<Room> Create(Room room)
+        {
+            _context.Rooms.Add(room);
+            await _context.SaveChangesAsync();
+            return room;
+        }
+
+        public async Task<Room> Delete(Room room)
+        {
+            _context.Rooms.Attach(room);
+            _context.Entry(room).State = EntityState.Deleted;
+           await _context.SaveChangesAsync();
+            return room;
+        }
+
+        public async Task<Room> Edit(Room room)
+        {
+            _context.Rooms.Attach(room);
+            _context.Entry(room).State = EntityState.Modified;
+            await _context.SaveChangesAsync();
+            return room;
+        }
+
+
+        private List<Room> DoSort(List<Room> rooms, string SortProperty, SortOrder sortOrder)
+        {           
+
+            if (SortProperty.ToLower() == "name")
+            {
+                if (sortOrder == SortOrder.Ascending)
+                    rooms = rooms.OrderBy(n => n.Name).ToList();
+                else
+                    rooms = rooms.OrderByDescending(n => n.Name).ToList();
+            }
+            else
+            {
+                if (sortOrder == SortOrder.Ascending)
+                    rooms = rooms.OrderBy(d => d.Description).ToList();
+                else
+                    rooms = rooms.OrderByDescending(d => d.Description).ToList();
+            }
+
+            return rooms;
+        }
+
+        public async Task<PaginatedList<Room>> GetItems(string SortProperty, SortOrder sortOrder, string SearchText = "", int pg = 1, int pageSize = 5)
+        {
+            List<Room> rooms;
+
+            if (!string.IsNullOrEmpty(SearchText))
+            {
+                rooms =await _context.Rooms.Include(e =>e.Building)
+                    .Include(e => e.Block)
+                    .Include(e => e.Floor)
+                .Where(n => n.Name.Contains(SearchText) || n.Description.Contains(SearchText))
+                    .ToListAsync();
+            }
+            else
+                rooms =await _context.Rooms.Include(e => e.Building)
+                    .Include(e => e.Block)
+                    .Include(e => e.Floor).ToListAsync();
+
+            rooms = DoSort(rooms, SortProperty, sortOrder);
+
+            PaginatedList<Room> retRooms = new PaginatedList<Room>(rooms,pg,pageSize);
+            return retRooms;
+        }
+
+        public async Task<Room> GetRoom(int id)
+        {
+            Room room =await _context.Rooms.Where(u => u.Id == id).FirstOrDefaultAsync();
+            return room == null ? new Room() : room;
+        }
+        public bool IsRoomNameExists(string name)
+        {
+            int ct = _context.Rooms.Where(n => n.Name.ToLower() == name.ToLower()).Count();
+            if (ct > 0)
+                return true;
+            else
+                return false;      
+        }
+
+        public bool IsRoomNameExists(string name,int Id)
+        {
+            int ct = _context.Rooms.Where(n => n.Name.ToLower() == name.ToLower() && n.Id!=Id).Count();
+            if (ct > 0)
+                return true;
+            else
+                return false;
+        }
+
+    }
+}

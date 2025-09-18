@@ -1,0 +1,86 @@
+﻿@model Anandashram.Models.Room
+@{
+    string currentModel = Helper.GetTypeNames(Model.GetType().ToString());
+    ViewData["Title"] = currentModel + " - Edit";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<h4>@currentModel - Edit</h4>
+<hr />
+
+<div class="row">
+    <div class="col-md-8">
+        <form asp-action="Edit">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <input type="hidden" asp-for="Id" />
+            <input type="hidden" asp-for="CreatedBy" />
+            <input type="hidden" asp-for="CreatedDate" />
+            <input type="hidden" asp-for="ModifiedBy" />
+            <input type="hidden" asp-for="ModifiedDate" />
+            <dl class="row">
+                <dt class="col-sm-2">
+                    <label asp-for="Name" class="control-label"></label>
+                </dt>
+                <dd class="col-sm-10">
+                    <div class="form-group">
+                        <input asp-for="Name" class="form-control" />
+                        <span asp-validation-for="Name" class="text-danger"></span>
+                    </div>
+                </dd>
+                <dt class="col-sm-2">
+                    <label asp-for="Description" class="control-label"></label>
+                </dt>
+                <dd class="col-sm-10">
+                    <div class="form-group">
+                        <input asp-for="Description" class="form-control" />
+                    </div>
+                </dd>
+                <dt class="col-sm-2">
+                    <label asp-for="BuildingId" class="control-label"></label>
+                </dt>
+                <dd class="col-sm-10">
+                    <div class="form-group">
+                <select asp-for="BuildingId" class="form-control" asp-items="ViewBag.BuildingId"></select>
+            </div>
+        </dd>
+                <dt class="col-sm-2">
+                    <label asp-for="BlockId" class="control-label"></label>
+                </dt>
+                <dd class="col-sm-10">
+                    <div class="form-group">
+                        <select asp-for="BlockId" class="form-control" asp-items="ViewBag.BlockId"></select>
+                    </div>
+                </dd>
+                <dt class="col-sm-2">
+                    <label class="control-label">Floor</label>
+                </dt>
+                <dd class="col-sm-10">
+                    <div class="form-group">
+                        <select asp-for="FloorId" class="form-control" asp-items="ViewBag.FloorId"></select>
+                        <span asp-validation-for="FloorId" class="text-danger"></span>
+                    </div>
+                </dd>
+                <dt class="col-sm-2">
+                    <label asp-for="Capacity" class="control-label"></label>
+                </dt>
+                <dd class="col-sm-10">
+                    <div class="form-group">
+                        <input asp-for="Capacity" class="form-control" />
+                        <span asp-validation-for="Capacity" class="text-danger"></span>
+                    </div>
+                </dd>
+            </dl>
+            <div class="form-group btn-group">
+                <input type="submit" value="Save" class="btn btn-primary" />&nbsp;
+                <a class="btn btn-secondary" asp-action="index"
+                   asp-route-pg="@TempData.Peek("CurrentPage")">Back</a>
+            </div>
+        </form>
+    </div>
+</div>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+}

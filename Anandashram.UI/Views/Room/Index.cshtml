@@ -1,0 +1,187 @@
+﻿@model IEnumerable<Room>
+@{
+    string currentModel = Helper.GetTypeNames(Model.GetType().ToString());
+    ViewData["Title"] = currentModel + " - Edit";
+    SortModel sortModel = (SortModel)ViewData["SortModel"];
+    int pg = 1;
+    if (TempData["CurrentPage"] != null)
+    {
+        pg = (int)TempData["CurrentPage"];
+
+        TempData["CurrentPage"] = pg;
+    }
+    PageModel pager = ViewBag.Pager;
+
+    int pageNo = 0;
+    if (ViewBag.SearchPager != null)
+    {
+        pager = ViewBag.SearchPager;
+        pageNo = pager.CurrentPage;
+    }
+}
+
+<div class="container-fluid btn-group">
+    <div class="col-10">
+        <h3>@currentModel - List</h3>
+    </div>
+    <div class="col-2 justify-content-end">
+        <p>
+            <a asp-action="Create" class="btn btn-success">Create New</a>
+        </p>
+    </div>
+</div>
+<br />
+
+
+<div class="row">
+    <div class="col-12">
+        <partial name="_PagerSearchOnly" model="@pager" />
+    </div>
+</div>
+<br />
+@if( pager.ViewType == "Tile")
+{
+<div class="container mt-4">
+    <div class="row">
+         @if (Model != null)
+            {
+        @foreach (var item in Model)
+        {
+            <div class="col-md-4">
+                <div class="card mb-4">
+                    <h5 class="card-title text-center">@item.Name</h5>
+                    <div class="card-body">
+                        <h5 class="card-title">Building : </h5><p class="card-text">@item.BuildingName</p> 
+                        <h5 class="card-title">Block : </h5><p class="card-text">@item.BlockName</p> 
+                        <h5 class="card-title">Floor : </h5><p class="card-text">@item.FloorName</p> 
+                        <h5 class="card-title">Capacity : </h5><p class="card-text">@item.Capacity</p> 
+                        <div class="btn-group fa-align-right">
+                                    <a asp-action="Edit" asp-route-id="@item.Id">
+                                        <span class="btn btn-sm btn-outline-primary">
+                                            <i class="fa fa-edit" aria-hidden="true" title="Edit"></i>
+                                        </span>
+                                    </a>
+
+                                    <a asp-action="Details" asp-route-id="@item.Id">
+                                        <span class="btn btn-sm btn-outline-dark">
+                                            <i class="fa fa-eye" aria-hidden="true" title="Details"></i>
+                                        </span>
+                                    </a>
+
+                                    <a asp-action="Delete" asp-route-id="@item.Id">
+                                        <span class="btn btn-sm btn-outline-danger">
+                                            <i class="fa fa-trash" aria-hidden="true" title="Delete"></i>
+                                        </span>
+                                    </a>
+                                </div>
+                    </div>
+                </div>
+            </div>
+            }
+        }
+    </div>
+</div>
+}
+@if( pager.ViewType == "Grid")
+{
+<table id="tblRoomList" class="table table-bordered border-success">
+        <thead>
+            <tr>
+            <th class="align-center">
+                    Building
+                </th>
+            <th class="align-middle">
+                    Block
+                </th class="align-middle">
+                <th>
+                   Floor
+                </th> 
+                <th>
+                   Name
+                </th>
+                <th>
+                   Description
+                </th>
+                <th>
+                    <span>Capacity</span>
+                </th>
+                <th>
+                &nbsp;
+                </th>
+            </tr>
+        </thead>
+        <tbody>
+            @if (Model != null)
+            {
+                var distinctBuildings = Model.DistinctBy(p => p.BuildingId).Select(g => new { g.BuildingId, g.BuildingName }).ToList(); //no of buildings
+                @foreach (var distinctBuild in distinctBuildings)
+                {
+                   @Html.Raw("<tr>");
+                    var buildingRowsList = Model.Where(p => p.BuildingId == distinctBuild.BuildingId).ToList();
+                    var buildingCount = buildingRowsList.Count();//for that bulding no of rows
+                    //add tr & td with rowspan buildCount
+                      <td rowspan="@buildingCount" class="align-middle">@distinctBuild.BuildingName</td>
+                    var distinctBlocks = buildingRowsList.DistinctBy(p => p.BlockId).Select(g => new { g.BuildingId, g.BlockId, g.BlockName });
+                    @foreach (var distinctBlock in distinctBlocks)
+                    {
+                        var blockRowsList = Model.Where(p => p.BlockId == distinctBlock.BlockId && p.BuildingId == distinctBlock.BuildingId).ToList();
+                    var blockCount = blockRowsList.Count();
+                        //add  td with rowspan blockCount
+                    <td rowspan="@blockCount" class="align-middle">@distinctBlock.BlockName</td>
+                    var distinctFloors = blockRowsList.DistinctBy(p => p.FloorId).Select(g => new { g.BuildingId, g.BlockId, g.FloorId, g.FloorName });
+                    //var distinctFloors = buildingRowsList.DistinctBy(p => p.FloorId).Select(g => new { g.BuildingId, g.BlockId, g.FloorId, g.FloorName });
+
+                        @foreach (var distinctFloor in distinctFloors)
+                        {
+                            var floorRowsList = Model.Where(p => p.BlockId == distinctBlock.BlockId && p.BuildingId == distinctBlock.BuildingId && p.FloorId == distinctFloor.FloorId).ToList();
+                        var floorCount = floorRowsList.Count();
+                            //add td for floor
+                        <td rowspan="@floorCount" class="align-middle">@distinctFloor.FloorName</td>
+                        @for (int iLoop = 0; floorRowsList.Count>iLoop;iLoop++)
+                                {
+                                    if(@iLoop != 0)
+                                        @Html.Raw("<tr>");
+                                    <td>@floorRowsList[@iLoop].Name</td>
+                                    <td>@floorRowsList[@iLoop].Description</td>
+                                    <td>@floorRowsList[@iLoop].Capacity</td>
+                            <td>
+                                <div class="btn-group">
+                                    <a asp-action="Edit" asp-route-id="@floorRowsList[@iLoop].Id">
+                                        <span class="btn btn-sm btn-outline-primary">
+                                            <i class="fa fa-edit" aria-hidden="true" title="Edit"></i>
+                                        </span>
+                                    </a>
+
+                                    <a asp-action="Details" asp-route-id="@floorRowsList[@iLoop].Id">
+                                        <span class="btn btn-sm btn-outline-dark">
+                                            <i class="fa fa-eye" aria-hidden="true" title="Details"></i>
+                                        </span>
+                                    </a>
+
+                                    <a asp-action="Delete" asp-route-id="@floorRowsList[@iLoop].Id">
+                                        <span class="btn btn-sm btn-outline-danger">
+                                            <i class="fa fa-trash" aria-hidden="true" title="Delete"></i>
+                                        </span>
+                                    </a>
+                                </div>
+                            </td>
+                                         @Html.Raw("</tr>");
+                            }
+                        }
+                    }
+            }
+            }
+            else
+            {
+                <tr>
+                    <td colspan="7">No Records Found</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+}

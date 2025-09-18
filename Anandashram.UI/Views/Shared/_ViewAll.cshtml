@@ -1,0 +1,55 @@
+﻿@model dynamic
+@{
+    string currentModel = Helper.GetTypeNames(Model.GetType().ToString());
+}
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                
+                <a asp-action="Index" asp-route-SearchText="@ViewBag.SearchText" asp-route-PageSize="@ViewBag.PageSize">Name</a> 
+            </th>
+            <th>
+               
+                 <a asp-action="Index" asp-route-SearchText="@ViewBag.SearchText" asp-route-PageSize="@ViewBag.PageSize">Description</a> 
+            </th>
+            <th>
+                &nbsp;
+            </th>
+        </tr>
+    </thead>
+    <tbody>
+        @if (Model != null)
+        {
+            @foreach (var item in Model)
+            {
+                <tr>
+                    <td class="Name">
+                        <span>@item.Name</span>
+                        <input type="text" value="@item.Name" style="display:none" />
+                    </td>
+                    <td class="Description">
+                        <span>@item.Description</span>
+                        <input type="text" value="@item.Description" style="display:none" />
+                    </td>
+                    <td>
+                        <div class="btn-group">
+                            <a onclick="showInPopup('@Url.Action("AddOrEdit", currentModel, new { id = item.Id }, Context.Request.Scheme)','Devotee Category - Edit')" class="btn btn-info text-white"><i class="fas fa-pencil-alt"></i>Edit</a>
+                            <form asp-action="Delete" asp-route-id="@item.Id" onsubmit="return jQueryAjaxDelete(this);" class="d-inline">
+                                   <input type="submit" aria-hidden="true" value="Delete" class="btn btn-danger"/> 
+                            </form>
+
+                        </div>
+                    </td>
+                </tr>
+            }
+        }
+        else
+        {
+            <tr>
+                <td colspan="3">No Records Found</td>
+            </tr>
+        }
+    </tbody>
+</table>
