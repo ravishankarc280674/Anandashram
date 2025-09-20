@@ -1,7 +1,11 @@
 ﻿@model Anandashram.Models.AddFile
-
-<h3>Add File</h3>
-<div>
+ 
+    
+<div class="col-md-12">
+    <form asp-action="UploadDocument" enctype="multipart/form-data">
+        <input type="hidden" asp-for="DevoteeId" />
+        <input type="hidden" asp-for="DevoteeCode" />
+        <div asp-validation-summary="ModelOnly" class="text-danger"></div>
      <dl class="row">
         <dt class="col-sm-4">
             <label class="control-label" asp-for="FileName"></label>
@@ -14,36 +18,39 @@
         </dd>
     </dl>
         <fieldset>
-            <div class="text-bold">Select Upload Type</div>
+        <div class="text-black">
+            <label class="fw-bold">File Upload Type: &nbsp;&nbsp;</label>
+            <label>
+                Scan <input type="radio" id="scanner" name="option" value="divScan" checked="checked" onchange="showControl()" />
+            </label>
+
+            <label>
+                File<input type="radio" id="browse" name="option" value="divFile" onchange="showControl()" />
+                </label>
+            </div>
             <div>
-            <input type="radio" id="scanner" name="scanner" value="option1" checked="checked" onchange="showControl()">
-             <label>Scan</label>
-
-            <input type="radio" id="browse" name="scanner" value="option2" onchange="showControl()">
-                <label>file</label>
+                <div id="divScan" class="col-sm-8 btn-secondary" style="border:solid;display:block">
+                    <div style="border:solid"></div>
+                </div>
+                <div id="divFile" style="border:solid;display:none" class="btn-outline-primary">
+                    <input type="file" id="ImageFile" name="ImageFile" asp-for="ImageFile" />
+                    <span asp-validation-for="ImageFile" class="text-danger"></span>
+                </div>
             </div>
-            <div id="divFile">
-                <label for="file">Choose a file:</label>
-                <input type="file" id="file" name="file" />
-            </div>
-        <div id="divScan" class="col-sm-8 btn-secondary" style="border:solid;display:none">
-            <div  style="border:solid"></div>
-        </div>
         
-        </fieldset>
-
-    <div class="col-sm-8 fa fa-upload">Upload</div>
-</div>
+            </fieldset>
+            <br />
+             <div class="form-group btn-group col-md-12">
+                <input type="submit" value="Submit" class="btn btn-primary" />
+            </div>
+    </form>
+        </div>
 <script>
     function showControl() {
         // Hide all controls
         document.getElementById('divFile').style.display = 'none';
         document.getElementById('divScan').style.display = 'none';
-
-         const option1 = document.querySelector('input[value="option1"]').checked;
-        const option2 = document.querySelector('input[value="option2"]').checked;
-
-        document.getElementById('divScan').style.display = "option1" ? 'block' : 'none';
-        document.getElementById('divFile').style.display = "option2" ? 'block' : 'none';
+         var selectedValue = document.querySelector('input[name="option"]:checked').value;
+        document.getElementById(selectedValue).style.display = 'block';
     }
 </script>

@@ -2,7 +2,8 @@
 {
     public interface IFileManagement
     {
-        void Upload(AddFile uploadImage);
-        byte[] GetProfilePic(string fileName);
+        Task Upload(AddFile uploadImage);
+        Task<byte[]> GetProfilePic(string fileName);
+        Task UploadDocument(AddFile addFile);
     }
 }

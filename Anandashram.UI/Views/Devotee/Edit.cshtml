@@ -5,15 +5,16 @@
     ViewData["Title"] = currentModel + " - Edit";
     Layout = "~/Views/Shared/_Layout.cshtml";
     AddFile addFile = ViewBag.AddFile;
+    addFile.DevoteeId = Model.Id;
     addFile.DevoteeCode = Model.Code;
-
+    ViewBag.AddFile = addFile;
 }
 
 <h4>@currentModel - Edit</h4>
 <hr />
 
 <div class="row">
-    <dd class="col-md-12">
+    <div class="col-md-12">
         <form asp-action="Edit">
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
             <input type="hidden" asp-for="Id" />
@@ -32,13 +33,13 @@
                         <td>
                             <div>
                                 <label class="fs-4 fw-bold" style="color: purple">@Html.DisplayFor(model => model.Code)</label>
-                                <a data-bs-toggle="modal" data-bs-target="#webcamModal">
+                            <a data-bs-toggle="modal" data-bs-target="#webcamModal">
                                     <span class="btn btn-sm btn-outline-primary">
                                         <i class="fa-solid fa-display" aria-hidden="true" title="Show Camera"></i>
                                       
                                     <a data-bs-toggle="modal" data-bs-target="#uploadModal" class=" align-self-end">
                                         <span class="btn btn-sm btn-outline-danger">
-                                            <i class="fa fa-add" aria-hidden="true" title="Add"></i>
+                                            <i class="fa fa-add" aria-hidden="true" title="Add Documents"></i>
                                         </span>
                                     </a>
                                     </span>
@@ -49,23 +50,38 @@
                 </table>
             <br />
             <dl class="row">
-                <dt class="col-md-1">
+                <dt class="col-md-2">
                     <label asp-for="Name" class="control-label"></label>
                 </dt>
                 <dd class="col-md-4">
                         <input asp-for="Name" class="form-control" />
                         <span asp-validation-for="Name" class="text-danger"></span>
                 </dd>
-                <dt class="col-md-1">
+                <dt class="col-md-2">
                     <label asp-for="DevoteeCategoryId" class="control-label"></label>
                 </dt>
                 <dd class="col-md-4">
                         <select asp-for="DevoteeCategoryId" class="form-control" asp-items="ViewBag.DevoteeCategoryId"></select>
                 </dd>
             </dl>
-
             <dl class="row">
-                <dt class="col-md-1">
+                <dt class="col-md-2">
+                    <label asp-for="StartDate" class="control-label"></label>
+                </dt>
+                <dd class="col-md-4">
+                    <input type="datetime-local" asp-for="StartDate" class="form-control" />
+                    <span asp-validation-for="StartDate" class="text-danger"></span>
+                </dd>
+                <dt class="col-md-2">
+                    <label asp-for="EndDate" class="control-label"></label>
+                </dt>
+                <dd class="col-md-4">
+                    <input type="datetime-local" asp-for="EndDate" class="form-control" />
+                    <span asp-validation-for="EndDate" class="text-danger"></span>
+                </dd>
+            </dl>
+            <dl class="row">
+                <dt class="col-md-2">
                     <label asp-for="AddressLine1" class="control-label"></label>
                 </dt>
                 <dd class="col-md-4">
@@ -75,7 +91,7 @@
                 </dl>
 
                 <dl class="row">
-                <dt class="col-md-1">
+                <dt class="col-md-2">
                     
                 </dt>
                 <dd class="col-md-4">
@@ -84,14 +100,14 @@
                     </dd>
                 </dl>
             <dl class="row">
-                <dt class="col-md-1">
+                <dt class="col-md-2">
                     <label asp-for="State" class="control-label"></label>
                 </dt>
                 <dd class="col-md-4">
                     <input asp-for="State" class="form-control" />
                     <span asp-validation-for="State" class="text-danger"></span>
                 </dd>
-                <dt class="col-md-1">
+                <dt class="col-md-2">
                         <label asp-for="Country" class="control-label"></label>
                 </dt>
                 <dd class="col-md-4">
@@ -100,7 +116,7 @@
                 </dd>
             </dl>
               <dl class="row">
-                <dt class="col-md-1">
+                <dt class="col-md-2">
                         <label asp-for="PinCode" class="control-label"></label>
                 </dt>
                 <dd class="col-md-4">
@@ -109,14 +125,14 @@
                 </dd>
             </dl>
               <dl class="row">
-                <dt class="col-md-1">
+                <dt class="col-md-2">
                       <label asp-for="Mobile" class="control-label"></label>
                 </dt>
                 <dd class="col-md-4">
                     <input asp-for="Mobile" class="form-control" />
                     <span asp-validation-for="Mobile" class="text-danger"></span>
                 </dd>
-                <dt class="col-md-1">
+                <dt class="col-md-2">
                         <label asp-for="Email" class="control-label"></label>
                 </dt>
                 <dd class="col-md-4">
@@ -127,36 +143,14 @@
             <br />
             <div class="row">
                 <div class="form-group btn-group">
-                    <input type="submit" value="Save" class="btn btn-primary" />&nbsp;
+                    <input type="submit" value="Submit" class="btn btn-primary" />&nbsp; 
+                    <input type="submit" value="Closed" class="btn btn-primary" />;
                 </div>
             </div>
         </form>
     </div>
-              
-               
-               @* modal 1 starts here*@
-        <div id="uploadModal" class="modal" tabindex="-1" role="dialog">
-            <div class="modal-dialog" role="document">
-                <div class="modal-content">
-                    <div class="modal-header">
-                        <h5 class="modal-title">Upload Document / Picture</h5>
-                        <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close">
-                            <span aria-hidden="true">&times;</span>
-                        </button>
-                    </div>
-                    <div class="modal-body">
-                        <partial name="_ImageUpload" model="@addFile" />
-                    </div>
-                    <div class="modal-footer">
-                        <button type="submit" class="btn btn-primary">Save changes</button>
-                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        @* modal 2 starts here*@
-        <div id="webcamModal" class="modal" tabindex="-1" role="dialog">
+               @* modal 1 starts here - to load the web cam *@
+                   <div id="webcamModal" class="modal" tabindex="-1" role="dialog">
             <div class="modal-dialog custom-modal" role="document">
                 <div class="modal-content">
                     <div class="modal-header">
@@ -167,7 +161,6 @@
                     </div>
                     <div class="modal-body">
                                 <table border="0" cellpadding="0" cellspacing="0">
-
                                     <tr>
                                         <td><div id="my_camera" style="width: 100%; height: auto;"></div></td>
                                         <td><div id="results" style="display: none;"></div></td>
@@ -192,7 +185,25 @@
                 </div>
             </div>
         </div>
-       </div>
+    
+
+        @* modal 2 starts here - to upload documents either by browing or scanning*@
+    <div id="uploadModal" class="modal" tabindex="-1" role="dialog">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Upload Document / Picture</h5>
+                    <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <partial name="_ImageUpload" model="ViewBag.AddFile"/>
+                </div>
+        </div>
+    </div>
+</div>
+</div>
 
 @section Scripts {
     @{

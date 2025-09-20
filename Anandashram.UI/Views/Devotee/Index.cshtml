@@ -58,6 +58,16 @@
                    asp-route-SearchText="@ViewBag.SearchText" asp-route-PageSize="@ViewBag.PageSize">Devotee Category</a>
             </th>
             <th>
+                <i class="@sortModel.GetColumn("startdate").SortIcon" aria-hidden="true"></i>
+                <a asp-action="Index" sp-route-sortExpression="@sortModel.GetColumn("startdate").SortExpression"
+                   asp-route-SearchText="@ViewBag.SearchText" asp-route-PageSize="@ViewBag.PageSize">Start Date</a>
+            </th>
+             <th>
+                <i class="@sortModel.GetColumn("enddate").SortIcon" aria-hidden="true"></i>
+                <a asp-action="Index" sp-route-sortExpression="@sortModel.GetColumn("enddate").SortExpression"
+                   asp-route-SearchText="@ViewBag.SearchText" asp-route-PageSize="@ViewBag.PageSize">End Date</a>
+            </th>
+            <th>
                 <i class="@sortModel.GetColumn("mobile").SortIcon" aria-hidden="true"></i>
                 <a asp-action="Index" asp-route-sortExpression="@sortModel.GetColumn("mobile").SortExpression"
                    asp-route-SearchText="@ViewBag.SearchText" asp-route-PageSize="@ViewBag.PageSize">Mobile</a>
@@ -87,19 +97,21 @@
                     </td>
                     <td class="Name">
                         <span>@item.Name</span>
-                        <input type="text" value="@item.Name" style="display:none" />
                     </td>
                     <td class="DevoteeCategoryName">
                         <span>@item.DevoteeCategoryName</span>
-                        <input type="text" value="@item.DevoteeCategoryName" style="display:none" />
+                    </td>
+                    <td class="StartDate">
+                        <span>@item.StartDate</span>
+                    </td>
+                    <td class="EndDate">
+                        <span>@item.EndDate</span>
                     </td>
                     <td class="Mobile">
                         <span>@item.Mobile</span>
-                        <input type="text" value="@item.Mobile" style="display:none" />
                     </td>
                     <td class="Email">
                         <span>@item.Email</span>
-                        <input type="text" value="@item.Email" style="display:none" />
                     </td>
                     <td>
                         <div class="btn-group">

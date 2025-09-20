@@ -47,6 +47,14 @@ public partial class Devotee
     [DisplayName("Pin Code")]
     [MaxLength(100)]
     public string? PinCode { get; set; }
+
+    [DisplayName("Start Date")]
+    [DisplayFormat(DataFormatString = "{0:dd/MM/yyyy HH:mm}")]
+    public DateTime StartDate { get; set; } = DateTime.Now;
+
+    [DisplayName("End Date")]
+    [DisplayFormat(DataFormatString = "{0:dd/MM/yyyy HH:mm}")]
+    public DateTime EndDate { get; set; } = DateTime.Now;
     [Required]
     public string CreatedBy { get; set; } = null!;
 

@@ -30,6 +30,8 @@ namespace Anandashram.Controllers
             sortModel.AddColumn("mobile");
             sortModel.AddColumn("email");
             sortModel.AddColumn("devoteecategoryname");
+            sortModel.AddColumn("startdate");
+            sortModel.AddColumn("enddate");
             sortModel.ApplySort(sortExpression);
             ViewData["SortModel"] = sortModel;
             ViewBag.PageSize = PageSize;
@@ -142,7 +144,7 @@ namespace Anandashram.Controllers
             // _devoteeRepo.Upload(uploadImage);
             return PartialView("_ImageUpload.cshtml");
         }
-        
+
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(int id, Devotee devotee)
@@ -225,18 +227,31 @@ namespace Anandashram.Controllers
         //image captured from webcam
 
         [HttpPost]
-        public IActionResult SaveImage(AddFile addFile)
+        public async Task<IActionResult> SaveImage(AddFile addFile)
         {
             string imageData = addFile.ImageData;
             var base64Data = imageData.Split(',')[1];
             var imageBytes = Convert.FromBase64String(base64Data);
-            _fileManagement.Upload(addFile);
+            await _fileManagement.Upload(addFile);
             return Json(new { success = true });
         }
 
-        public IActionResult GetImage(string fileName,Devotee model)
+        public async Task<IActionResult> UploadDocument(AddFile addFile)
         {
-            var fileBytes = _fileManagement.GetProfilePic(fileName);
+            //if (!ModelState.IsValid)
+            //{
+                string imageData = addFile.ImageData;
+                string fileName = addFile.FileName;
+                string fileExtention = Path.GetExtension(addFile.ImageFile.FileName);
+                addFile.FileName = addFile.FileName + fileExtention;
+                await _fileManagement.UploadDocument(addFile);
+            //}
+            return Json(new { isValid = true, html = Helper.RenderRazorViewToString(this, "Edit", addFile.DevoteeId) });
+        }
+
+        public async Task<IActionResult> GetImage(string fileName,Devotee model)
+        {
+            var fileBytes =await _fileManagement.GetProfilePic(fileName);
             return File(fileBytes, "image/jpeg"); // Adjust MIME type as needed
         }
     }

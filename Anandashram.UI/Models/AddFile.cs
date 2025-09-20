@@ -14,5 +14,8 @@ namespace Anandashram.Models
         public string FileName { get; set; }
 
         public string ImageData { get; set; }
+
+        [DisplayName("Upload File")]
+        public IFormFile ImageFile { get; set; }
     }
 }

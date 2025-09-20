@@ -3,24 +3,24 @@
     public class FileManagement : IFileManagement
     {
         private readonly IConfiguration _configuration;
-        private string ImageStoragePath;
+        private string _imageStoragePath;
         public FileManagement(IConfiguration configuration)
         {
             _configuration = configuration;
-            ImageStoragePath = _configuration.GetValue<string>("DocumentStoragePath").ToString();
+            _imageStoragePath = _configuration.GetValue<string>("DocumentStoragePath").ToString();
 
         }
-        public void Upload(AddFile uploadImage)
+        public async Task Upload(AddFile uploadImage)
         {
-            var imageStoragePath = ImageStoragePath + @"\Images";
-            CreateFolder(ImageStoragePath);
+            var imageStoragePath = _imageStoragePath + @"\Images";
+            CreateFolder(_imageStoragePath);
             string FullPath = Path.Combine(imageStoragePath, uploadImage.DevoteeCode + ".jpeg");
             if (File.Exists(FullPath))
             {
                 // Delete the file
                 System.IO.File.Delete(FullPath);
             }
-            File.WriteAllBytes(FullPath, uploadImage.ImageBytes);
+           await File.WriteAllBytesAsync(FullPath, uploadImage.ImageBytes);
         }
         private static void CreateFolder(string folderPath)
         {
@@ -32,15 +32,31 @@
             }
         }
 
-        public byte[] GetProfilePic(string fileName)
+        public async Task UploadDocument(AddFile addFile)
         {
-            var filePath = Path.Combine(ImageStoragePath, "Images", fileName + ".jpeg");
+            var imageStoragePath = Path.Combine(_imageStoragePath, addFile.DevoteeCode);
+            CreateFolder(imageStoragePath);
+            string FullPath = Path.Combine(imageStoragePath, addFile.FileName);
+            if (File.Exists(FullPath))
+            {
+                // Delete the file
+                System.IO.File.Delete(FullPath);
+            }
+            using (var fileStream = new FileStream(FullPath, FileMode.Create))
+            {
+                await addFile.ImageFile.CopyToAsync(fileStream);
+            }
+        }
+        
+        public async Task<byte[]> GetProfilePic(string fileName)
+        {
+            var filePath = Path.Combine(_imageStoragePath, "Images", fileName + ".jpeg");
 
             if (!System.IO.File.Exists(filePath))
             {
                 return System.IO.File.ReadAllBytes("wwwroot/images/NoFound.jpeg");
             }
-            return System.IO.File.ReadAllBytes(filePath);
+             return await System.IO.File.ReadAllBytesAsync(filePath);
         }
     }
 }
