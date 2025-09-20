@@ -240,8 +240,6 @@ namespace Anandashram.Controllers
         {
             //if (!ModelState.IsValid)
             //{
-                string imageData = addFile.ImageData;
-                string fileName = addFile.FileName;
                 string fileExtention = Path.GetExtension(addFile.ImageFile.FileName);
                 addFile.FileName = addFile.FileName + fileExtention;
                 await _fileManagement.UploadDocument(addFile);
