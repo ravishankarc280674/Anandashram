@@ -26,7 +26,7 @@
     </div>
     <div class="col-2 justify-content-end">
         <p>
-            <a asp-action="Create" class="btn btn-success">Create New</a>
+            <a asp-action="AddOrEdit" class="btn btn-success"><i class="fas fa-random"></i>Create New</a>
         </p>
     </div>
 </div>
@@ -91,7 +91,7 @@
                 <tr>
                     <td class="image"><img src="@Url.Action("GetImage", "Devotee", new { fileName = item.Code })" width="40" height="30" class="rounded-circle" /></td>
                     <td class="Code">
-                        <a asp-action="Edit" asp-route-id="@item.Id">
+                        <a asp-action="AddOrEdit" asp-route-id="@item.Id">
                             <span style="color: purple" asp-action="Edit" asp-route-id="@item.Id">@item.Code</span>
                         </a>
                     </td>
@@ -115,7 +115,7 @@
                     </td>
                     <td>
                         <div class="btn-group">
-                            <a asp-action="Edit" asp-route-id="@item.Id">
+                            <a asp-action="AddOrEdit" asp-route-id="@item.Id">
                                 <span class="btn btn-sm btn-outline-primary">
                                     <i class="fa fa-edit" aria-hidden="true" title="Edit"></i>
                                 </span>

@@ -1,5 +1,8 @@
 ﻿
+using Anandashram.Interfaces;
 using Anandashram.Models;
+using Microsoft.AspNetCore.Mvc.Formatters;
+using System.Net.Mime;
 using System.Threading.Tasks;
 
 namespace Anandashram.Controllers
@@ -89,108 +92,95 @@ namespace Anandashram.Controllers
             return View(devotee);
         }
 
-        // GET: Devotee/Create
-        public IActionResult Create()
-        {
-            Devotee devotee = new Devotee();
-            devotee.CreatedBy = this.User.FindFirstValue(ClaimTypes.NameIdentifier);
-
-            ViewBag.DevoteeCategoryId = GetDevoteeCategories();
-
-            devotee.CreatedDate = DateTime.Now;
-            return View(devotee);
-        }
-
+       
         // POST: Devotee/Create
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create(Devotee devotee)
-        {
-            string errMessage = string.Empty;
-            if (string.IsNullOrEmpty(devotee.Name))
-            {
-                errMessage = errMessage + "Devotee Name cannot be Blank";
-            }
-            if (ModelState.IsValid)
-            {
-                await _devoteeRepo.Create(devotee);
-                return RedirectToAction(nameof(Index));
-            }
-            return View(devotee);
-        }
+        //[HttpPost]
+        //[ValidateAntiForgeryToken]
+        //public async Task<IActionResult> Create(Devotee devotee)
+        //{
+        //    string errMessage = string.Empty;
+        //    if (string.IsNullOrEmpty(devotee.Name))
+        //    {
+        //        errMessage = errMessage + "Devotee Name cannot be Blank";
+        //    }
+        //    if (ModelState.IsValid)
+        //    {
+        //        await _devoteeRepo.Create(devotee);
+        //        return RedirectToAction(nameof(Index));
+        //    }
+        //    return View(devotee);
+        //}
 
         // GET: Devotee/Edit/5
-        public async Task<IActionResult> Edit(int id)
+        public async Task<IActionResult> AddOrEdit(int Id = 0)
         {
-            ViewBag.DevoteeCategoryId = GetDevoteeCategories();
-            AddFile file = new AddFile();
-            var devotee = await _devoteeRepo.GetDevotee(id);
-            TempData.Keep();
-            if (devotee == null)
+                Devotee devotee = new Devotee();
+                ViewBag.DevoteeCategoryId = GetDevoteeCategories();
+            if (Id == 0)
             {
-                return NotFound();
+                devotee.CreatedBy = this.User.FindFirstValue(ClaimTypes.NameIdentifier);
+                devotee.CreatedDate = DateTime.Now;
+                return View(devotee);
             }
-            file.DevoteeCode = devotee.Code;
-            ViewBag.AddFile = file;
-            devotee.ModifiedBy = this.User.FindFirstValue(ClaimTypes.NameIdentifier);
-            devotee.ModifiedDate = DateTime.Now;
+            else
+            {
+                AddFile file = new AddFile();
+                devotee = await _devoteeRepo.GetDevotee(Id);
+                TempData.Keep();
+                if (devotee == null)
+                {
+                    return NotFound();
+                }
+                file.DevoteeCode = devotee.Code;
+                ViewBag.AddFile = file;
+                this.ViewBag.UploadedFiles = _fileManagement.GetUploadedFiles(devotee.Id, devotee.Code);
+                devotee.ModifiedBy = this.User.FindFirstValue(ClaimTypes.NameIdentifier);
+                devotee.ModifiedDate = DateTime.Now;
+            }
             return View(devotee);
         }
 
-        public async Task<IActionResult> Upload(AddFile someFile)
-        {
-            AddFile uploadImage = new AddFile();
-            uploadImage.DevoteeCode = "DEV-000001";
-            // _devoteeRepo.Upload(uploadImage);
-            return PartialView("_ImageUpload.cshtml");
-        }
+
+        //public async Task<IActionResult> Upload(AddFile someFile)
+        //{
+        //    AddFile uploadImage = new AddFile();
+        //    uploadImage.DevoteeCode = "DEV-000001";
+        //    // _devoteeRepo.Upload(uploadImage);
+        //    return PartialView("_ImageUpload.cshtml");
+        //}
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, Devotee devotee)
+        public async Task<IActionResult> AddOrEdit(int Id,Devotee devotee)
         {
-            bool bolret = false;
-            string errMessage = "";
-            if (string.IsNullOrEmpty(devotee.Name))
-            {
-                errMessage = errMessage + "Devotee Name cannot be Blank";
-                ModelState.AddModelError("", errMessage);
-            }
             if (ModelState.IsValid)
             {
-                try
+                if (Id == 0)
                 {
-
-                    if (_devoteeRepo.IsDevoteeNameExists(devotee.Name, devotee.Id) == true)
-                        errMessage = errMessage + "Devotee Name " + devotee.Name + " Already Exists";
-
-                    if (errMessage == "")
-                    {
-                        devotee = await _devoteeRepo.Edit(devotee);
-                        TempData["SuccessMessage"] = devotee.Name + " - Devotee Saved Successfully";
-                        bolret = true;
-                    }
-                }
-                catch (Exception ex)
-                {
-                    errMessage = errMessage + " " + ex.Message;
-                }
-
-                int currentPage = 1;
-                if (TempData["CurrentPage"] != null)
-                    currentPage = (int)TempData["CurrentPage"];
-
-
-                if (bolret == false)
-                {
-                    TempData["ErrorMessage"] = errMessage;
-                    ModelState.AddModelError("", errMessage);
-                    return View(devotee);
+                    devotee = await _devoteeRepo.Create(devotee);
+                    
                 }
                 else
-                    return RedirectToAction(nameof(Index), new { pg = currentPage });
+                {
+                    try
+                    {
+
+                        devotee = await _devoteeRepo.Edit(devotee);
+                    }
+                    catch (DbUpdateConcurrencyException)
+                    {
+                        if (_devoteeRepo.GetDevotee(devotee.Id) == null)
+                        {
+                            return NotFound();
+                        }
+                        else
+                        {
+                            throw;
+                        }
+                    }
+                }
             }
-            return View(devotee);
+            return RedirectToAction("AddOrEdit", new { Id = devotee.Id });
         }
 
         // GET: Devotee/Delete/5
@@ -244,13 +234,26 @@ namespace Anandashram.Controllers
                 addFile.FileName = addFile.FileName + fileExtention;
                 await _fileManagement.UploadDocument(addFile);
             //}
-            return Json(new { isValid = true, html = Helper.RenderRazorViewToString(this, "Edit", addFile.DevoteeId) });
+            return Json(new { isValid = true, html = Helper.RenderRazorViewToString(this, "_UploadDocument", addFile.DevoteeId) });
+
         }
 
-        public async Task<IActionResult> GetImage(string fileName,Devotee model)
+        public async Task<IActionResult> GetImage(string fileName)
         {
             var fileBytes =await _fileManagement.GetProfilePic(fileName);
-            return File(fileBytes, "image/jpeg"); // Adjust MIME type as needed
+            return File(fileBytes, "image/jpeg");
+        }
+
+        public async Task<FileResult> GetDocument(string filePath, string fileName)
+        {
+            var fileBytes = await _fileManagement.GetDocument(filePath);
+            return File(fileBytes, "application/octet-stream", fileName); // Adjust MIME type as needed
+
+        }
+        public async Task<IActionResult> DeleteDocument(int Id, string filePath)
+        {
+            await _fileManagement.DeleteDocument(filePath);
+            return Json(new { isValid = true, html = Helper.RenderRazorViewToString(this, "Edit", Id) });
         }
     }
 }

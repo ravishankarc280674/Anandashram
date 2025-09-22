@@ -4,13 +4,25 @@
     string currentModel = Helper.GetTypeNames(Model.GetType().ToString());
     ViewData["Title"] = currentModel + " - Edit";
     Layout = "~/Views/Shared/_Layout.cshtml";
+
     AddFile addFile = ViewBag.AddFile;
-    addFile.DevoteeId = Model.Id;
-    addFile.DevoteeCode = Model.Code;
-    ViewBag.AddFile = addFile;
+    var uploadedFiles = ViewBag.UploadedFiles;
+    if (Model.Id != 0)
+    {
+        addFile.DevoteeId = Model.Id;
+        addFile.DevoteeCode = Model.Code;
+        ViewBag.AddFile = addFile;
+    }
+}
+@if(Model.Id == 0)
+{
+    <h4>@currentModel - Add </h4>
+}
+else
+{
+    <h4>@currentModel - Edit </h4>
 }
 
-<h4>@currentModel - Edit</h4>
 <hr />
 
 <div class="row">
@@ -23,8 +35,11 @@
             <input type="hidden" asp-for="ModifiedBy" />
             <input type="hidden" asp-for="ModifiedDate" />
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            @if (Model.Id != 0)
+            {
             <div class="col-md-12 d-flex">
-                <div class="col-md-6" style="border:solid">
+                <div class="col-md-6">
+                   
                 <table >
                 <tr>
                     <td rowspan="2"><img src="@Url.Action("GetImage", "Devotee", new { fileName = Model.Code })" width="100" height="100" class="img-thumbnail rounded" target="_blank" /></td>
@@ -43,23 +58,58 @@
                         </td>
                     </tr>
                     </table>
+                   
                 </div>
-                <div class="col-md-6" style="border:solid">
-                    <table>
-                    <tr>
-                            <td class="justify-content-end">
-                            <label class="text-bold">Uploaded Documents</label>
+                <div class="col-md-2 col text-end"></div>
+                <div class="col-md-4 col text-end">
+                    
+                    <table class="table">
+                            <thead>
+                            </thead>
+                        <tbody>
+                            <tr>
+                        <td colspan="3">
+                            <div class="col text-end fw-bold">
+                                Document List
                                 <a data-bs-toggle="modal" data-bs-target="#uploadModal" class=" align-self-end">
                                     <span class="btn btn-sm btn-outline-danger">
                                         <i class="fa fa-add" aria-hidden="true" title="Add Documents"></i>
                                     </span>
                                 </a>
+                            </div>
                         </td>
-                    </tr>
-                 </table>
+                            </tr>
+                            @if(uploadedFiles!=null)
+                            {
+                            @foreach(var fileUpload in uploadedFiles)
+                                {
+                                   <tr>
+                                        <td class="col-md-10">
+                                            @fileUpload.FileName
+                                        </td>
+                                        <td><span class="btn btn-sm btn-outline-secondary">@Html.ActionLink("", "GetDocument", new { fileName = @fileUpload.FileName, filePath = @fileUpload.FilePath }, new { @class = "fa-solid fa-download" })<span></span></td>
+                                       <td>
+                                            <a asp-action="DeleteDocument" asp-route-filePath="@fileUpload.FilePath" onsubmit="return jQueryAjaxDelete(this);" asp-route-Id="@fileUpload.DevoteeId">
+                                                <span class="btn btn-sm btn-outline-danger">
+                                                    <i class="fa fa-cut" aria-hidden="true" title="Remove"></i>
+                                                </span>
+                                            </a>
+                                       </td>
+                                   </tr>
+                               }
+                            }
+                            else
+                            {
+                                <tr>
+                                    <td>No Documents Uploaded</td>
+                                </tr>
+                            }
+                        </tbody>
+                        </table>
                 </div>
             </div>
             <br />
+            }
             <dl class="row">
                 <dt class="col-md-2">
                     <label asp-for="Name" class="control-label"></label>
@@ -155,7 +205,13 @@
             <div class="row">
                 <div class="form-group btn-group">
                     <input type="submit" value="Submit" class="btn btn-primary" />&nbsp; 
-                    <input type="submit" value="Closed" class="btn btn-primary" />;
+                   @if(Model.Id !=0)
+                    {
+                        <input type="submit" value="Closed" class="btn btn-primary" />
+                    }
+                    
+                    &nbsp;<a class="btn btn-secondary" asp-action="index"
+                       asp-route-pg="@TempData.Peek("CurrentPage")">Back</a>
                 </div>
             </div>
         </form>
@@ -212,7 +268,7 @@
                     </button>
                 </div>
                 <div class="modal-body">
-                    <partial name="_ImageUpload" model="ViewBag.AddFile"/>
+                    <partial name="_UploadDocument" model="ViewBag.AddFile" />
                 </div>
         </div>
     </div>

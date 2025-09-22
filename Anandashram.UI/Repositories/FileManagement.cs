@@ -58,5 +58,34 @@
             }
              return await System.IO.File.ReadAllBytesAsync(filePath);
         }
+
+        public async Task<byte[]> GetDocument(string filePath)
+        {
+            return await File.ReadAllBytesAsync(filePath);
+        }
+        public List<UploadedFile> GetUploadedFiles(int Id,string code)
+        {
+            List<UploadedFile> fileList = new List<UploadedFile>();
+            var folderPath = Path.Combine(_imageStoragePath, code);
+            foreach(string filePath in Directory.GetFiles(folderPath))
+            {
+                fileList.Add(new UploadedFile()
+                {
+                    DevoteeId = Id,
+                    FileName = Path.GetFileName(filePath),
+                    FilePath = filePath
+                });
+
+            }
+            return fileList;
+
+        }
+        public async Task DeleteDocument(string filePath)
+        {
+            if (System.IO.File.Exists(filePath))
+            {
+                File.Delete(filePath);
+            }
+        }
     }
 }
