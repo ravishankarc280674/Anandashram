@@ -67,7 +67,11 @@
         {
             List<UploadedFile> fileList = new List<UploadedFile>();
             var folderPath = Path.Combine(_imageStoragePath, code);
-            foreach(string filePath in Directory.GetFiles(folderPath))
+            if (!System.IO.File.Exists(folderPath))
+            {
+                return fileList;
+            }
+            foreach (string filePath in Directory.GetFiles(folderPath))
             {
                 fileList.Add(new UploadedFile()
                 {
