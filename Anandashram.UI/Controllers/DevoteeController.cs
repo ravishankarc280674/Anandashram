@@ -92,25 +92,6 @@ namespace Anandashram.Controllers
             return View(devotee);
         }
 
-       
-        // POST: Devotee/Create
-        //[HttpPost]
-        //[ValidateAntiForgeryToken]
-        //public async Task<IActionResult> Create(Devotee devotee)
-        //{
-        //    string errMessage = string.Empty;
-        //    if (string.IsNullOrEmpty(devotee.Name))
-        //    {
-        //        errMessage = errMessage + "Devotee Name cannot be Blank";
-        //    }
-        //    if (ModelState.IsValid)
-        //    {
-        //        await _devoteeRepo.Create(devotee);
-        //        return RedirectToAction(nameof(Index));
-        //    }
-        //    return View(devotee);
-        //}
-
         // GET: Devotee/Edit/5
         public async Task<IActionResult> AddOrEdit(int Id = 0)
         {
@@ -139,15 +120,6 @@ namespace Anandashram.Controllers
             }
             return View(devotee);
         }
-
-
-        //public async Task<IActionResult> Upload(AddFile someFile)
-        //{
-        //    AddFile uploadImage = new AddFile();
-        //    uploadImage.DevoteeCode = "DEV-000001";
-        //    // _devoteeRepo.Upload(uploadImage);
-        //    return PartialView("_ImageUpload.cshtml");
-        //}
 
         [HttpPost]
         [ValidateAntiForgeryToken]
