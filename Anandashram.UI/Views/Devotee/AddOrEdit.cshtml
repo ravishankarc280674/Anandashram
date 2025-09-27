@@ -34,10 +34,16 @@ else
             <input type="hidden" asp-for="CreatedDate" />
             <input type="hidden" asp-for="ModifiedBy" />
             <input type="hidden" asp-for="ModifiedDate" />
+            <input type="hidden" asp-for="Closed" />
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
             @if (Model.Id != 0)
             {
+                @if (!string.IsNullOrEmpty(Model.ReopenedCode))
+                {
+                    <label class="col-md-12 d-flex text-center">This Devotee has been Reopened with new Devotee Code @Model.ReopenedCode</label>
+                }
             <div class="col-md-12 d-flex">
+              
                 <div class="col-md-6">
                    
                 <table >
@@ -204,12 +210,15 @@ else
             <br />
             <div class="row">
                 <div class="form-group btn-group">
-                    <input type="submit" value="Submit" class="btn btn-primary" />&nbsp; 
-                   @if(Model.Id !=0)
+                    <input type="submit" name="actionButton" value="Submit" class="btn btn-primary" />&nbsp;
+                    @if(Model.Id !=0 && Model.Closed==false)
                     {
-                        <input type="submit" value="Closed" class="btn btn-primary" />
+                        <input type="submit" name="actionButton" value="Closed" class="btn btn-danger" />
                     }
-                    
+                    @if (Model.Id != 0 && String.IsNullOrEmpty(Model.ReopenedCode) && Model.Closed == true)
+                    {
+                        <input type="submit" name="actionButton" value="Reopen" class="btn btn-info" />
+                    }
                     &nbsp;<a class="btn btn-secondary" asp-action="index"
                        asp-route-pg="@TempData.Peek("CurrentPage")">Back</a>
                 </div>

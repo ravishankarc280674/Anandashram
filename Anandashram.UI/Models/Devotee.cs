@@ -69,4 +69,8 @@ public partial class Devotee
     public string? DevoteeCategoryName { get { return this.DevoteeCategory != null ? DevoteeCategory.Name : string.Empty; } }
 
     public DevoteeCategory DevoteeCategory { get; set; }
+
+    public bool Closed { get; set; }
+
+    public string? ReopenedCode { get; set; }
 }

@@ -123,20 +123,42 @@ namespace Anandashram.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> AddOrEdit(int Id,Devotee devotee)
+        public async Task<IActionResult> AddOrEdit(int Id,Devotee devotee, string actionButton)
         {
             if (ModelState.IsValid)
             {
                 if (Id == 0)
                 {
                     devotee = await _devoteeRepo.Create(devotee);
-                    
                 }
                 else
                 {
                     try
                     {
-
+                        if (actionButton == "Closed")
+                        {
+                            devotee.Closed = true;
+                        }
+                        if (actionButton == "Reopen")
+                        {
+                            Devotee newDevotee = new Devotee() {
+                                DevoteeCategoryId = devotee.DevoteeCategoryId,
+                                Description = devotee.Description,
+                                CreatedBy = this.User.FindFirstValue(ClaimTypes.NameIdentifier),
+                                CreatedDate = DateTime.Now,
+                                Country = devotee.Country,
+                                StartDate = DateTime.Now,
+                                EndDate = DateTime.Now,
+                                AddressLine1 = devotee.AddressLine1,
+                                AddressLine2 = devotee.AddressLine2,
+                                PinCode = devotee.PinCode,
+                                Email = devotee.Email,
+                                Name = devotee.Name,
+                                State = devotee.State
+                            };
+                            newDevotee = await _devoteeRepo.Create(newDevotee);
+                            devotee.ReopenedCode = newDevotee.Code;
+                        }
                         devotee = await _devoteeRepo.Edit(devotee);
                     }
                     catch (DbUpdateConcurrencyException)
