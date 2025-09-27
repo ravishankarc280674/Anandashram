@@ -67,7 +67,7 @@
         {
             List<UploadedFile> fileList = new List<UploadedFile>();
             var folderPath = Path.Combine(_imageStoragePath, code);
-            if (!System.IO.File.Exists(folderPath))
+            if (!System.IO.Directory.Exists(folderPath))
             {
                 return fileList;
             }
