@@ -1,48 +1,79 @@
-﻿@model Anandashram.Models.AddFile
+﻿@model Anandashram.Models.Devotee
 
+<input type="hidden" id="Id" value="456" />
+<input type="hidden" id="DevoteeId" asp-for="Id" />
+<input type="hidden" id="DevoteeCode" asp-for="Code" />
 <table border="0" cellpadding="0" cellspacing="0">
-
-    <tr>
-        <td><div id="webcam"></div></td>
-        <td><img id="imgCapture" /></td>
+    <tr> 
+        <td><div id="my_camera" style="width: 100%; height: auto;"></div></td>
+        <td><div id="results" style="display: none;"></div></td>
     </tr>
     <tr>
         <td align="center">
-           
-            <span id="btnCaptureSpan" class="btn btn-sm btn-outline-primary">
-                <i id="btnCapture" class="fa fa-camera" aria-hidden="true" title="Capture" style="width: 100%; height: auto;"></i>
+            <span id="btnCaptureSpan" class="btn btn-sm btn-outline-primary" onclick="takeSnapshot()">
+                <i id="btnCapture" class="fa fa-camera" aria-hidden="true" title="Capture"></i>
             </span>
         </td>
         <td align="center">
-            <span id="btnUploadSpan" class="btn btn-sm btn-outline-primary">
-                <i id="btnUpload" class="fa fa-upload" title="Upload"></i>
+            <span id="btnUploadSpan" style="width: 100%; display:none;" class="btn btn-sm btn-outline-primary">
+                <i id="btnUpload" class="fa fa-upload" title="Upload" onclick="saveImage()"></i>
             </span>
         </td>
     </tr>
 </table>
 
-<script type="text/javascript">
-    $(function () {
-     Webcam.set({
-         width: 320,
-         height: 240,
-         image_format: 'jpeg',
-         jpeg_quality: 90
-     });
-     Webcam.attach('#webcam');
-           $("#btnCapture").click(function () {
-            Webcam.snap(function (data_uri) {
-                $("#imgCapture")[0].src = data_uri;
-                $("#btnUpload").removeAttr("disabled");
-            });
-        });
-            $("#btnUpload").click(function () {
-                $.ajax({
-                    type: "POST",
-                    url: "/Home/SaveCapturedImage",
-                    data: { data:JSON.stringify({data: $("#imgCapture")[0].src,devotee:model}),
-                    success: function (r) { }
-                });
-            });
-        });
-</script>
+@* <script>
+    Webcam.set({
+             width: 320,
+             height: 240,
+             image_format: 'jpeg',
+             jpeg_quality: 90
+         });
+
+         // Attach webcam to the div when modal opens
+         document.getElementById('webcamModal').addEventListener('shown.bs.modal', function () {
+             Webcam.attach('#my_camera');
+         });
+
+         // Detach webcam when modal closes
+         document.getElementById('webcamModal').addEventListener('hidden.bs.modal', function () {
+             Webcam.reset();
+         });
+
+         // Capture snapshot
+         function takeSnapshot() {
+             Webcam.snap(function (data_uri) {
+                 // Display captured image
+                 document.getElementById('results').style.display = 'block';
+                 document.getElementById('btnUploadSpan').style.display = 'block';
+                 document.getElementById('results').innerHTML = '<img src="' + data_uri + '"/>';
+             });
+         }
+
+             function saveImage() {
+
+                  $('#webcamModal').on('show.bs.modal', function (event) {
+                 var button = $(event.relatedTarget); // Button that triggered the modal
+                 var devoteeId = button.data('item-Id'); // Extract info from data-* attributes
+                 var devoteeCode = button.data('item-Code');
+                 //alert(devoteeCode);
+                 alert(devoteeId);
+             });
+             Webcam.snap(function (data_uri) {
+
+                 // Send image data to server
+                 $.ajax({
+                     type: "POST",
+                     url: '/Devotee/SaveImage',
+                     data: data_uri,
+                     success: function (response) {
+                         alert('Image saved successfully!');
+                     },
+                     error: function () {
+                         alert('Error saving image.');
+                     },
+
+                 });
+             });
+         }
+</script> *@

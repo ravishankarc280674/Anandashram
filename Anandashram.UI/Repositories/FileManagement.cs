@@ -13,7 +13,7 @@
         public async Task Upload(AddFile uploadImage)
         {
             var imageStoragePath = _imageStoragePath + @"\Images";
-            CreateFolder(_imageStoragePath);
+            CreateFolder(imageStoragePath);
             string FullPath = Path.Combine(imageStoragePath, uploadImage.DevoteeCode + ".jpeg");
             if (File.Exists(FullPath))
             {

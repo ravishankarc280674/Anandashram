@@ -218,11 +218,15 @@ namespace Anandashram.Controllers
         //image captured from webcam
 
         [HttpPost]
-        public async Task<IActionResult> SaveImage(AddFile addFile)
+        public async Task<IActionResult> SaveImage(int Id,string Code,string Data)
         {
-            string imageData = addFile.ImageData;
+            AddFile addFile = new AddFile();
+            addFile.DevoteeId = Id;
+            addFile.DevoteeCode = Code;
+            string imageData = Data;
             var base64Data = imageData.Split(',')[1];
             var imageBytes = Convert.FromBase64String(base64Data);
+            addFile.ImageBytes = imageBytes;
             await _fileManagement.Upload(addFile);
             return Json(new { success = true });
         }
