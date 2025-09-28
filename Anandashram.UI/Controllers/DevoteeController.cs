@@ -239,8 +239,7 @@ namespace Anandashram.Controllers
                 addFile.FileName = addFile.FileName + fileExtention;
                 await _fileManagement.UploadDocument(addFile);
             //}
-            return Json(new { isValid = true, html = Helper.RenderRazorViewToString(this, "_UploadDocument", addFile.DevoteeId) });
-
+            return RedirectToAction("AddOrEdit", new { Id = addFile.DevoteeId });
         }
 
         public async Task<IActionResult> GetImage(string fileName)
@@ -258,7 +257,8 @@ namespace Anandashram.Controllers
         public async Task<IActionResult> DeleteDocument(int Id, string filePath)
         {
             await _fileManagement.DeleteDocument(filePath);
-            return Json(new { isValid = true, html = Helper.RenderRazorViewToString(this, "Edit", Id) });
+            return RedirectToAction("AddOrEdit", new { Id = Id });
+
         }
     }
 }
