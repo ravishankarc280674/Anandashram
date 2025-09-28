@@ -361,3 +361,5 @@ MigrationBackup/
 
 # Fody - auto-generated XML schema
 FodyWeavers.xsd
+/Anandashram.UI.Tools/Core/Models/PageModel.cs
+/Anandashram.UI/Program.cs
