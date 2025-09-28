@@ -257,8 +257,17 @@ namespace Anandashram.Controllers
         public async Task<IActionResult> DeleteDocument(int Id, string filePath)
         {
             await _fileManagement.DeleteDocument(filePath);
+            NotifyUser("Document Deleted Successfully");
             return RedirectToAction("AddOrEdit", new { Id = Id });
 
+        }
+
+
+
+        public void NotifyUser(string message)
+        {
+            // Perform some server-side logic
+            Content($"<script>notify('{message}');</script>", "text/html");
         }
     }
 }
