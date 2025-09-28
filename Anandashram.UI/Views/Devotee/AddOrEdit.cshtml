@@ -210,7 +210,11 @@ else
             <br />
             <div class="row">
                 <div class="form-group btn-group">
-                    <input type="submit" name="actionButton" value="Submit" class="btn btn-primary" />&nbsp;
+                    @if (Model.Closed == false)
+                    {
+                        <input type="submit" name="actionButton" value="Submit" class="btn btn-primary" />
+                    }
+                    &nbsp;
                     @if(Model.Id !=0 && Model.Closed==false)
                     {
                         <input type="submit" name="actionButton" value="Closed" class="btn btn-danger" />
@@ -220,7 +224,7 @@ else
                         <input type="submit" name="actionButton" value="Reopen" class="btn btn-info" />
                     }
                     &nbsp;<a class="btn btn-secondary" asp-action="index"
-                       asp-route-pg="@TempData.Peek("CurrentPage")">Back</a>
+                       asp-route-pg="@TempData.Peek("CurrentPage")" asp-route-SearchText ="@ViewBag.SearchText">Back</a>
                 </div>
             </div>
         </form>

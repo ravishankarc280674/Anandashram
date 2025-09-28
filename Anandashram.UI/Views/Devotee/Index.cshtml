@@ -44,38 +44,38 @@
             <th>
                 <i class="@sortModel.GetColumn("code").SortIcon" aria-hidden="true"></i>
                 <a asp-action="Index" asp-route-sortExpression="@sortModel.GetColumn("code").SortExpression"
-                   asp-route-SearchText="@ViewBag.SearchText" asp-route-PageSize="@ViewBag.PageSize">Code</a>
+                   asp-route-SearchText="@ViewBag.SearchText" asp-route-PageSize="@ViewBag.PageSize" asp-route-Checked="@ViewBag.Checked">Code</a>
             </th>
             <th>
                 <i class="@sortModel.GetColumn("code").SortIcon" aria-hidden="true"></i>
                 <a asp-action="Index" asp-route-sortExpression="@sortModel.GetColumn("code").SortExpression"
-                   asp-route-SearchText="@ViewBag.SearchText" asp-route-PageSize="@ViewBag.PageSize">Name</a>
+                   asp-route-SearchText="@ViewBag.SearchText" asp-route-PageSize="@ViewBag.PageSize" asp-route-Checked="@ViewBag.Checked">Name</a>
             </th>
            
             <th>
                 <i class="@sortModel.GetColumn("devoteecategoryname").SortIcon" aria-hidden="true"></i>
                 <a asp-action="Index" sp-route-sortExpression="@sortModel.GetColumn("devoteecategoryname").SortExpression"
-                   asp-route-SearchText="@ViewBag.SearchText" asp-route-PageSize="@ViewBag.PageSize">Devotee Category</a>
+                   asp-route-SearchText="@ViewBag.SearchText" asp-route-PageSize="@ViewBag.PageSize" asp-route-Checked="@ViewBag.Checked">Devotee Category</a>
             </th>
             <th>
                 <i class="@sortModel.GetColumn("startdate").SortIcon" aria-hidden="true"></i>
                 <a asp-action="Index" sp-route-sortExpression="@sortModel.GetColumn("startdate").SortExpression"
-                   asp-route-SearchText="@ViewBag.SearchText" asp-route-PageSize="@ViewBag.PageSize">Start Date</a>
+                   asp-route-SearchText="@ViewBag.SearchText" asp-route-PageSize="@ViewBag.PageSize" asp-route-Checked="@ViewBag.Checked">Start Date</a>
             </th>
              <th>
                 <i class="@sortModel.GetColumn("enddate").SortIcon" aria-hidden="true"></i>
                 <a asp-action="Index" sp-route-sortExpression="@sortModel.GetColumn("enddate").SortExpression"
-                   asp-route-SearchText="@ViewBag.SearchText" asp-route-PageSize="@ViewBag.PageSize">End Date</a>
+                   asp-route-SearchText="@ViewBag.SearchText" asp-route-PageSize="@ViewBag.PageSize" asp-route-Checked="@ViewBag.Checked">End Date</a>
             </th>
             <th>
                 <i class="@sortModel.GetColumn("mobile").SortIcon" aria-hidden="true"></i>
                 <a asp-action="Index" asp-route-sortExpression="@sortModel.GetColumn("mobile").SortExpression"
-                   asp-route-SearchText="@ViewBag.SearchText" asp-route-PageSize="@ViewBag.PageSize">Mobile</a>
+                   asp-route-SearchText="@ViewBag.SearchText" asp-route-PageSize="@ViewBag.PageSize" asp-route-Checked="@ViewBag.Checked">Mobile</a>
             </th>
             <th>
                 <i class="@sortModel.GetColumn("email").SortIcon" aria-hidden="true"></i>
                 <a asp-action="Index" asp-route-sortExpression="@sortModel.GetColumn("email").SortExpression"
-                   asp-route-SearchText="@ViewBag.SearchText" asp-route-PageSize="@ViewBag.PageSize">Email</a>
+                   asp-route-SearchText="@ViewBag.SearchText" asp-route-PageSize="@ViewBag.PageSize" asp-route-Checked="@ViewBag.Checked">Email</a>
             </th>
             <th>
                 &nbsp;
@@ -88,11 +88,21 @@
         {
             @foreach (var item in Model)
             {
-                <tr>
+            
+            string rowClass = "";
+                @if (item.Closed == true && string.IsNullOrEmpty(item.ReopenedCode))
+            {
+                    rowClass = "table-success";
+            }
+                @if (item.Closed == true && !string.IsNullOrEmpty(item.ReopenedCode))
+                {
+                    rowClass = "table-warning";
+                }
+                <tr class="@rowClass">
                     <td class="image"><img src="@Url.Action("GetImage", "Devotee", new { fileName = item.Code })" width="40" height="30" class="rounded-circle" /></td>
                     <td class="Code">
                         <a asp-action="AddOrEdit" asp-route-id="@item.Id">
-                            <span style="color: purple" asp-action="Edit" asp-route-id="@item.Id">@item.Code</span>
+                            <span style="color: purple" asp-action="AddOrEdit" asp-route-id="@item.Id">@item.Code</span>
                         </a>
                     </td>
                     <td class="Name">

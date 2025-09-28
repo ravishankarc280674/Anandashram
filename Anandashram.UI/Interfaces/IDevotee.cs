@@ -2,7 +2,7 @@
 {
     public interface IDevotee
     {
-        Task<PaginatedList<Devotee>> GetItems(string SortProperty, SortOrder sortOrder, string SearchText = "", int pageIndex = 1, int pageSize = 5); //read all
+        Task<PaginatedList<Devotee>> GetItems(string SortProperty, SortOrder sortOrder, string SearchText = "", int pageIndex = 1, int pageSize = 5, bool Checked = false); //read all
         Task<Devotee> GetDevotee(int id); // read particular item
 
         Task<Devotee> Create(Devotee devotee);

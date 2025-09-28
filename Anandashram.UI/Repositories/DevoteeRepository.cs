@@ -57,18 +57,30 @@ namespace Anandashram.Repositories
             return devotees;
         }
 
-        public async Task<PaginatedList<Devotee>> GetItems(string SortProperty, SortOrder sortOrder, string SearchText = "", int pg = 1, int pageSize = 5)
+        public async Task<PaginatedList<Devotee>> GetItems(string SortProperty, SortOrder sortOrder, string SearchText = "", int pg = 1, int pageSize = 5,bool Checked=false)
         {
             List<Devotee> devotees;
 
-            if (!string.IsNullOrEmpty(SearchText))
+            if (!Checked)
             {
-                devotees = await _context.Devotees.Where(n => n.Name.Contains(SearchText) || n.Description.Contains(SearchText)).Include(d => d.DevoteeCategory).ToListAsync();
+                if (!string.IsNullOrEmpty(SearchText))
+                {
+                    devotees = await _context.Devotees.Where(n => (n.Name.Contains(SearchText) || n.Description.Contains(SearchText)) && n.Closed == false).Include(d => d.DevoteeCategory).ToListAsync();
+                }
+                else
+                    devotees = await _context.Devotees.Where(n => n.Closed == false).Include(d => d.DevoteeCategory).ToListAsync();
             }
             else
-                devotees = await _context.Devotees.Include(d => d.DevoteeCategory).ToListAsync();
+            {
+                if (!string.IsNullOrEmpty(SearchText))
+                {
+                    devotees = await _context.Devotees.Where(n => n.Name.Contains(SearchText) || n.Description.Contains(SearchText)).Include(d => d.DevoteeCategory).ToListAsync();
+                }
+                else
+                    devotees = await _context.Devotees.Include(d => d.DevoteeCategory).ToListAsync();
+            }
 
-            devotees = DoSort(devotees, SortProperty, sortOrder);
+                devotees = DoSort(devotees, SortProperty, sortOrder);
 
             PaginatedList<Devotee> retDevotees = new PaginatedList<Devotee>(devotees, pg, pageSize);
             return retDevotees;

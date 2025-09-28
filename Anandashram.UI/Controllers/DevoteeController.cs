@@ -22,7 +22,7 @@ namespace Anandashram.Controllers
         }
 
         // GET: Devotee
-        public async Task<IActionResult> Index(string sortExpression = "", string SearchText = "", int pg = 1, int PageSize = 5)
+        public async Task<IActionResult> Index(string sortExpression = "", string SearchText = "", int pg = 1, int PageSize = 5, bool Closed=false)
         {
             if (pg < 1) pg = 1;
 
@@ -39,10 +39,11 @@ namespace Anandashram.Controllers
             ViewData["SortModel"] = sortModel;
             ViewBag.PageSize = PageSize;
             ViewBag.SearchText = SearchText;
+            ViewBag.Closed = Closed;
             TempData["CurrentPage"] = pg;
-            var DevoteeList = await _devoteeRepo.GetItems(sortModel.SortedProperty, sortModel.SortedOrder, SearchText, pg, PageSize);
+            var DevoteeList = await _devoteeRepo.GetItems(sortModel.SortedProperty, sortModel.SortedOrder, SearchText, pg, PageSize, Closed);
 
-            var pager = new PageModel(DevoteeList.TotalRecords, pg, PageSize) { Action = "Index", Controller = "Devotee", SearchText = SearchText };
+            var pager = new PageModel(DevoteeList.TotalRecords, pg, PageSize) { Action = "Index", Controller = "Devotee",SearchText = SearchText ,Closed = Closed};
             pager.SortExpression = sortExpression;
             this.ViewBag.Pager = pager;
             this.ViewBag.PageSizes = GetPageSizes(PageSize);
@@ -127,12 +128,15 @@ namespace Anandashram.Controllers
         {
             if (ModelState.IsValid)
             {
+           int IdToRedirect = 0;
                 if (Id == 0)
                 {
                     devotee = await _devoteeRepo.Create(devotee);
+                    IdToRedirect = devotee.Id;
                 }
                 else
                 {
+                    IdToRedirect = devotee.Id;
                     try
                     {
                         if (actionButton == "Closed")
@@ -157,6 +161,8 @@ namespace Anandashram.Controllers
                                 State = devotee.State
                             };
                             newDevotee = await _devoteeRepo.Create(newDevotee);
+                            IdToRedirect = newDevotee.Id;
+
                             devotee.ReopenedCode = newDevotee.Code;
                         }
                         devotee = await _devoteeRepo.Edit(devotee);
@@ -173,8 +179,9 @@ namespace Anandashram.Controllers
                         }
                     }
                 }
+            return RedirectToAction("AddOrEdit", new { Id = IdToRedirect });
             }
-            return RedirectToAction("AddOrEdit", new { Id = devotee.Id });
+            return RedirectToAction("AddOrEdit", new { Id = 0 });
         }
 
         // GET: Devotee/Delete/5

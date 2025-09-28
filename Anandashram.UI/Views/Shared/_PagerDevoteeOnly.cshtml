@@ -29,7 +29,7 @@
 			</span>
 			</span>
 			&nbsp;
-			<input type="checkbox" checked="@ViewBag.Checked" title="Include Closed" />
+			<input type="checkbox" onchange="this.form.submit()" name="Closed" value="true" checked="@ViewBag.Closed" title="Include Closed" />
 		</form>
 	</div>
 
