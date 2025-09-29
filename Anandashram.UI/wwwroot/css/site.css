@@ -170,3 +170,29 @@ a.btn:hover
 .custom-modal {
     max-width: 800px; /* Set your desired width */
 }
+
+.table-container {
+    overflow-x: auto; /* Enables horizontal scrolling for the container */
+    max-width: 100%; /* Ensures container doesn't overflow */
+}
+
+.data-table {
+    width: fit-content; /* Adjusts table width to content */
+    border-collapse: collapse;
+}
+
+.fixed-column {
+    position: sticky;
+    left: 0; /* Fixes the column to the left edge */
+    background-color: #f2f2f2; /* Optional: differentiate fixed column */
+    z-index: 1; /* Ensures fixed column stays on top of scrolling content */
+}
+
+/* Also apply to fixed column cells in tbody */
+.data-table tbody .fixed-column {
+    position: sticky;
+    left: 0;
+    background-color: #f2f2f2;
+    z-index: 1;
+}
+

@@ -19,14 +19,13 @@
         pageNo = pager.CurrentPage;
     }
 }
-<h3><i class="fas fa-comment-dollar text-success"></i> Floor - List</h3>
 <div class="container-fluid btn-group">
     <div class="col-10">
-        
+        <h3><i class="fas fa-comment-dollar text-success"></i> @currentModel - List</h3>
     </div>
     <div class="col-2 justify-content-end">
         <p>
-             <a onclick="showInPopup('@Url.Action("AddOrEdit","Floor",null,Context.Request.Scheme)','Devotee Category - New')" class="btn btn-success"><i class="fas fa-random"></i>Create New</a> 
+            <a onclick="showInPopup('@Url.Action("AddOrEdit", "Floor", null, Context.Request.Scheme)','@currentModel - New')" class="btn btn-success"><i class="fas fa-random"></i>Create New</a>
         </p>
     </div>
 </div>

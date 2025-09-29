@@ -26,4 +26,5 @@ public partial class DevoteeCategory
     public DateTime CreatedDate { get; set; }
 
     public DateTime? ModifiedDate { get; set; }
+    public ICollection<Devotee> Devotees { get; set; }
 }

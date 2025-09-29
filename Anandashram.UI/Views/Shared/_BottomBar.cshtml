@@ -28,7 +28,14 @@
     function ChangePageSize(obj)
     {
         var controllerName = '@this.ViewContext.RouteData.Values["controller"].ToString()';
+        if(controllerName.toLowerCase()=="devotee")
+        {
+        window.location.href = "/" + controllerName + "/@Model.Action" + "?pageSize=" + obj.value + "&SearchText@Model.SearchText" + "&sortExpression=" + "@Model.SortExpression" + "&Closed=" + "@Model.Closed";
+        }
+        else
+        {
         window.location.href = "/" + controllerName + "/@Model.Action" + "?pageSize=" + obj.value + "&SearchText@Model.SearchText" + "&sortExpression=" + "@Model.SortExpression";
+        }
     }
 
 </script>

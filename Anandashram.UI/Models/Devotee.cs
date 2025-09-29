@@ -24,7 +24,7 @@ public partial class Devotee
 
     [Required]
     [ForeignKey("DevoteeCategory")]
-    [DisplayName("Dev Category")]
+    [DisplayName("Category")]
     public int DevoteeCategoryId { get; set; }
 
     [MaxLength(100)]

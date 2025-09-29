@@ -1,72 +1,223 @@
 ﻿@model Anandashram.Models.Devotee
 
 @{
-    ViewData["Title"] = "Details";
+    string currentModel = Helper.GetTypeNames(Model.GetType().ToString());
+    ViewData["Title"] = currentModel + " - Details";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+
+    // AddFile addFile = ViewBag.AddFile;
+    var uploadedFiles = ViewBag.UploadedFiles;
+  
 }
+    <h4>@currentModel - Details </h4>
 
-<h1>Details</h1>
+<hr />
 
-<div>
-    <h4>Devotee</h4>
-    <hr />
-    <dl class="row">
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Code)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Code)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Name)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Name)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Description)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Description)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Mobile)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Mobile)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Email)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Email)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.CreatedBy)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.CreatedBy)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.ModifiedBy)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.ModifiedBy)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.CreatedDate)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.CreatedDate)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.ModifiedDate)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.ModifiedDate)
-        </dd>
-    </dl>
+<div class="row">
+    <div class="col-md-12">
+        <form asp-action="AddOrEdit">
+
+            @if (Model.Id != 0)
+            {
+                @if (!string.IsNullOrEmpty(Model.ReopenedCode))
+                {
+                    <label class="col-md-12 d-flex text-center">This Devotee has been Reopened with new Devotee Code @Model.ReopenedCode</label>
+                }
+                <div class="col-md-12 d-flex">
+
+                    <div class="col-md-6">
+
+                        <table>
+                            <tr>
+                                <td rowspan="2"><img src="@Url.Action("GetImage", "Devotee", new { fileName = Model.Code })" width="100" height="100" class="img-thumbnail rounded" target="_blank" /></td>
+                                <td><div><label class="fs-4 fw-bold" style="color: purple">@Html.DisplayFor(model => model.Name)</label></div></td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    <div>
+                                        <label class="fs-4 fw-bold" style="color: purple">@Html.DisplayFor(model => model.Code)</label>
+                                    </div>
+                                </td>
+                            </tr>
+                        </table>
+
+                    </div>
+                    <div class="col-md-2 col text-end"></div>
+                    <div class="col-md-4 col text-end">
+
+                        <table class="table">
+                            <thead>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td colspan="3">
+                                        <div class="col text-end fw-bold">
+                                            Document List
+                                        </div>
+                                    </td>
+                                </tr>
+                                @if (uploadedFiles != null)
+                                {
+                                    @foreach (var fileUpload in uploadedFiles)
+                                    {
+                                        <tr>
+                                            <td class="col-md-10">
+                                                @fileUpload.FileName
+                                            </td>
+                                            <td><span class="btn btn-sm btn-outline-secondary">@Html.ActionLink("", "GetDocument", new { fileName = @fileUpload.FileName, filePath = @fileUpload.FilePath }, new { @class = "fa-solid fa-download" })</span></td>
+                                            <td>
+                                            </td>
+                                        </tr>
+                                    }
+                                }
+                                else
+                                {
+                                    <tr>
+                                        <td>No Documents Uploaded</td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                <br />
+            }
+            <dl class="row">
+                <dt class="col-md-2">
+                    <label asp-for="Name" class="control-label"></label>
+                </dt>
+                <dd class="col-md-4">
+                    <input asp-for="Name" class="form-control" readonly/>
+                </dd>
+                <dt class="col-md-2">
+                    <label asp-for="DevoteeCategoryId" class="control-label"></label>
+                </dt>
+                <dd class="col-md-4">
+                    <select asp-for="DevoteeCategoryId" class="form-control" asp-items="ViewBag.DevoteeCategoryId" readonly></select>
+                </dd>
+            </dl>
+            <dl class="row">
+                <dt class="col-md-2">
+                    <label asp-for="StartDate" class="control-label"></label>
+                </dt>
+                <dd class="col-md-4">
+                    <input type="datetime-local" asp-for="StartDate" class="form-control" readonly />
+                </dd>
+                <dt class="col-md-2">
+                    <label asp-for="EndDate" class="control-label"></label>
+                </dt>
+                <dd class="col-md-4">
+                    <input type="datetime-local" asp-for="EndDate" class="form-control" readonly />
+                </dd>
+            </dl>
+            <dl class="row">
+                <dt class="col-md-2">
+                    <label asp-for="AddressLine1" class="control-label"></label>
+                </dt>
+                <dd class="col-md-4">
+                    <input asp-for="AddressLine1" class="form-control" readonly />
+                </dd>
+            </dl>
+
+            <dl class="row">
+                <dt class="col-md-2">
+
+                </dt>
+                <dd class="col-md-4">
+                    <input asp-for="AddressLine2" class="form-control" readonly />
+                </dd>
+            </dl>
+            <dl class="row">
+                <dt class="col-md-2">
+                    <label asp-for="State" class="control-label"></label>
+                </dt>
+                <dd class="col-md-4">
+                    <input asp-for="State" class="form-control" readonly />
+                </dd>
+                <dt class="col-md-2">
+                    <label asp-for="Country" class="control-label"></label>
+                </dt>
+                <dd class="col-md-4">
+                    <input asp-for="Country" class="form-control" readonly />
+                </dd>
+            </dl>
+            <dl class="row">
+                <dt class="col-md-2">
+                    <label asp-for="PinCode" class="control-label"></label>
+                </dt>
+                <dd class="col-md-4">
+                    <input asp-for="PinCode" class="form-control" readonly />
+                </dd>
+            </dl>
+            <dl class="row">
+                <dt class="col-md-2">
+                    <label asp-for="Mobile" class="control-label"></label>
+                </dt>
+                <dd class="col-md-4">
+                    <input asp-for="Mobile" class="form-control" readonly />
+                </dd>
+                <dt class="col-md-2">
+                    <label asp-for="Email" class="control-label"></label>
+                </dt>
+                <dd class="col-md-4">
+                    <input asp-for="Email" class="form-control" readonly />
+                </dd>
+            </dl>
+            <br />
+            <div class="row">
+                <div class="form-group btn-group">
+                   
+                    @if (Model.Id != 0 && String.IsNullOrEmpty(Model.ReopenedCode) && Model.Closed == true)
+                    {
+                        <input type="submit" name="actionButton" value="Reopen" class="btn btn-info" />
+                    }
+                    &nbsp;<a class="btn btn-secondary" asp-action="index"
+                             asp-route-pg="@TempData.Peek("CurrentPage")" asp-route-SearchText="@ViewBag.SearchText">Back</a>
+                </div>
+            </div>
+        </form>
+    </div>
+    @* modal 1 starts here - to load the web cam *@
+    <div id="webcamModal" class="modal" tabindex="-1" role="dialog">
+        <div class="modal-dialog custom-modal" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Upload Profile Picture</h5>
+                    <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <partial name="_UploadProfilePic" model="@Model" />
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+    @* modal 2 starts here - to upload documents either by browing or scanning*@
+    <div id="uploadModal" class="modal" tabindex="-1" role="dialog">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Upload Document / Picture</h5>
+                    <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <partial name="_UploadDocument" model="ViewBag.AddFile" />
+                </div>
+            </div>
+        </div>
+    </div>
 </div>
-<div>
-    <a asp-action="Edit" asp-route-id="@Model?.Id">Edit</a> |
-    <a asp-action="Index">Back to List</a>
-</div>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+}

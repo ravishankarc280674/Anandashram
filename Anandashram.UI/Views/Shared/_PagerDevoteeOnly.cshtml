@@ -39,7 +39,7 @@
 			{
 				<li class="page-item">
 					<a class="" asp-controller="@Model.Controller" asp-action="@Model.Action" aria-hidden="true"
-					   asp-route-SearchText="@Model.SearchText" asp-route-view="Tile" title="Tile View">
+					   asp-route-SearchText="@Model.SearchText" asp-route-Closed="@Model.Closed" asp-route-view="Tile" title="Tile View">
 						<span class="btn btn-sm btn-outline-secondary">
 							<i class="fa fa-id-card" aria-hidden="true" title="Tile View"></i>
 						</span>
@@ -50,7 +50,7 @@
 			{
 				<li class="page-item">
 					<a class="" asp-controller="@Model.Controller" asp-action="@Model.Action" aria-hidden="true"
-					   asp-route-SearchText="@Model.SearchText" asp-route-view="Grid" title="Grid View">
+					   asp-route-SearchText="@Model.SearchText" asp-route-Closed="@Model.Closed" asp-route-view="Grid" title="Grid View">
 						<span class="btn btn-sm btn-outline-secondary">
 							<i class="fa fa-grid-horizontal" aria-hidden="true" title="Grid View"></i>
 						</span>
@@ -65,12 +65,12 @@
 				{
 					<li class="page-item">
 						<a class="page-link" asp-controller="@Model.Controller" asp-action="@Model.Action" asp-route-pg="1"
-						   asp-route-SearchText="@Model.SearchText" asp-route-pageSize="@Model.PageSize">First</a>
+							   asp-route-SearchText="@Model.SearchText" asp-route-Closed="@Model.Closed" asp-route-pageSize="@Model.PageSize">First</a>
 					</li>
 					<li>
 						<a class="page-link" asp-controller="@Model.Controller" asp-action="@Model.Action"
 						   asp-route-pg="@(Model.CurrentPage - 1)"
-						   asp-route-SearchText="@Model.SearchText" asp-route-pageSize="@Model.PageSize">Previous</a>
+							   asp-route-SearchText="@Model.SearchText" asp-route-Closed="@Model.Closed" asp-route-pageSize="@Model.PageSize">Previous</a>
 					</li>
 				}
 				@for (var pge = Model.StartPage; pge <= Model.EndPage; pge++)
@@ -79,7 +79,7 @@
 						@if (pge != Model.CurrentPage)
 						{
 							<a class="page-link" asp-controller="@Model.Controller" asp-action="@Model.Action" asp-route-pg="@pge"
-							   asp-route-SearchText="@Model.SearchText" asp-route-pageSize="@Model.PageSize"> @pge </a>
+								   asp-route-SearchText="@Model.SearchText" asp-route-Closed="@Model.Closed" asp-route-pageSize="@Model.PageSize"> @pge </a>
 						}
 						else
 						{
@@ -92,11 +92,11 @@
 				{
 					<li class="page-item">
 						<a class="page-link" asp-controller="@Model.Controller" asp-action="@Model.Action"
-						   asp-route-SearchText="@Model.SearchText" asp-route-pg="@(Model.CurrentPage + 1)" asp-route-pageSize="@Model.PageSize">Next</a>
+							   asp-route-SearchText="@Model.SearchText" asp-route-Closed="@Model.Closed" asp-route-pg="@(Model.CurrentPage + 1)" asp-route-pageSize="@Model.PageSize">Next</a>
 					</li>
 					<li class="page-item">
 						<a class="page-link" asp-controller="@Model.Controller" asp-action="@Model.Action" asp-route-sortExpression="@Model.SortExpression"
-						   asp-route-SearchText="@Model.SearchText" asp-route-pg="@(Model.TotalPages)" asp-route-PageSize="@Model.PageSize">Last</a>
+							   asp-route-SearchText="@Model.SearchText" asp-route-Closed="@Model.Closed" asp-route-pg="@(Model.TotalPages)" asp-route-PageSize="@Model.PageSize">Last</a>
 					</li>
 				}
 			</ul>

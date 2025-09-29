@@ -18,37 +18,36 @@
         pager = ViewBag.SearchPager;
         pageNo = pager.CurrentPage;
     }
+    ViewData["SortModel"] = sortModel;
+    ViewBag.Pager = pager;
 }
-<h3><i class="fas fa-comment-dollar text-success"></i> Block - List</h3>
+
 <div class="container-fluid btn-group">
     <div class="col-10">
-        
+        <h3><i class="fas fa-comment-dollar text-success"></i> @currentModel - List</h3>
     </div>
     <div class="col-2 justify-content-end">
         <p>
-             <a onclick="showInPopup('@Url.Action("AddOrEdit","Block",null,Context.Request.Scheme)','Block - New')" class="btn btn-success"><i class="fas fa-random"></i>Create New</a> 
+            <a onclick="showInPopup('@Url.Action("AddOrEdit", "Block", null, Context.Request.Scheme)','@currentModel - New')" class="btn btn-success"><i class="fas fa-random"></i>Create New</a>
         </p>
     </div>
 </div>
 <br />
-
-
 <div class="row">
     <div class="col-12">
         <partial name="_pager" model="@pager" />
     </div>
 </div>
- 
 <!--table comes here-->
 <div id="view-all">
     @await Html.PartialAsync("_ViewAll", Model)
 </div>
+
 <div class="row">
     <div class="col-12">
         <partial name="_BottomBar" model="@pager" />
     </div>
 </div>
-
 
 @section Scripts {
     @{

@@ -22,7 +22,7 @@
 
 <div class="container-fluid btn-group">
     <div class="col-10">
-        <h3>Devotee - List</h3>
+        <h3>@currentModel - List</h3>
     </div>
     <div class="col-2 justify-content-end">
         <p>
@@ -37,45 +37,45 @@
     </div>
 </div>
 
-<table id="tblBlockList" class="table">
+<table id="tblBlockList" class="class=" table fixed-column-table"" enable-horizontal-scroll="true">
     <thead>
         <tr>
             <th></th>
             <th>
                 <i class="@sortModel.GetColumn("code").SortIcon" aria-hidden="true"></i>
                 <a asp-action="Index" asp-route-sortExpression="@sortModel.GetColumn("code").SortExpression"
-                   asp-route-SearchText="@ViewBag.SearchText" asp-route-PageSize="@ViewBag.PageSize" asp-route-Checked="@ViewBag.Checked">Code</a>
+                   asp-route-SearchText="@ViewBag.SearchText" asp-route-PageSize="@ViewBag.PageSize" asp-route-Closed="@ViewBag.Closed">Code</a>
             </th>
             <th>
-                <i class="@sortModel.GetColumn("code").SortIcon" aria-hidden="true"></i>
-                <a asp-action="Index" asp-route-sortExpression="@sortModel.GetColumn("code").SortExpression"
-                   asp-route-SearchText="@ViewBag.SearchText" asp-route-PageSize="@ViewBag.PageSize" asp-route-Checked="@ViewBag.Checked">Name</a>
+                <i class="@sortModel.GetColumn("name").SortIcon" aria-hidden="true"></i>
+                <a asp-action="Index" asp-route-sortExpression="@sortModel.GetColumn("name").SortExpression"
+                   asp-route-SearchText="@ViewBag.SearchText" asp-route-PageSize="@ViewBag.PageSize" asp-route-Closed="@ViewBag.Closed">Name</a>
             </th>
            
             <th>
                 <i class="@sortModel.GetColumn("devoteecategoryname").SortIcon" aria-hidden="true"></i>
-                <a asp-action="Index" sp-route-sortExpression="@sortModel.GetColumn("devoteecategoryname").SortExpression"
-                   asp-route-SearchText="@ViewBag.SearchText" asp-route-PageSize="@ViewBag.PageSize" asp-route-Checked="@ViewBag.Checked">Devotee Category</a>
+                <a asp-action="Index" asp-route-sortExpression="@sortModel.GetColumn("devoteecategoryname").SortExpression"
+                   asp-route-SearchText="@ViewBag.SearchText" asp-route-PageSize="@ViewBag.PageSize" asp-route-Closed="@ViewBag.Closed">Devotee Category</a>
             </th>
             <th>
                 <i class="@sortModel.GetColumn("startdate").SortIcon" aria-hidden="true"></i>
-                <a asp-action="Index" sp-route-sortExpression="@sortModel.GetColumn("startdate").SortExpression"
-                   asp-route-SearchText="@ViewBag.SearchText" asp-route-PageSize="@ViewBag.PageSize" asp-route-Checked="@ViewBag.Checked">Start Date</a>
+                <a asp-action="Index" asp-route-sortExpression="@sortModel.GetColumn("startdate").SortExpression"
+                   asp-route-SearchText="@ViewBag.SearchText" asp-route-PageSize="@ViewBag.PageSize" asp-route-Closed="@ViewBag.Closed">Start Date</a>
             </th>
              <th>
                 <i class="@sortModel.GetColumn("enddate").SortIcon" aria-hidden="true"></i>
-                <a asp-action="Index" sp-route-sortExpression="@sortModel.GetColumn("enddate").SortExpression"
-                   asp-route-SearchText="@ViewBag.SearchText" asp-route-PageSize="@ViewBag.PageSize" asp-route-Checked="@ViewBag.Checked">End Date</a>
+                <a asp-action="Index" asp-route-sortExpression="@sortModel.GetColumn("enddate").SortExpression"
+                   asp-route-SearchText="@ViewBag.SearchText" asp-route-PageSize="@ViewBag.PageSize" asp-route-Closed="@ViewBag.Closed">End Date</a>
             </th>
             <th>
                 <i class="@sortModel.GetColumn("mobile").SortIcon" aria-hidden="true"></i>
                 <a asp-action="Index" asp-route-sortExpression="@sortModel.GetColumn("mobile").SortExpression"
-                   asp-route-SearchText="@ViewBag.SearchText" asp-route-PageSize="@ViewBag.PageSize" asp-route-Checked="@ViewBag.Checked">Mobile</a>
+                   asp-route-SearchText="@ViewBag.SearchText" asp-route-PageSize="@ViewBag.PageSize" asp-route-Closed="@ViewBag.Closed">Mobile</a>
             </th>
             <th>
                 <i class="@sortModel.GetColumn("email").SortIcon" aria-hidden="true"></i>
                 <a asp-action="Index" asp-route-sortExpression="@sortModel.GetColumn("email").SortExpression"
-                   asp-route-SearchText="@ViewBag.SearchText" asp-route-PageSize="@ViewBag.PageSize" asp-route-Checked="@ViewBag.Checked">Email</a>
+                   asp-route-SearchText="@ViewBag.SearchText" asp-route-PageSize="@ViewBag.PageSize" asp-route-Closed="@ViewBag.Closed">Email</a>
             </th>
             <th>
                 &nbsp;
@@ -125,18 +125,23 @@
                     </td>
                     <td>
                         <div class="btn-group">
-                            <a asp-action="AddOrEdit" asp-route-id="@item.Id">
-                                <span class="btn btn-sm btn-outline-primary">
-                                    <i class="fa fa-edit" aria-hidden="true" title="Edit"></i>
-                                </span>
-                            </a>
-
-                            <a asp-action="Details" asp-route-id="@item.Id">
-                                <span class="btn btn-sm btn-outline-dark">
-                                    <i class="fa fa-eye" aria-hidden="true" title="Details"></i>
-                                </span>
-                            </a>
-@* 
+                            @if (item.Closed == false)
+                            {
+                                <a asp-action="AddOrEdit" asp-route-id="@item.Id">
+                                    <span class="btn btn-sm btn-outline-primary">
+                                        <i class="fa fa-edit" aria-hidden="true" title="Edit"></i>
+                                    </span>
+                                </a>
+                            }
+                            else
+                            {
+                                <a asp-action="Details" asp-route-id="@item.Id">
+                                    <span class="btn btn-sm btn-outline-dark">
+                                        <i class="fa fa-eye" aria-hidden="true" title="Details"></i>
+                                    </span>
+                                </a>
+                            }
+                            @* 
                             <a asp-action="Delete" asp-route-id="@item.Id">
                                 <span class="btn btn-sm btn-outline-danger">
                                     <i class="fa fa-trash" aria-hidden="true" title="Delete"></i>

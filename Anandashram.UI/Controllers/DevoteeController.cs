@@ -85,6 +85,7 @@ namespace Anandashram.Controllers
         public async Task<IActionResult> Details(int id)
         {
             var devotee = await _devoteeRepo.GetDevotee(id);
+            ViewBag.DevoteeCategoryId = GetDevoteeCategories();
             if (devotee == null)
             {
                 return NotFound();
