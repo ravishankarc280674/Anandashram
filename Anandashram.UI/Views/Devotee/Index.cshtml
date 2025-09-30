@@ -36,12 +36,14 @@
         <partial name="_PagerDevoteeOnly" model="@pager" />
     </div>
 </div>
-<div class="table-responsive">
-    <table id="tblDevoteeList" class="table fixed-column-table" style="overflow-x: auto;" enable-horizontal-scroll="true">
+<div class="col-12 container tbl-container">
+    <div class="row tbl-fixed">
+
+        <table id="tblDevoteeList" class="table-striped table-condenced" style="overflow-x: auto;" enable-horizontal-scroll="true">
     <thead>
         <tr>
-                <th class="fixed-first w-auto"></th>
-                <th class="fixed-first w-auto">
+                    <th class="fixed-column"></th>
+                    <th class="fixed-column">
                 <i class="@sortModel.GetColumn("code").SortIcon" aria-hidden="true"></i>
                 <a asp-action="Index" asp-route-sortExpression="@sortModel.GetColumn("code").SortExpression"
                    asp-route-SearchText="@ViewBag.SearchText" asp-route-PageSize="@ViewBag.PageSize" asp-route-Closed="@ViewBag.Closed">Code</a>
@@ -104,37 +106,38 @@
                 {
                     rowClass = "table-warning";
                 }
-                <tr class="@rowClass">
-                        <td class="fixed-first w-auto"><img src="@Url.Action("GetImage", "Devotee", new { fileName = item.Code })" width="40" height="30" class="rounded-circle" /></td>
-                        <td class="fixed-first w-auto">
+                <tr>
+                            <td class="fixed-column"><img src="@Url.Action("GetImage", "Devotee", new { fileName = item.Code })" width="40" height="30" class="rounded-circle" /></td>
+                            <td class="fixed-column">
                         <a asp-action="AddOrEdit" asp-route-id="@item.Id">
                             <span style="color: purple" asp-action="AddOrEdit" asp-route-id="@item.Id">@item.Code</span>
                         </a>
                     </td>
-                    <td class="Name">
+                    <td class="@rowClass">
                         <span>@item.Name</span>
                     </td>
-                    <td class="DevoteeCategoryName">
+                            <td class="@rowClass">
                         <span>@item.DevoteeCategoryName</span>
                     </td>
-                    <td class="StartDate">
+                            <td class="@rowClass">
                         <span>@item.StartDate</span>
                     </td>
-                    <td class="EndDate">
+                            <td class="@rowClass">
                         <span>@item.EndDate</span>
                     </td>
-                    <td class="Mobile">
+                            <td class="@rowClass">
                         <span>@item.Mobile</span>
                     </td>
-                    <td class="Email">
+                            <td class="@rowClass">
                         <span>@item.Email</span>
                     </td>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                    <td></td>
+                            <td class="@rowClass"></td>
+                            <td class="@rowClass"></td>
+                            <td class="@rowClass"></td>
+                            <td class="@rowClass"></td>
+                            <td class="@rowClass"></td>
+                            <td class="@rowClass"></td>
+                    
                     <td>
                         <div class="btn-group">
                             @if (item.Closed == false)
@@ -173,6 +176,7 @@
         }
     </tbody>
 </table>
+</div>
 </div>
 <div class="row">
     <div class="col-12">

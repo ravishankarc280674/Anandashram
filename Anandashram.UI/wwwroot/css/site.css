@@ -124,89 +124,34 @@ a.btn:hover
     min-height: 85%;
     min-width: 100%;
 }
-
-
-.CenteredContainer {
-    position: absolute;
-    transform: translate(-50%,-50%);
-    top: 50%;
-    left: 50%;
+.tbl.container {
+    max-width: fit-content;
 }
 
-    .CenteredContainer form {
-        background: linear-gradient(to left,#28347d,#19767D);
-        padding: 3em;
-        border-radius: 20px;
+.tbl-fixed {
+    overflow-x: scroll;
+}
+
+table {
+    min-width: max-content;
+    border-collapse: separate;
+}
+
+    table th {
+        background: #ffffa1;
+        text-align: center;
+        border: 1px solid #ccc;
     }
 
-        .CenteredContainer form a {
-            text-decoration: none;
-            color: white;
-            font-size: 15px;
-        }
-
-            .CenteredContainer form a:hover {
-                text-shadow: 2px 2px 6px #000040;
-            }
-
-        .CenteredContainer form input {
-            border-radius: 20px;
-        }
-
-        .CenteredContainer form .btn {
-            width: 150px;
-            font-size: 1em;
-        }
-
-        .CenteredContainer form:hover {
-            margin: 8px;
-        }
-
-    .CenteredContainer a, input:focus, submit:focus, button:focus {
-        outline: none;
-        margin: 2px;
+    table td {
+        text-align: center;
+        border: 1px solid #ccc;
     }
-
-.custom-modal {
-    max-width: 800px; /* Set your desired width */
-}
-
-.table-container {
-    overflow-x: auto; /* Enables horizontal scrolling for the container */
-         position: relative;
-
-
-.data-table {
-    width: fit-content; /* Adjusts table width to content */
-    border-collapse: collapse;
-}
-
 .fixed-column {
     position: sticky;
-    
     background-color: #f2f2f2; /* Optional: differentiate fixed column */
+    left:0;
     z-index: 1; /* Ensures fixed column stays on top of scrolling content */
 }
 
 /* Also apply to fixed column cells in tbody */
-.data-table tbody .fixed-column {
-    position: sticky;
-    left: 0;
-    background-color: #f2f2f2;
-    z-index: 1;
-}
-
-.table .fixed-first {
-    position: sticky;
-    left: 0;
-    background-color: #f8f9fa; /* Optional: Background color for visibility */
-    z-index: 1; /* Ensure it stays above other columns */
-}
-
-/* Fix the last column */
-.table .fixed-last {
-    position: sticky;
-    right: 0;
-    background-color: #f8f9fa; /* Optional: Background color for visibility */
-    z-index: 1; /* Ensure it stays above other columns */
-}
