@@ -3,6 +3,7 @@
     string currentModel = Helper.GetTypeNames(Model.GetType().ToString());
     SortModel sortModel = (SortModel)ViewData["SortModel"];
     int pg = 1;
+    string searchText = ViewBag.SearchText;
     if (TempData["CurrentPage"] != null)
     {
         pg = (int)TempData["CurrentPage"];
@@ -59,7 +60,7 @@
                     </td>
                     <td>
                         <div class="btn-group">
-                            <a onclick="showInPopup('@Url.Action("AddOrEdit", currentModel, new { id = item.Id }, Context.Request.Scheme)', '@currentModel - Edit')" class="btn btn-info text-white"><i class="fas fa-pencil-alt"></i>Edit</a>
+                            <a onclick="showInPopup('@Url.Action("AddOrEdit", currentModel, new { id = item.Id, pg = pg, SearchText = searchText}, Context.Request.Scheme)', '@currentModel - Edit')" class="btn btn-info text-white"><i class="fas fa-pencil-alt"></i>Edit</a>
                             <form asp-action="Delete" asp-route-id="@item.Id" onsubmit="return jQueryAjaxDelete(this);" class="d-inline">
                                    <input type="submit" aria-hidden="true" value="Delete" class="btn btn-danger"/> 
                             </form>

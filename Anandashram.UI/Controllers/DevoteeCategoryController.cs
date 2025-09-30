@@ -98,8 +98,10 @@ namespace Anandashram.Controllers
         [HttpPost]
         [ValidateAntiForgeryToken]
       //  [NoDirectAccess]
-        public async Task<IActionResult> AddOrEdit(int id, DevoteeCategory devoteeCategory)
+        public async Task<IActionResult> AddOrEdit(int id, DevoteeCategory devoteeCategory, int pg = 0, int pageSize = 5, string sortExpression = "", string searchText = "")
         {
+            BuildData(pg, pageSize, sortExpression, searchText);
+
             if (ModelState.IsValid)
             {
                 if (id == 0)
@@ -132,11 +134,23 @@ namespace Anandashram.Controllers
 
         [HttpPost]
         //[NoDirectAccess]
-        public async Task<IActionResult> Delete(DevoteeCategory devoteeCategory)
+        public async Task<IActionResult> Delete(DevoteeCategory devoteeCategory, int pg = 0, int pageSize = 5, string sortExpression = "", string searchText = "")
         {
-           
-                devoteeCategory =await _devoteeCategoryRepo.Delete(devoteeCategory);
+            BuildData(pg, pageSize, sortExpression, searchText);
+
+            devoteeCategory = await _devoteeCategoryRepo.Delete(devoteeCategory);
                 return Json(new { html = Helper.RenderRazorViewToString(this,"_ViewAll", _devoteeCategoryRepo.GetDevoteeCategories()) });
+        }
+        private void BuildData(int pg, int pageSize, string sortExpression, string searchText)
+        {
+            SortModel sortModel = new SortModel();
+            sortModel.AddColumn("name");
+            sortModel.AddColumn("description");
+            sortModel.ApplySort(sortExpression);
+            ViewData["SortModel"] = sortModel;
+            ViewBag.PageSize = pageSize;
+            ViewBag.SearchText = searchText;
+            TempData["CurrentPage"] = pg;
         }
     }
 }

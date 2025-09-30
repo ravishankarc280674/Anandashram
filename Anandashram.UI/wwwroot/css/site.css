@@ -173,8 +173,8 @@ a.btn:hover
 
 .table-container {
     overflow-x: auto; /* Enables horizontal scrolling for the container */
-    max-width: 100%; /* Ensures container doesn't overflow */
-}
+         position: relative;
+
 
 .data-table {
     width: fit-content; /* Adjusts table width to content */
@@ -183,7 +183,7 @@ a.btn:hover
 
 .fixed-column {
     position: sticky;
-    left: 0; /* Fixes the column to the left edge */
+    
     background-color: #f2f2f2; /* Optional: differentiate fixed column */
     z-index: 1; /* Ensures fixed column stays on top of scrolling content */
 }
@@ -196,3 +196,17 @@ a.btn:hover
     z-index: 1;
 }
 
+.table .fixed-first {
+    position: sticky;
+    left: 0;
+    background-color: #f8f9fa; /* Optional: Background color for visibility */
+    z-index: 1; /* Ensure it stays above other columns */
+}
+
+/* Fix the last column */
+.table .fixed-last {
+    position: sticky;
+    right: 0;
+    background-color: #f8f9fa; /* Optional: Background color for visibility */
+    z-index: 1; /* Ensure it stays above other columns */
+}

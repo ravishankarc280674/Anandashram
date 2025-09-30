@@ -36,12 +36,12 @@
         <partial name="_PagerDevoteeOnly" model="@pager" />
     </div>
 </div>
-
-<table id="tblDevoteeList" class="table fixed-column-table" enable-horizontal-scroll="true">
+<div class="table-responsive">
+    <table id="tblDevoteeList" class="table fixed-column-table" style="overflow-x: auto;" enable-horizontal-scroll="true">
     <thead>
         <tr>
-            <th></th>
-            <th>
+                <th class="fixed-first w-auto"></th>
+                <th class="fixed-first w-auto">
                 <i class="@sortModel.GetColumn("code").SortIcon" aria-hidden="true"></i>
                 <a asp-action="Index" asp-route-sortExpression="@sortModel.GetColumn("code").SortExpression"
                    asp-route-SearchText="@ViewBag.SearchText" asp-route-PageSize="@ViewBag.PageSize" asp-route-Closed="@ViewBag.Closed">Code</a>
@@ -77,6 +77,12 @@
                 <a asp-action="Index" asp-route-sortExpression="@sortModel.GetColumn("email").SortExpression"
                    asp-route-SearchText="@ViewBag.SearchText" asp-route-PageSize="@ViewBag.PageSize" asp-route-Closed="@ViewBag.Closed">Email</a>
             </th>
+            <th>Extra column 1</th>           
+            <th>Extra column 2</th>
+            <th>Extra column 3</th>
+            <th>Extra column 4</th>
+            <th>Extra column 5</th>
+            <th>Extra column 6</th>
             <th>
                 &nbsp;
             </th>
@@ -99,8 +105,8 @@
                     rowClass = "table-warning";
                 }
                 <tr class="@rowClass">
-                    <td class="image"><img src="@Url.Action("GetImage", "Devotee", new { fileName = item.Code })" width="40" height="30" class="rounded-circle" /></td>
-                    <td class="Code">
+                        <td class="fixed-first w-auto"><img src="@Url.Action("GetImage", "Devotee", new { fileName = item.Code })" width="40" height="30" class="rounded-circle" /></td>
+                        <td class="fixed-first w-auto">
                         <a asp-action="AddOrEdit" asp-route-id="@item.Id">
                             <span style="color: purple" asp-action="AddOrEdit" asp-route-id="@item.Id">@item.Code</span>
                         </a>
@@ -123,6 +129,12 @@
                     <td class="Email">
                         <span>@item.Email</span>
                     </td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
                     <td>
                         <div class="btn-group">
                             @if (item.Closed == false)
@@ -161,6 +173,7 @@
         }
     </tbody>
 </table>
+</div>
 <div class="row">
     <div class="col-12">
         <partial name="_BottomBar" model="@pager" />

@@ -1,4 +1,5 @@
 ﻿
+using System.Drawing.Printing;
 using System.Threading.Tasks;
 
 namespace Anandashram.Controllers
@@ -98,8 +99,10 @@ namespace Anandashram.Controllers
         [HttpPost]
         [ValidateAntiForgeryToken]
         //  [NoDirectAccess]
-        public async Task<IActionResult> AddOrEdit(int id, Floor floor)
+        public async Task<IActionResult> AddOrEdit(int id, Floor floor, int pg = 0, int pageSize = 5, string sortExpression = "", string searchText = "")
         {
+            BuildData(pg, pageSize, sortExpression, searchText);
+
             if (ModelState.IsValid)
             {
                 if (id == 0)
@@ -132,11 +135,23 @@ namespace Anandashram.Controllers
 
         [HttpPost]
         //[NoDirectAccess]
-        public async Task<IActionResult> Delete(Floor floor)
+        public async Task<IActionResult> Delete(Floor floor, int pg = 0, int pageSize = 5, string sortExpression = "", string searchText = "")
         {
+            BuildData(pg, pageSize, sortExpression, searchText);
 
             floor = await _floorRepo.Delete(floor);
             return Json(new { html = Helper.RenderRazorViewToString(this, "_ViewAll", _floorRepo.GetFloors()) });
+        }
+        private void BuildData(int pg, int pageSize, string sortExpression, string searchText)
+        {
+            SortModel sortModel = new SortModel();
+            sortModel.AddColumn("name");
+            sortModel.AddColumn("description");
+            sortModel.ApplySort(sortExpression);
+            ViewData["SortModel"] = sortModel;
+            ViewBag.PageSize = pageSize;
+            ViewBag.SearchText = searchText;
+            TempData["CurrentPage"] = pg;
         }
     }
 }

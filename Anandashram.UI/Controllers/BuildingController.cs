@@ -1,12 +1,13 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+﻿using Anandashram.Data;
+using Anandashram.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
-using Anandashram.Data;
-using Anandashram.Models;
+using System;
+using System.Collections.Generic;
+using System.Drawing.Printing;
+using System.Linq;
+using System.Threading.Tasks;
 
 namespace Anandashram.Controllers
 {
@@ -75,6 +76,7 @@ namespace Anandashram.Controllers
 
         public async Task<IActionResult> AddOrEdit(int id = 0)
         {
+
             Building building = new Building();
             if (id == 0)
             {
@@ -101,8 +103,9 @@ namespace Anandashram.Controllers
         [HttpPost]
         [ValidateAntiForgeryToken]
         //  [NoDirectAccess]
-        public async Task<IActionResult> AddOrEdit(int id, Building building)
+        public async Task<IActionResult> AddOrEdit(Building building,int id, int pg = 0, int pageSize = 5, string sortExpression = "", string searchText = "")
         {
+            BuildData(pg, pageSize, sortExpression, searchText);
             if (ModelState.IsValid)
             {
                 if (id == 0)
@@ -133,11 +136,23 @@ namespace Anandashram.Controllers
             return Json(new { isValid = false, html = Helper.RenderRazorViewToString(this, "AddOrEdit", building) });
         }
 
+        private void BuildData(int pg, int pageSize, string sortExpression, string searchText)
+        {
+            SortModel sortModel = new SortModel();
+            sortModel.AddColumn("name");
+            sortModel.AddColumn("description");
+            sortModel.ApplySort(sortExpression);
+            ViewData["SortModel"] = sortModel;
+            ViewBag.PageSize = pageSize;
+            ViewBag.SearchText = searchText;
+            TempData["CurrentPage"] = pg;
+        }
+
         [HttpPost]
         //[NoDirectAccess]
-        public async Task<IActionResult> Delete(Building building)
+        public async Task<IActionResult> Delete(Building building, int pg = 0, int pageSize = 5, string sortExpression = "", string searchText = "")
         {
-
+            BuildData(pg, pageSize, sortExpression, searchText);
             building = await _buildingRepo.Delete(building);
             return Json(new { html = Helper.RenderRazorViewToString(this, "_ViewAll", _buildingRepo.GetBuildings()) });
         }
