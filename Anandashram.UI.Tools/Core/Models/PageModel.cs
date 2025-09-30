@@ -62,20 +62,6 @@ namespace Anandashram.UI.Tools.Core.Models
             }
 
         }
-        //public List<SelectedListItem> GetPageSizes()
-        //{
-        //    var pageSizes = new List<SelectedListItem>();
-        //    for (int lp = 5; lp <= 50; lp++5)
-        //    {
-        //        if (lp == this.PageSize)
-        //        {
-        //            pageSizes.Add(new SelectedListItem(lp.ToString(), lp.ToString(), true));
-        //        }
-        //        else
-        //            pageSizes.Add(new SelectedListItem(lp.ToString(), lp.ToString()));
-        //    }
-
-
-        //}
+      
     }
 }
