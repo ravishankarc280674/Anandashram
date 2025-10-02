@@ -39,7 +39,7 @@
 <div class="col-12 container tbl-container">
     <div class="row tbl-fixed">
 
-        <table id="tblDevoteeList" class="table-striped table-condenced" style="overflow-x: auto;" enable-horizontal-scroll="true">
+        <table id="tblDevoteeList" class="table-striped table-condensed" style="overflow-x: auto;" enable-horizontal-scroll="true">
     <thead>
         <tr>
                     <th class="fixed-column"></th>
@@ -79,13 +79,7 @@
                 <a asp-action="Index" asp-route-sortExpression="@sortModel.GetColumn("email").SortExpression"
                    asp-route-SearchText="@ViewBag.SearchText" asp-route-PageSize="@ViewBag.PageSize" asp-route-Closed="@ViewBag.Closed">Email</a>
             </th>
-            <th>Extra column 1</th>           
-            <th>Extra column 2</th>
-            <th>Extra column 3</th>
-            <th>Extra column 4</th>
-            <th>Extra column 5</th>
-            <th>Extra column 6</th>
-            <th>
+            <th class ="fixed-column-right">
                 &nbsp;
             </th>
         </tr>
@@ -100,21 +94,30 @@
             string rowClass = "";
                 @if (item.Closed == true && string.IsNullOrEmpty(item.ReopenedCode))
             {
-                    rowClass = "table-success";
+                    rowClass = "bg-success";
             }
                 @if (item.Closed == true && !string.IsNullOrEmpty(item.ReopenedCode))
                 {
-                    rowClass = "table-warning";
+                    rowClass = "bg-warning";
                 }
                 <tr>
-                            <td class="fixed-column"><img src="@Url.Action("GetImage", "Devotee", new { fileName = item.Code })" width="40" height="30" class="rounded-circle" /></td>
-                            <td class="fixed-column">
-                        <a asp-action="AddOrEdit" asp-route-id="@item.Id">
+                    <td class="fixed-column"><img src="@Url.Action("GetImage", "Devotee", new { fileName = item.Code })" width="40" height="30" class="rounded-circle" /></td>
+                    <td class="fixed-column">
+                    @if (item.Closed == false)
+                    {
+                    <a asp-action="AddOrEdit" asp-route-id="@item.Id">
+                        <span style="color: purple" asp-action="AddOrEdit" asp-route-id="@item.Id">@item.Code</span>
+                    </a>
+                    }
+                    else
+                    {
+                        <a asp-action="Details" asp-route-id="@item.Id">
                             <span style="color: purple" asp-action="AddOrEdit" asp-route-id="@item.Id">@item.Code</span>
                         </a>
+                    }
                     </td>
-                    <td class="@rowClass">
-                        <span>@item.Name</span>
+                    <td  class="@rowClass">
+                                <span>@item.Name</span>
                     </td>
                             <td class="@rowClass">
                         <span>@item.DevoteeCategoryName</span>
@@ -131,14 +134,7 @@
                             <td class="@rowClass">
                         <span>@item.Email</span>
                     </td>
-                            <td class="@rowClass"></td>
-                            <td class="@rowClass"></td>
-                            <td class="@rowClass"></td>
-                            <td class="@rowClass"></td>
-                            <td class="@rowClass"></td>
-                            <td class="@rowClass"></td>
-                    
-                    <td>
+                            <td class="fixed-column-right">
                         <div class="btn-group">
                             @if (item.Closed == false)
                             {
@@ -156,13 +152,6 @@
                                     </span>
                                 </a>
                             }
-                            @* 
-                            <a asp-action="Delete" asp-route-id="@item.Id">
-                                <span class="btn btn-sm btn-outline-danger">
-                                    <i class="fa fa-trash" aria-hidden="true" title="Delete"></i>
-                                </span>
-                            </a> *@
-
                         </div>
                     </td>
                 </tr>

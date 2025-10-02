@@ -182,7 +182,11 @@ namespace Anandashram.Controllers
                 }
             return RedirectToAction("AddOrEdit", new { Id = IdToRedirect });
             }
-            return RedirectToAction("AddOrEdit", new { Id = 0 });
+            else
+            {
+                View(devotee);
+            }
+             return RedirectToAction("AddOrEdit", new { Id = 0 });
         }
 
         // GET: Devotee/Delete/5

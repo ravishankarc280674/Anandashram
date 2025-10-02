@@ -30,15 +30,12 @@
         </p>
     </div>
 </div>
-<br />
-
 
 <div class="row">
     <div class="col-12">
         <partial name="_PagerSearchOnly" model="@pager" />
     </div>
 </div>
-<br />
 @if( pager.ViewType == "Tile")
 {
 <div class="container mt-4">
@@ -84,28 +81,28 @@
 }
 @if( pager.ViewType == "Grid")
 {
-<table id="tblRoomList" class="table table-bordered border-success">
+<table id="tblRoomList" class="table">
         <thead>
-            <tr>
-            <th class="align-center">
+            <tr class="fa-border-all" style="background:#d4d454">
+            <th >
                     Building
                 </th>
-            <th class="align-middle">
+            <th>
                     Block
-                </th class="align-middle">
+                </th>
                 <th>
                    Floor
                 </th> 
                 <th>
                    Name
                 </th>
-                <th>
+                <th style="background:#d4d454">
                    Description
                 </th>
-                <th>
+                <th style="background:#d4d454">
                     <span>Capacity</span>
                 </th>
-                <th>
+                <th style="background:#d4d454">
                 &nbsp;
                 </th>
             </tr>

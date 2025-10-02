@@ -74,7 +74,7 @@ namespace Anandashram.Repositories
             {
                 if (!string.IsNullOrEmpty(SearchText))
                 {
-                    devotees = await _context.Devotees.Where(n => n.Code.Contains(SearchText) || n.Name.Contains(SearchText) || n.Description.Contains(SearchText)).ToListAsync();
+                    devotees = await _context.Devotees.Where(n => n.Code.Contains(SearchText) || n.Name.Contains(SearchText) || n.Description.Contains(SearchText)).Include(d => d.DevoteeCategory).ToListAsync();
                 }
                 else
                     devotees = await _context.Devotees.Include(d => d.DevoteeCategory).ToListAsync();
