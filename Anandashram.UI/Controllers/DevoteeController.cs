@@ -12,11 +12,13 @@ namespace Anandashram.Controllers
         //  private readonly ApplicationDbContext _context;
         private readonly IDevotee _devoteeRepo;
         private readonly IDevoteeCategory _devoteeCategoryRepo;
+        private readonly IRoom _roomRepo;
         private readonly IFileManagement _fileManagement;
-        public DevoteeController(IDevotee devoteeRepo, IDevoteeCategory devoteeCategoryRepo, IFileManagement fileManagement)
+        public DevoteeController(IDevotee devoteeRepo, IDevoteeCategory devoteeCategoryRepo,IRoom roomRepo, IFileManagement fileManagement)
         {
             // _context = context;
             _devoteeRepo = devoteeRepo;
+            _roomRepo = roomRepo;
             _devoteeCategoryRepo = devoteeCategoryRepo;
             _fileManagement = fileManagement;
         }
@@ -103,12 +105,15 @@ namespace Anandashram.Controllers
             {
                 devotee.CreatedBy = this.User.FindFirstValue(ClaimTypes.NameIdentifier);
                 devotee.CreatedDate = DateTime.Now;
+                
                 return View(devotee);
             }
             else
             {
                 AddFile file = new AddFile();
                 devotee = await _devoteeRepo.GetDevotee(Id);
+                devotee.ReservationCharts.Add(new ReservationChart() { Id = 0 });
+                ViewBag.RoomsList = GetFilteredRooms();
                 TempData.Keep();
                 if (devotee == null)
                 {
@@ -273,6 +278,35 @@ namespace Anandashram.Controllers
         {
             // Perform some server-side logic
             Content($"<script>notify('{message}');</script>", "text/html");
+        }
+
+        private List<SelectListItem> GetFilteredRooms()
+        {
+            var lstRooms = new List<SelectListItem>();
+
+            PaginatedList<Room> rooms =new PaginatedList<Room>(_roomRepo.GetFilteredRooms(),1,1000);
+
+            lstRooms = rooms.Select(ut => new SelectListItem()
+            {
+                Value = ut.Id.ToString(),
+                Text = ut.Name
+            }).ToList();
+
+            var defItem = new SelectListItem()
+            {
+                Value = "",
+                Text = "----Select Room----"
+            };
+
+            lstRooms.Insert(0, defItem);
+
+            return lstRooms;
+        }
+
+        public JsonResult GetFilteredRoom(int Id)
+        {
+            var room = _roomRepo.GetFilteredRoom(Id);
+            return Json(new { Success = "true", Data = room });
         }
     }
 }

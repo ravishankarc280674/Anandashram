@@ -1,4 +1,5 @@
-﻿@model Anandashram.Models.Devotee
+﻿
+@model Anandashram.Models.Devotee
 
 @{
     string currentModel = Helper.GetTypeNames(Model.GetType().ToString());
@@ -13,6 +14,15 @@
         addFile.DevoteeCode = Model.Code;
         ViewBag.AddFile = addFile;
     }
+    int pg = 1;
+    var roomsList = ViewBag.RoomsList;
+    string searchText = ViewBag.SearchText;
+    if (TempData["CurrentPage"] != null)
+    {
+        pg = (int)TempData["CurrentPage"];
+
+        TempData["CurrentPage"] = pg;
+    }
 }
 @if(Model.Id == 0)
 {
@@ -25,7 +35,7 @@ else
 
 <hr />
 
-<div class="row">
+<div class="card">
     <div class="col-md-12">
         <form asp-action="AddOrEdit">
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
@@ -38,15 +48,15 @@ else
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
             @if (Model.Id != 0)
             {
-               
-            <div class="col-md-12 d-flex">
+              <div class="col-md-12 d-flex">
               
                 <div class="col-md-5">
-                   
-                <table>
+
+                        <table style="border:none;">
                 <tr>
-                    <td rowspan="2"><img src="@Url.Action("GetImage", "Devotee", new { fileName = Model.Code })" width="100" height="100" class="img-thumbnail rounded" target="_blank" /></td>
+                                <td class="form-group col-2 " rowspan="2"><img src="@Url.Action("GetImage", "Devotee", new { fileName = Model.Code })" width="100" height="100" class="img-thumbnail rounded" target="_blank" /></td>
                                 <td style="border:none" class="text-start"><div><label class="fs-4 fw-bold" style="color: purple">@Html.DisplayFor(model => model.Name)</label></div></td>
+                                
                     </tr>
                             <tr style="border:none;">
                                 <td style="border:none" class="text-start">
@@ -63,15 +73,14 @@ else
                     </table>
                    
                 </div>
-                    <div class="col-md-4 text-end">
+                    <div class="form-group col-2">
+                    </div>
+                    <div class="form-group col-5 text-end">
                     
-                    <table class="table">
-                            <thead>
-                            </thead>
-                        <tbody>
+                    <table>
                             <tr>
                         <td colspan="3">
-                                        <div class="col-sm-12 col text-end fw-bold">
+                                        <div class="col text-end fw-bold">
                                 Document List
                                 <a data-bs-toggle="modal" data-bs-target="#uploadModal" class=" align-self-end">
                                     <span class="btn btn-sm btn-outline-danger">
@@ -106,7 +115,6 @@ else
                                     <td>No Documents Uploaded</td>
                                 </tr>
                             }
-                        </tbody>
                         </table>
                 </div>
             </div>
@@ -123,7 +131,7 @@ else
                 <dt class="col-md-2">
                     <label asp-for="DevoteeCategoryId" class="control-label"></label>
                 </dt>
-                <dd class="col-md-4">
+                <dd class="form-group col-md-4">
                         <select asp-for="DevoteeCategoryId" class="form-control" asp-items="ViewBag.DevoteeCategoryId"></select>
                 </dd>
             </dl>
@@ -131,15 +139,16 @@ else
                 <dt class="col-md-2">
                     <label asp-for="StartDate" class="control-label"></label>
                 </dt>
-                <dd class="col-md-4">
-                    <input type="datetime-local" asp-for="StartDate" class="form-control" />
+                <dd class="col-md-4 form-group">
+                    <input  asp-for="StartDate" class="form-control" />
                     <span asp-validation-for="StartDate" class="text-danger"></span>
                 </dd>
+              
                 <dt class="col-md-2">
                     <label asp-for="EndDate" class="control-label"></label>
                 </dt>
-                <dd class="col-md-4">
-                    <input type="datetime-local" asp-for="EndDate" class="form-control" />
+                <dd class="col-md-4 form-group">
+                    <input  asp-for="EndDate" class="form-control" />
                     <span asp-validation-for="EndDate" class="text-danger"></span>
                 </dd>
             </dl>
@@ -203,6 +212,7 @@ else
                     <span asp-validation-for="Email" class="text-danger"></span>
                 </dd>
             </dl>
+            </form>
             <br />
             <div class="row">
                 <div class="form-group btn-group">
@@ -232,15 +242,100 @@ else
                 Manage Reservation(s)
             </button>
             <br />
+           
             <div class="collapse mt-12 border-2" id="manageReservationDiv">
                 <div class="card card-body">
-                    This is the content inside the div. Click the button again to hide it.
-                </div>
-            </div>
+            <form asp-action="AddOrEditReservation" asp-route-id="@Model.Id" asp-route-pg="@pg" asp-route-SearchText="@ViewBag.SearchText" asp-route-PageSize="@ViewBag.PageSize">
+
+                    <div class="col-12 ml-5">
+                        <dl class="row">
+                            <dt class="col-md-2">
+                                <label asp-for="StartDate" class="control-label"></label>
+                            </dt>
+                            <dd class="col-md-4 form-group">
+                                <input asp-for="StartDate" class="form-control" />
+                                <span asp-validation-for="StartDate" class="text-danger"></span>
+                            </dd>
+
+                            <dt class="col-md-2">
+                                <label asp-for="EndDate" class="control-label"></label>
+                            </dt>
+                            <dd class="col-md-4 form-group">
+                                <input asp-for="EndDate" class="form-control" />
+                                <span asp-validation-for="EndDate" class="text-danger"></span>
+                            </dd>
+                        </dl>
+                        <table id="RegTable" class="table table-borderless table-sm mb-0 pb-0">
+                            <thead>
+                                <tr>
+                                    <th>
+                                        Room
+                                    </th>
+                                    <th>
+                                        Floor
+                                    </th>
+                                    <th>
+                                        Block
+                                    </th>
+                                    <th>
+                                        Building
+                                    </th>
+                                    <th>
+                                        Max Capacity
+                                    </th>
+                                    <th>
+                                        Remaining
+                                    </th>
+                                    <th>
+                                       Already Allocate
+                                    </th>
+                                    <th>
+                                        New Allocation
+                                    </th>
+                                    <th style="width:60px;">
+                                        <button id='btnAddDetailRow' type="button" class="btn btn-sm btn-secondary visible" onclick="AddItem(this)">
+                                            Add
+                                        </button>
+                                    </th>
+                                </tr>
+                            </thead>
+
+                            <tbody>
+                                 @for (int i = 0; i < Model.ReservationCharts.Count; i++)
+                                {
+                                    <tr>
+                                        <td>
+                                            <select asp-for="@Model.ReservationCharts[i].Id" class="form-control dropdown"
+                                                    asp-items="ViewBag.RoomsList"></select>
+                                        </td>
+                                         <td>
+                                            <label class="building-label" />
+                                        </td>
+                                        <td>
+                                            <label class="block-label" />
+                                        </td>
+                                        <td>
+                                            <label class="floor-label"/>
+                                        </td>
+                                        @* <td>
+                                            <input asp-for="@Model.PoDetails[i].UnitName" class="form-control" readonly />
+                                        </td>
+                                        <td style="width:60px;">
+                                            <button id='btnremove-@i' type="button" class="btn btn-sm btn-danger visible" onclick="DeleteItem(this)">
+                                                Delete
+                                            </button>
+                                        </td> *@
+                                    </tr>
+                                } 
+                            </tbody>
+
+                        </table>
+                    </div>
+               
         </form>
+            </div>
+        </div>
     </div>
-
-
 
                @* modal 1 starts here - to load the web cam *@
     <div id="webcamModal" class="modal" tabindex="-1" role="dialog">
@@ -286,6 +381,28 @@ else
         await Html.RenderPartialAsync("_ValidationScriptsPartial");
     }
     <script>
+        $(document).ready(function () {
+        $('.dropdown').change(function () {
+        //     var rooms =
+                var id = $(this).val(); // Get selected value
+                          $.ajax({
+                                type: 'POST',
+                                url: '/Devotee/GetFilteredRoom',
+                                data: { Id: id }, // Parameters sent to the controller
+                        success: function (Data) {
+                            var room = Data.data;
+                            alert("building:" +  room.buildingName);
+                            $(this).closest('tr').find('.block-label').text = room.blockName;
+                            $(this).closest('tr').find('.building-label').text = room.buildingName;
+                            $(this).closest('tr').find('.floor-label').text = room.floorName;
+                        },
+                        error: function (error) {
+                            alert(error);
+                            console.log(error);
+                        }
+                     });
+        });
+        });
         // Configure Webcam.js
         Webcam.set({
             width: 320,
@@ -335,5 +452,37 @@ else
                 });
             });
         }
+        
+        function AddItem() {
+
+                var table;
+                table = document.getElementById('RegTable');
+                var rows = table.getElementsByTagName('tr');
+                var rowOuterHtml = rows[rows.length - 1].outerHTML;
+
+                var lastrowIdx = rows.length - 2;
+
+                var nextrowIdx = eval(lastrowIdx) + 1;
+
+                rowOuterHtml = rowOuterHtml.replaceAll('_' + lastrowIdx + '_', '_' + nextrowIdx + '_');
+                rowOuterHtml = rowOuterHtml.replaceAll('[' + lastrowIdx + ']', '[' + nextrowIdx + ']');
+                rowOuterHtml = rowOuterHtml.replaceAll('-' + lastrowIdx, '-' + nextrowIdx);
+
+                var newRow = table.insertRow();
+                newRow.innerHTML = rowOuterHtml;
+
+                var x = document.getElementsByTagName("INPUT");
+
+                for (var cnt = 0; cnt < x.length; cnt++) {
+                    if (x[cnt].type == "text" && x[cnt].id.indexOf('_' + nextrowIdx + '_') > 0) {
+                        if (x[cnt].id.indexOf('Unit') == 0)
+                            x[cnt].value = '';
+                    }
+                    else if (x[cnt].type == "number" && x[cnt].id.indexOf('_' + nextrowIdx + '_') > 0)
+                        x[cnt].value = 0;
+                }
+
+               // rebindvalidators();
+            }
     </script>
 }

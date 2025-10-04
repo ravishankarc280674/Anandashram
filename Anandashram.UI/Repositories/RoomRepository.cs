@@ -98,5 +98,20 @@
                 return false;
         }
 
+        public List<Room> GetFilteredRooms()
+        {
+           return  _context.Rooms.Include(e => e.Building)
+                    .Include(e => e.Block)
+                    .Include(e => e.Floor).ToList();
+
+        }
+        public Room GetFilteredRoom(int Id) // to be changed future
+        {
+            Room room = _context.Rooms.Where(u => u.Id == Id)
+                            .Include(e => e.Building)
+                            .Include(e => e.Block)
+                            .Include(e => e.Floor).FirstOrDefault();
+            return room == null ? new Room() : room;
+        }
     }
 }

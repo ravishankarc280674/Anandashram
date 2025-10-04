@@ -5,10 +5,7 @@ namespace Anandashram.Models;
 
 public partial class Room
 {
-    public Room()
-    {
-      
-    }
+    
 
     [Key]
     public int Id { get; set; }

@@ -8,6 +8,10 @@ namespace Anandashram.Models;
 [Table("DevoteeHeaders")]
 public partial class Devotee
 {
+    public Devotee()
+    {
+        ReservationCharts = new List<ReservationChart>();
+    }
     [Key]
     public int Id { get; set; }
 
@@ -73,4 +77,8 @@ public partial class Devotee
     public bool Closed { get; set; }
 
     public string? ReopenedCode { get; set; }
+
+    [NotMapped]
+
+    public List<ReservationChart> ReservationCharts { get; set; }
 }

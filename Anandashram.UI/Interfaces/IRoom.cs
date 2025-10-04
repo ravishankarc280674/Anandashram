@@ -13,7 +13,7 @@
 
         bool IsRoomNameExists(string name);
         bool IsRoomNameExists(string name, int Id);
-
-
+        List<Room> GetFilteredRooms();
+        Room GetFilteredRoom(int id);
     }
 }
