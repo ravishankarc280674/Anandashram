@@ -154,6 +154,22 @@ else
             </dl>
             <dl class="row">
                 <dt class="col-md-2">
+                    <label asp-for="NoOfPeople" class="control-label"></label>
+                </dt>
+                <dd class="col-md-4">
+                    <input asp-for="NoOfPeople" class="form-control" />
+                    <span asp-validation-for="NoOfPeople" class="text-danger"></span>
+                </dd>
+                <dt class="col-md-2">
+                    <label asp-for="Email" class="control-label"></label>
+                </dt>
+                <dd class="col-md-4">
+                    <input asp-for="Email" class="form-control" />
+                    <span asp-validation-for="Email" class="text-danger"></span>
+                </dd>
+            </dl>
+            <dl class="row">
+                <dt class="col-md-2">
                     <label asp-for="AddressLine1" class="control-label"></label>
                 </dt>
                 <dd class="col-md-4">
@@ -212,7 +228,6 @@ else
                     <span asp-validation-for="Email" class="text-danger"></span>
                 </dd>
             </dl>
-            </form>
             <br />
             <div class="row">
                 <div class="form-group btn-group">
@@ -233,7 +248,7 @@ else
                        asp-route-pg="@TempData.Peek("CurrentPage")" asp-route-SearchText ="@ViewBag.SearchText">Back</a>
                 </div>
             </div>
-
+            </form>
             <br />
 
             @* Add Reservation Details here *@
@@ -265,20 +280,20 @@ else
                                 <span asp-validation-for="EndDate" class="text-danger"></span>
                             </dd>
                         </dl>
-                        <table id="RegTable" class="table table-borderless table-sm mb-0 pb-0">
+                        <table id="RegTable" class="table table-borderless table-sm mb-0 pb-0 col-md-12">
                             <thead>
                                 <tr>
                                     <th>
                                         Room
                                     </th>
                                     <th>
-                                        Floor
+                                        Building
                                     </th>
                                     <th>
                                         Block
                                     </th>
                                     <th>
-                                        Building
+                                        Floor
                                     </th>
                                     <th>
                                         Max Capacity
@@ -287,10 +302,16 @@ else
                                         Remaining
                                     </th>
                                     <th>
-                                       Already Allocate
+                                       Alloted
                                     </th>
                                     <th>
-                                        New Allocation
+                                        From
+                                    </th>
+                                    <th>
+                                        To
+                                    </th>
+                                    <th>
+                                        Allot
                                     </th>
                                     <th style="width:60px;">
                                         <button id='btnAddDetailRow' type="button" class="btn btn-sm btn-secondary visible" onclick="AddItem(this)">
@@ -317,14 +338,26 @@ else
                                         <td>
                                             <label class="floor-label"/>
                                         </td>
-                                        @* <td>
-                                            <input asp-for="@Model.PoDetails[i].UnitName" class="form-control" readonly />
+                                         <td>
+                                            <label class="maxCapacity-label" />
                                         </td>
-                                        <td style="width:60px;">
-                                            <button id='btnremove-@i' type="button" class="btn btn-sm btn-danger visible" onclick="DeleteItem(this)">
-                                                Delete
-                                            </button>
-                                        </td> *@
+                                        <td>
+                                            <label class="remaining-label" />
+                                        </td>
+                                        <td>
+                                            <label class="alreadyAllocate-label" />
+                                        </td>
+                                      
+                                        <td>
+                                            <label class="fromDate-label" />
+                                        </td>
+                                        <td>
+                                            <label class="toDate-label" />
+                                        </td>
+                                        <td style="width:100px">
+                                            <input asp-for="@Model.ReservationCharts[i].NewAllocation" class="form-control" />
+                                            <span asp-validation-for="@Model.ReservationCharts[i].NewAllocation" class="text-danger"></span>
+                                        </td>
                                     </tr>
                                 } 
                             </tbody>
@@ -382,26 +415,32 @@ else
     }
     <script>
         $(document).ready(function () {
-        $('.dropdown').change(function () {
-        //     var rooms =
-                var id = $(this).val(); // Get selected value
-                          $.ajax({
-                                type: 'POST',
-                                url: '/Devotee/GetFilteredRoom',
-                                data: { Id: id }, // Parameters sent to the controller
-                        success: function (Data) {
-                            var room = Data.data;
-                            alert("building:" +  room.buildingName);
-                            $(this).closest('tr').find('.block-label').text = room.blockName;
-                            $(this).closest('tr').find('.building-label').text = room.buildingName;
-                            $(this).closest('tr').find('.floor-label').text = room.floorName;
-                        },
-                        error: function (error) {
-                            alert(error);
-                            console.log(error);
-                        }
-                     });
-        });
+            $('.dropdown').change(function () {
+            //     var rooms =
+                    var id = $(this).val(); // Get selected value
+                    var currentRow = $(this).closest('tr');
+                              $.ajax({
+                                    type: 'POST',
+                                    url: '/Devotee/GetFilteredRoom',
+                                    data: { Id: id }, // Parameters sent to the controller
+                            success: function (Data) {
+                                var room = Data.data;
+                                console.log(room);
+                                currentRow.find('.building-label').text(room.buildingName);
+                                currentRow.find('.block-label').text(room.blockName);
+                                currentRow.find('.floor-label').text(room.floorName);
+                                currentRow.find('.maxCapacity-label').text(room.capacity);
+                                currentRow.find('.remaining-label').text(room.remainingCapacity);
+                                currentRow.find('.alreadyAllocate-label').text(room.allocated);
+                                currentRow.find('.fromDate-label').text(room.fromDate);
+                                currentRow.find('.ToDate-label').text(room.toDate);
+                            },
+                            error: function (error) {
+                                alert(error);
+                                console.log(error);
+                            }
+                         });
+            });
         });
         // Configure Webcam.js
         Webcam.set({

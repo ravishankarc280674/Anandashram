@@ -79,6 +79,11 @@
                 <a asp-action="Index" asp-route-sortExpression="@sortModel.GetColumn("email").SortExpression"
                    asp-route-SearchText="@ViewBag.SearchText" asp-route-PageSize="@ViewBag.PageSize" asp-route-Closed="@ViewBag.Closed">Email</a>
             </th>
+                    <td>some data</td>
+            <td>some data</td>
+                    <td>some data</td>
+                    <td>some data</td>
+                    <td>some data</td>
             <th class ="fixed-column-right">
                 &nbsp;
             </th>
@@ -134,6 +139,21 @@
                             <td class="@rowClass">
                         <span>@item.Email</span>
                     </td>
+                            <td class="@rowClass">
+                                <span>@item.Email</span>
+                            </td>
+                                    <td class="@rowClass">
+                        <span>@item.Email</span>
+                    </td>
+                            <td class="@rowClass">
+                                <span>@item.Email</span>
+                            </td>
+                                    <td class="@rowClass">
+                        <span>@item.Email</span>
+                    </td>
+                            <td class="@rowClass">
+                                <span>@item.Email</span>
+                            </td>
                             <td class="fixed-column-right">
                         <div class="btn-group">
                             @if (item.Closed == false)

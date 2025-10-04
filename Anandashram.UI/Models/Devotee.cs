@@ -68,6 +68,10 @@ public partial class Devotee
 
     public DateTime? ModifiedDate { get; set; }
 
+    [Required]
+    [DisplayName("Number of People")]
+    public int NoOfPeople { get; set; }
+
     [NotMapped]
     [DisplayName("Devotee Category")]
     public string? DevoteeCategoryName { get { return this.DevoteeCategory != null ? DevoteeCategory.Name : string.Empty; } }
