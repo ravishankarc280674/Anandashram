@@ -1,4 +1,6 @@
-﻿namespace Anandashram
+﻿using Anandashram.Models;
+
+namespace Anandashram
 {
     public class FileManagement : IFileManagement
     {
@@ -88,8 +90,41 @@
         {
             if (System.IO.File.Exists(filePath))
             {
-                File.Delete(filePath);
+               File.Delete(filePath);
             }
         }
+
+        public  async Task CopyProfilePic(string oldDevoteeCode, string newDevoteeCode)
+        {
+            var imageStoragePath = _imageStoragePath + @"\Images";
+            string oldFullPath = Path.Combine(imageStoragePath, oldDevoteeCode + ".jpeg");
+            string newFullPath = Path.Combine(imageStoragePath, newDevoteeCode + ".jpeg");
+            if (File.Exists(oldFullPath))
+            {
+                // copy the file
+                System.IO.File.Copy(oldFullPath, newFullPath);
+            }
+        }
+
+        public async Task CopyDocuments(string oldDevoteeCode, string newDevoteeCode)
+        {
+            var imageOldPath = Path.Combine(_imageStoragePath, oldDevoteeCode);
+            var imageNewPath = Path.Combine(_imageStoragePath, oldDevoteeCode);
+            if (Directory.Exists(imageNewPath))
+            {
+                if (!Directory.Exists(imageNewPath))
+                {
+                    // Create the folder if it doesn't exist
+                    Directory.CreateDirectory(imageNewPath);
+                    foreach (string file in Directory.GetFiles(imageOldPath))
+                    {
+                        string fileName = Path.GetFileName(file);
+                        string destFile = Path.Combine(imageNewPath, fileName);
+                        File.Copy(file, destFile, true); // The 'true' parameter overwrites if the file already exists
+                    }
+                }
+            }
+        }
+       
     }
 }

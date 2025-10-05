@@ -8,5 +8,7 @@
         List<UploadedFile> GetUploadedFiles(int Id, string code); // all the files related to document uploaded 
         Task<byte[]> GetDocument(string filePath); // to get the image by document type
         Task DeleteDocument(string filePath);
+        Task CopyProfilePic(string oldDevoteeCode, string newDevoteeCode);
+        Task CopyDocuments(string oldDevoteeCode, string newDevoteeCode);
     }
 }

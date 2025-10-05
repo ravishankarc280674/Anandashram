@@ -57,31 +57,29 @@ namespace Anandashram.Repositories
             return devotees;
         }
 
-        public async Task<PaginatedList<Devotee>> GetItems(string SortProperty, SortOrder sortOrder, string SearchText = "", int pg = 1, int pageSize = 5,bool Checked=false)
+        public async Task<PaginatedList<Devotee>> GetItems(string SortProperty, SortOrder sortOrder, string SearchText = "", int pg = 1, int pageSize = 5, bool Checked = false)
         {
-            List<Devotee> devotees;
+            List<Devotee> devotees = new List<Devotee>();
 
             if (!Checked)
             {
-                if (!string.IsNullOrEmpty(SearchText))
-                {
-                    devotees = await _context.Devotees.Where(n => (n.Code.Contains(SearchText) || n.Name.Contains(SearchText) || n.Description.Contains(SearchText)) && n.Closed == false).Include(d =>d.DevoteeCategory).ToListAsync();
-                }
-                else
-                    devotees = await _context.Devotees.Where(n => n.Closed == false).Include(d => d.DevoteeCategory).ToListAsync();
+                devotees = await _context.Devotees.Include(d => d.DevoteeCategory).Where(n => n.Closed == false).ToListAsync();
             }
             else
             {
+                devotees = await _context.Devotees.Include(d => d.DevoteeCategory).ToListAsync();
+            }
                 if (!string.IsNullOrEmpty(SearchText))
                 {
-                    devotees = await _context.Devotees.Where(n => n.Code.Contains(SearchText) || n.Name.Contains(SearchText) || n.Description.Contains(SearchText)).Include(d => d.DevoteeCategory).ToListAsync();
+                    devotees = devotees.Where(n => n.Code.Contains(SearchText, StringComparison.OrdinalIgnoreCase) 
+                                                || n.Name.Contains(SearchText, StringComparison.OrdinalIgnoreCase) 
+                                                || (n.Description ?? "").Contains(SearchText, StringComparison.OrdinalIgnoreCase)
+                                                || (n.Document ?? "").Contains(SearchText, StringComparison.OrdinalIgnoreCase)
+                                                || (n.Email ?? "").Contains(SearchText, StringComparison.OrdinalIgnoreCase)
+                                                || (n.Mobile ?? "").Contains(SearchText, StringComparison.OrdinalIgnoreCase)
+                                                || n.DevoteeCategory.Name.Contains(SearchText,StringComparison.OrdinalIgnoreCase)).ToList();
                 }
-                else
-                    devotees = await _context.Devotees.Include(d => d.DevoteeCategory).ToListAsync();
-            }
-
-                devotees = DoSort(devotees, SortProperty, sortOrder);
-
+            devotees = DoSort(devotees, SortProperty, sortOrder);
             PaginatedList<Devotee> retDevotees = new PaginatedList<Devotee>(devotees, pg, pageSize);
             return retDevotees;
         }

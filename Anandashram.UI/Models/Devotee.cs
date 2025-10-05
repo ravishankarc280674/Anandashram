@@ -4,8 +4,8 @@ using System.ComponentModel;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Anandashram.Models;
-
-[Table("DevoteeHeaders")]
+                           
+[Table("Devotees")]
 public partial class Devotee
 {
     public Devotee()
@@ -24,6 +24,7 @@ public partial class Devotee
     public string Name { get; set; } = null!;
 
     [MaxLength(500)]
+    [DisplayName("Addiional Information")]
     public string? Description { get; set; }
 
     [Required]
@@ -36,6 +37,8 @@ public partial class Devotee
     [MaxLength(100)]
     public string Email { get; set; } = null!;
 
+    [DisplayName("Docs(Aaadaar/Pan/..)")]
+    public string Document { get; set; }
     [DisplayName("Address")]
     [MaxLength(200)]
     public string? AddressLine1 { get; set; }

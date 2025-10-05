@@ -36,6 +36,7 @@ namespace Anandashram.Controllers
             sortModel.AddColumn("email");
             sortModel.AddColumn("devoteecategoryname");
             sortModel.AddColumn("startdate");
+            sortModel.AddColumn("document");
             sortModel.AddColumn("enddate");
             sortModel.ApplySort(sortExpression);
             ViewData["SortModel"] = sortModel;
@@ -135,6 +136,8 @@ namespace Anandashram.Controllers
             if (ModelState.IsValid)
             {
            int IdToRedirect = 0;
+                string OldDevoteeCode = string.Empty;
+                string NewDevoteeCode = string.Empty;
                 if (Id == 0)
                 {
                     devotee = await _devoteeRepo.Create(devotee);
@@ -143,6 +146,7 @@ namespace Anandashram.Controllers
                 else
                 {
                     IdToRedirect = devotee.Id;
+                    OldDevoteeCode = devotee.Code;
                     try
                     {
                         if (actionButton == "Closed")
@@ -164,14 +168,25 @@ namespace Anandashram.Controllers
                                 PinCode = devotee.PinCode,
                                 Email = devotee.Email,
                                 Name = devotee.Name,
-                                State = devotee.State
+                                State = devotee.State,
+                                Document = devotee.Document,
+                                Mobile = devotee.Mobile,
+                                NoOfPeople = devotee.NoOfPeople
                             };
                             newDevotee = await _devoteeRepo.Create(newDevotee);
+                            NewDevoteeCode = newDevotee.Code;
                             IdToRedirect = newDevotee.Id;
 
                             devotee.ReopenedCode = newDevotee.Code;
+                            await _fileManagement.CopyProfilePic(OldDevoteeCode, NewDevoteeCode);
+                            await _fileManagement.CopyDocuments(OldDevoteeCode, NewDevoteeCode);
                         }
                         devotee = await _devoteeRepo.Edit(devotee);
+                        if (actionButton == "Closed")
+                        {
+                            return RedirectToAction("Details", new { Id = IdToRedirect });
+                        }
+
                     }
                     catch (DbUpdateConcurrencyException)
                     {
