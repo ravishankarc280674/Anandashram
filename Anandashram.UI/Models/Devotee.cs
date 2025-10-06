@@ -17,7 +17,7 @@ public partial class Devotee
 
     [DisplayName("Code")]
     [DatabaseGenerated(DatabaseGeneratedOption.Computed)]
-    public string Code { get;private set; }
+    public string Code { get;set; }
 
     [Required]
     [MaxLength(100)]

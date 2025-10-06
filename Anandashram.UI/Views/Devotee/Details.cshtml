@@ -110,6 +110,20 @@
             </dl>
             <dl class="row">
                 <dt class="col-md-2">
+                    <label asp-for="NoOfPeople" class="control-label"></label>
+                </dt>
+                <dd class="col-md-4">
+                    <input asp-for="NoOfPeople" class="form-control" readonly />
+                </dd>
+                <dt class="col-md-2">
+                    <label asp-for="Document" class="control-label"></label>
+                </dt>
+                <dd class="col-md-4">
+                    <input asp-for="Document" class="form-control" readonly/>
+                </dd>
+            </dl>
+            <dl class="row">
+                <dt class="col-md-2">
                     <label asp-for="AddressLine1" class="control-label"></label>
                 </dt>
                 <dd class="col-md-4">
@@ -159,6 +173,14 @@
                 </dt>
                 <dd class="col-md-4">
                     <input asp-for="Email" class="form-control" readonly />
+                </dd>
+            </dl>
+            <dl class="row">
+                <dt class="col-md-2">
+                    <label asp-for="Description" class="control-label"></label>
+                </dt>
+                <dd class="col-md-10">
+                    <textarea asp-for="Description" rows="2" class="form-control" readonly></textarea>
                 </dd>
             </dl>
             <br />

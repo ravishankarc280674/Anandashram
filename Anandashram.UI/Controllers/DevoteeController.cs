@@ -93,6 +93,10 @@ namespace Anandashram.Controllers
             {
                 return NotFound();
             }
+            //AddFile file = new AddFile();
+            //file.DevoteeCode = devotee.Code;
+            //ViewBag.AddFile = file;
+            this.ViewBag.UploadedFiles = _fileManagement.GetUploadedFiles(devotee.Id, devotee.Code);
 
             return View(devotee);
         }

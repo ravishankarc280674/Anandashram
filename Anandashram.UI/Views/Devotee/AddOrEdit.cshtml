@@ -274,9 +274,12 @@ else
            
             <div class="collapse mt-12 border-2" id="manageReservationDiv">
                 <div class="card card-body">
-            <form asp-action="AddOrEditReservation" asp-route-id="@Model.Id" asp-route-pg="@pg" asp-route-SearchText="@ViewBag.SearchText" asp-route-PageSize="@ViewBag.PageSize">
+                <form id="AddOrEditReservationForm" asp-action="AddOrEditReservation" asp-route-id="@Model.Id" asp-route-pg="@pg" asp-route-SearchText="@ViewBag.SearchText" asp-route-PageSize="@ViewBag.PageSize">
 
                     <div class="col-12 ml-5">
+                        <div class="row col-11 ml-2">
+                            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+
                         <dl class="row">
                             <dt class="col-md-2">
                                 <label asp-for="StartDate" class="control-label"></label>
@@ -370,7 +373,12 @@ else
                                         </td>
                                         <td style="width:100px">
                                             <input asp-for="@Model.ReservationCharts[i].NewAllocation" class="form-control" />
-                                            <span asp-validation-for="@Model.ReservationCharts[i].NewAllocation" class="text-danger"></span>
+                                            <input type="hidden" asp-for="@Model.ReservationCharts[i].Closed" />
+                                        </td>
+                                        <td style="width:60px;">
+                                            <button id='btnremove-@i' type="button" class="btn btn-sm btn-danger visible" onclick="DeleteItem(this)">
+                                                Delete
+                                            </button>
                                         </td>
                                     </tr>
                                 } 
@@ -378,7 +386,44 @@ else
 
                         </table>
                     </div>
-               
+                    </div>
+                    <div class="form-group btn-group col-1">
+
+
+                        <select id="dropdownExRate" class="form-control" size="1" style="visibility: hidden;" asp-items="ViewBag.ExchangeRate">
+                        </select>
+
+                        <div class="form-group invisible">
+                            <select id="mySelect" class="form-control" size="5"
+                                    style="visibility: hidden;" asp-items="ViewBag.ProductList">
+                            </select>
+                            <input id="txtValue" class="form-control col-2 invisible" />
+                        </div>
+
+                        <div ID="HiddenDiv" style="visibility: hidden;">
+                           @*  <input asp-for="PoDate" class="form-control" />
+                            <select asp-for="BaseCurrencyId" class="form-control"
+                                    asp-items="ViewBag.BaseCurrencyList"></select> *@
+
+
+                            <select id="dropdownUnitNames" class="form-control"
+                                    size="1" style="visibility: hidden;"
+                                    asp-items="ViewBag.UnitNames">
+                            </select>
+                        </div>
+
+                    </div>
+                    <div class="form-group btn-group col-12">
+                        <div class="col-1"></div>
+                        <div class="col-5">
+                            <input type="submit" value="Create" class="btn btn-primary btn-block" />
+                        </div>
+                        <div class="col-5">
+                            <a class="btn btn-secondary btn-block" asp-action="index"
+                               asp-route-pg="@TempData.Peek("CurrentPage")">Cancel</a>
+                        </div>
+                        <div class="col-1"></div>
+                    </div>
         </form>
             </div>
         </div>
@@ -482,7 +527,7 @@ else
                 document.getElementById('btnUploadSpan').style.display = 'block';
                 document.getElementById('results').innerHTML = '<img src="' + data_uri + '"/>';
             });
-        }
+        } 
 
             function saveImage() {
             Webcam.snap(function (data_uri) {
@@ -533,9 +578,42 @@ else
                     }
                     else if (x[cnt].type == "number" && x[cnt].id.indexOf('_' + nextrowIdx + '_') > 0)
                         x[cnt].value = 0;
-                }
+                    else
+                        x[cnt].value = '';
 
-               // rebindvalidators();
+                }
             }
+
+                 function rebindvalidators() {
+                    var $form = $("#AddOrEditReservationForm");
+                    $form.unbind();
+                    $form.data("validator", null);
+                    $.validator.unobtrusive.parse($form);
+                    $form.validate($form.data("unobtrusiveValidation").options);
+                }
+                function DeleteItem(btn) {
+
+               var table = document.getElementById('RegTable');
+               var rows = table.getElementsByTagName('tr');
+
+                    // var btnIdx = btn.id.replaceAll('btnremove-', '');
+                    // var idOfQuantity = btnIdx + "__Quantity";
+                    // var txtQuantity = document.querySelector("[id$='" + idOfQuantity + "']");
+
+                    // txtQuantity.value = 0;
+
+
+                    // var idOfIsDeleted = btnIdx + "__IsDeleted";
+                    // var txtIsDeleted = document.querySelector("[id$='" + idOfIsDeleted + "']");
+                   // txtIsDeleted.value="true";
+
+
+
+
+                    $(btn).closest('tr').hide();
+
+                    // CalcTotals();
+
+        }
     </script>
 }

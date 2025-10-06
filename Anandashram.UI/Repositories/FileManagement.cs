@@ -109,8 +109,8 @@ namespace Anandashram
         public async Task CopyDocuments(string oldDevoteeCode, string newDevoteeCode)
         {
             var imageOldPath = Path.Combine(_imageStoragePath, oldDevoteeCode);
-            var imageNewPath = Path.Combine(_imageStoragePath, oldDevoteeCode);
-            if (Directory.Exists(imageNewPath))
+            var imageNewPath = Path.Combine(_imageStoragePath, newDevoteeCode);
+            if (Directory.Exists(imageOldPath))
             {
                 if (!Directory.Exists(imageNewPath))
                 {
