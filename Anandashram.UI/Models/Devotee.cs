@@ -10,7 +10,7 @@ public partial class Devotee
 {
     public Devotee()
     {
-        ReservationCharts = new List<ReservationChart>();
+        ReservationCharts = new List<Reservation>();
     }
     [Key]
     public int Id { get; set; }
@@ -87,5 +87,5 @@ public partial class Devotee
 
     [NotMapped]
 
-    public List<ReservationChart> ReservationCharts { get; set; }
+    public List<Reservation> ReservationCharts { get; set; }
 }

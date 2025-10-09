@@ -16,6 +16,7 @@ namespace Anandashram.Data
         public virtual DbSet<Room> Rooms { get; set; }
         public virtual DbSet<DevoteeCategory> DevoteeCategories { get; set; }
         public virtual DbSet<Devotee> Devotees { get; set; }
+        public virtual DbSet<Reservation> Reservations { get; set; }
 
     }
 }

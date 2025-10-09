@@ -14,13 +14,15 @@ namespace Anandashram.Controllers
         private readonly IDevoteeCategory _devoteeCategoryRepo;
         private readonly IRoom _roomRepo;
         private readonly IFileManagement _fileManagement;
-        public DevoteeController(IDevotee devoteeRepo, IDevoteeCategory devoteeCategoryRepo,IRoom roomRepo, IFileManagement fileManagement)
+        private readonly IReservation _reservationRepo;
+        public DevoteeController(IDevotee devoteeRepo, IDevoteeCategory devoteeCategoryRepo,IRoom roomRepo, IFileManagement fileManagement, IReservation reservationRepo)
         {
             // _context = context;
             _devoteeRepo = devoteeRepo;
             _roomRepo = roomRepo;
             _devoteeCategoryRepo = devoteeCategoryRepo;
             _fileManagement = fileManagement;
+            _reservationRepo = reservationRepo;
         }
 
         // GET: Devotee
@@ -117,7 +119,8 @@ namespace Anandashram.Controllers
             {
                 AddFile file = new AddFile();
                 devotee = await _devoteeRepo.GetDevotee(Id);
-                devotee.ReservationCharts.Add(new ReservationChart() { Id = 0 });
+                devotee.ReservationCharts =await _reservationRepo.ReservationList(Id);
+                //devotee.ReservationCharts.Add(new Reservation() { Id = 0 });
                 ViewBag.RoomsList = GetFilteredRooms();
                 TempData.Keep();
                 if (devotee == null)
