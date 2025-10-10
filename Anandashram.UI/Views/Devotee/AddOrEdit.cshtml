@@ -274,7 +274,7 @@ else
            
             <div class="collapse mt-12 border-2" id="manageReservationDiv">
                 <div class="card card-body">
-                <form id="AddOrEditReservationForm" asp-action="AddOrEditReservation" asp-route-id="@Model.Id" asp-route-pg="@pg" asp-route-SearchText="@ViewBag.SearchText" asp-route-PageSize="@ViewBag.PageSize">
+                <form id="AddOrEditReservationForm" onsubmit="return saveNewDetails(this);" asp-action="AddReservation" asp-route-id="@Model.Id" asp-route-pg="@pg" asp-route-SearchText="@ViewBag.SearchText" asp-route-PageSize="@ViewBag.PageSize">
 
                     <div class="col-12 ml-5">
                         <div class="row col-11 ml-2">
@@ -339,7 +339,7 @@ else
                             </thead>
 
                             <tbody>
-                                    <tr hidden="hidden">
+                                    <tr hidden="hidden" class="rowClass">
                                         <td>
                                             <select class="form-control dropdown" asp-items="ViewBag.RoomsList"></select>
                                         </td>
@@ -369,8 +369,7 @@ else
                                             <label class="toDate-label" />
                                         </td>
                                         <td style="width:100px">
-                                            <input type="number" class="form-control" />
-                                            <input type="hidden" />
+                                            <input type="number" step="1" min="0" max="100" class="form-control class-allot" />
                                         </td>
                                         <td style="width:60px;">
                                             <button id='btnremove' type="button" class="btn btn-sm btn-danger visible" onclick="DeleteItem(this)">
@@ -380,7 +379,8 @@ else
                                     </tr>
                                     @for (int i = 0; i < Model.ReservationCharts.Count; i++)
                                     {
-                                    <td >
+                                        <tr>
+                                    <td>
                                         <select asp-for="@Model.ReservationCharts[i].RoomId" class="form-control" asp-items="ViewBag.RoomsList" disabled></select>
                                     </td>
                                     <td>
@@ -410,9 +410,10 @@ else
                                     </td>
                                     <td style="width:100px">
                                     </td>
+                                        </tr>
                                     }
-                                    <tr>
-                                        <td>
+                                    <tr class="rowClass">
+                                    <td>
                                             <select class="form-control dropdown" asp-items="ViewBag.RoomsList"></select>
                                         </td>
                                          <td>
@@ -441,8 +442,7 @@ else
                                             <label class="toDate-label" />
                                         </td>
                                         <td style="width:100px">
-                                            <input type="number" class="form-control" />
-                                            <input type="hidden" />
+                                            <input type="number" step="1" min="0" max="100" class="form-control class-allot" />
                                         </td>
                                         <td style="width:60px;">
                                             <button id='btnremove' type="button" class="btn btn-sm btn-danger visible" onclick="DeleteItem(this)">
@@ -450,41 +450,16 @@ else
                                             </button>
                                         </td>
                                     </tr>
-                            </tbody>
+                           </tbody>
 
                         </table>
                     </div>
                     </div>
-                    <div class="form-group btn-group col-1">
-
-
-                        <select id="dropdownExRate" class="form-control" size="1" style="visibility: hidden;" asp-items="ViewBag.ExchangeRate">
-                        </select>
-
-                        <div class="form-group invisible">
-                            <select id="mySelect" class="form-control" size="5"
-                                    style="visibility: hidden;" asp-items="ViewBag.ProductList">
-                            </select>
-                            <input id="txtValue" class="form-control col-2 invisible" />
-                        </div>
-
-                        <div ID="HiddenDiv" style="visibility: hidden;">
-                           @*  <input asp-for="PoDate" class="form-control" />
-                            <select asp-for="BaseCurrencyId" class="form-control"
-                                    asp-items="ViewBag.BaseCurrencyList"></select> *@
-
-
-                            <select id="dropdownUnitNames" class="form-control"
-                                    size="1" style="visibility: hidden;"
-                                    asp-items="ViewBag.UnitNames">
-                            </select>
-                        </div>
-
-                    </div>
+                     
                     <div class="form-group btn-group col-12">
                         <div class="col-1"></div>
                         <div class="col-5">
-                            <input type="submit" value="Create" class="btn btn-primary btn-block" />
+                            <input type="submit" value="Update" class="btn btn-primary btn-block" />
                         </div>
                         <div class="col-5">
                             <a class="btn btn-secondary btn-block" asp-action="index"
@@ -623,6 +598,7 @@ else
                 var rows = table.getElementsByTagName('tr');
                  var rowOuterHtml = rows[1].outerHTML;
                  var newRow = table.insertRow();
+                 newRow.classList.add("rowClass");
                  newRow.innerHTML = rowOuterHtml;
         }
 
@@ -631,5 +607,21 @@ else
                  var row = btn.parentNode.parentNode.rowIndex;
                  table.deleteRow(row);
         }
+
+        function saveNewDetails(data){
+            var table = document.getElementById('RegTable');
+                var rows = table.getElementsByTagName('tr');
+                debugger;
+                        for (let i = 2; i < table.rows.length; i++) {
+            var row = table.rows[i];
+            // Check if the row contains the specified class name
+            if (row.classList.contains("rowClass")) {
+               var roomSelected = row.querySelector('.dropdown').value;
+               var allot =  row.querySelector('.class-allot').value;
+              alert(roomSelected);
+              alert(allot);
+              }
+            }
+          }
     </script>
 }

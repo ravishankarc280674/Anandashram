@@ -316,7 +316,7 @@ namespace Anandashram.Controllers
 
             var defItem = new SelectListItem()
             {
-                Value = "",
+                Value = "0",
                 Text = "----Select Room----"
             };
 
@@ -329,6 +329,11 @@ namespace Anandashram.Controllers
         {
             var room = _roomRepo.GetFilteredRoom(Id);
             return Json(new { Success = "true", Data = room });
+        }
+
+        public ActionResult AddReservation(List<Reservation> reservations,int Id)
+        {
+            return RedirectToAction("AddOrEdit", new { Id = Id });
         }
     }
 }
