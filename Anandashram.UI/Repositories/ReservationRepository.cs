@@ -1,4 +1,5 @@
-﻿using System.CodeDom;
+﻿using Anandashram.Models;
+using System.CodeDom;
 
 namespace Anandashram.Repositories
 {
@@ -22,6 +23,11 @@ namespace Anandashram.Repositories
                                .ToListAsync();
             return reservations;
         }
-
+        public async Task<List<Reservation>>  AddReservation([FromBody] List<Reservation> reservationList)
+        {
+            _context.Reservations.AddRange(reservationList);
+            await _context.SaveChangesAsync();
+            return reservationList;
+        }
     }
 }

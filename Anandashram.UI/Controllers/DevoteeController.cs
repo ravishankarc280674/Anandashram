@@ -317,7 +317,7 @@ namespace Anandashram.Controllers
             var defItem = new SelectListItem()
             {
                 Value = "0",
-                Text = "----Select Room----"
+                Text = "--Room--"
             };
 
             lstRooms.Insert(0, defItem);
@@ -331,9 +331,12 @@ namespace Anandashram.Controllers
             return Json(new { Success = "true", Data = room });
         }
 
-        public ActionResult AddReservation(List<Reservation> registrationList)
+        [HttpPost]
+        public async Task<IActionResult> AddReservation([FromBody] List<Reservation> data)
         {
-            return RedirectToAction("AddOrEdit");
+            foreach (Reservation r in data) { r.CreatedDate = DateTime.Now; r.CreatedBy = this.User.FindFirstValue(ClaimTypes.NameIdentifier); };
+            List<Reservation> reservationList = await _reservationRepo.AddReservation(data); 
+            return RedirectToAction("AddOrEdit", new { Id = reservationList[0].DevoteeId });
         }
     }
 }

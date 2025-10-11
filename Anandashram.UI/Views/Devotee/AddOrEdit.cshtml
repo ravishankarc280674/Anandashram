@@ -274,7 +274,7 @@ else
            
             <div class="collapse mt-12 border-2" id="manageReservationDiv">
                 <div class="card card-body">
-                <form id="AddOrEditReservationForm" onsubmit="return saveNewDetails(this);"  asp-route-id="@Model.Id" asp-route-pg="@pg" asp-route-SearchText="@ViewBag.SearchText" asp-route-PageSize="@ViewBag.PageSize">
+                <form id="AddOrEditReservationForm" onsubmit="saveNewDetails(this);"  asp-route-id="@Model.Id" asp-route-pg="@pg" asp-route-SearchText="@ViewBag.SearchText" asp-route-PageSize="@ViewBag.PageSize">
 
                     <div class="col-12 ml-5">
                         <div class="row col-11 ml-2">
@@ -300,7 +300,7 @@ else
                         <table id="RegTable" class="table table-borderless table-sm mb-0 pb-0 col-md-12">
                             <thead>
                                 <tr>
-                                    <th>
+                                    <th style="width:110px">
                                         Room
                                     </th>
                                     <th>
@@ -313,7 +313,7 @@ else
                                         Floor
                                     </th>
                                     <th>
-                                        Max Capacity
+                                        Capacity
                                     </th>
                                     <th>
                                         Remaining
@@ -332,7 +332,7 @@ else
                                     </th>
                                     <th style="width:60px;">
                                         <button id='btnAddDetailRow' type="button" class="btn btn-sm btn-secondary visible" onclick="AddItem(this)">
-                                            Add
+                                                &nbsp&nbsp;Add&nbsp&nbsp;
                                         </button>
                                     </th>
                                 </tr>
@@ -402,14 +402,23 @@ else
                                         @Model.ReservationCharts[i].Allocated
                                     </td>
                                     <td>
-                                        @Model.ReservationCharts[i].FromDate
+                                        @Model.ReservationCharts[i].FromDate.ToString("dd/MM/yyyy")
 
                                     </td>
                                     <td>
-                                        @Model.ReservationCharts[i].ToDate
+                                                @Model.ReservationCharts[i].ToDate.ToString("dd/MM/yyyy")
                                     </td>
                                     <td style="width:100px">
-                                    </td>
+                                                
+                                            </td>
+                                            <td style="width:60px;">
+                                            @if (Model.ReservationCharts[i].Closed == false)
+                                            {
+                                                <button id='btnclose' type="button" class="btn btn-sm btn-success visible" onclick="CloseItem(this)">
+                                                    Close
+                                                </button>
+                                            }
+                                            </td>
                                         </tr>
                                     }
                                     <tr class="rowClass">
@@ -451,7 +460,13 @@ else
                                         </td>
                                     </tr>
                            </tbody>
-
+                           <tfoot>
+                               <tr>
+                                   <th colspan="6">
+                                       Total : 
+                                   </th>
+                               </tr>
+                           </tfoot>
                         </table>
                     </div>
                     </div>
@@ -611,7 +626,8 @@ else
         function saveNewDetails(data){
             var table = document.getElementById('RegTable');
                 var rows = table.getElementsByTagName('tr');
-                let registrationList=[];
+                 let reservationList=[];
+                 let index=0;
                 var startDate =  document.getElementById("reg-start-date").value;
                 var endDate =  document.getElementById("reg-end-date").value;
                 
@@ -621,30 +637,32 @@ else
                 if (row.classList.contains("rowClass")) {
                    var roomSelected = row.querySelector('.dropdown').value;
                    var allot =  row.querySelector('.class-allot').value;
+                   
                   if(roomSelected>0 && allot>0)
                 {
-                    registrationList[i] = {
+                    reservationList[index++] = {
                         DevoteeId : document.getElementById('DevoteeId').value,
                         RoomId : roomSelected,
-                        Allot : allot,
-                        StartDate: new Date(startDate).toLocaleDateString('en-GB'),
-                        EndDate:new Date(endDate).toLocaleDateString('en-GB'),
-                        CreatedDate:new Date().toLocaleDateString('en-GB')
+                        Allocated : allot,
+                        FromDate: new Date(startDate),
+                        ToDate:new Date(endDate)
                     };
                     
                 }
                 
                   }
                 }
-                if(registrationList.length>0)
+
+                if(reservationList.length>0)
                 {
                     $.ajax({
                     type: "POST",
                     url: '/Devotee/AddReservation',
-                    data: {registrationList:registrationList},
+                    contentType:"application/json; charset=utf-8",
+                    dataType:"json",
+                    data: JSON.stringify(reservationList),
                     success: function (response) {
                       $.notify("Submitted Successfully", { globalPosition: "top centre", className:"Success" });
-                        window.location.reload();
                     },
                     error: function () {
                         alert('Error saving.');
@@ -652,9 +670,7 @@ else
 
                 });
                 }
-                debugger;
-                    console.log(registrationList);
-                    alert("process here");
+                   
           }
     </script>
 }

@@ -18,21 +18,21 @@
         </dd>
     </dl>
         <fieldset>
-        <div class="text-black">
-            <label class="fw-bold">File Upload Type: &nbsp;&nbsp;</label>
-            <label>
+        @* <div class="text-black"> *@
+            @* <label class="fw-bold">File Upload Type: &nbsp;&nbsp;</label> *@
+           @*  <label>
                 Scan <input type="radio" id="scanner" name="option" value="divScan" checked="checked" onchange="showControl()" />
             </label>
 
             <label>
                 File<input type="radio" id="browse" name="option" value="divFile" onchange="showControl()" />
                 </label>
-            </div>
+            </div> *@
             <div>
-                <div id="divScan" class="col-sm-8 btn-secondary" style="border:solid;display:block">
+               @*  <div id="divScan" class="col-sm-8 btn-secondary" style="border:solid;display:block">
                     <div style="border:solid"></div>
-                </div>
-                <div id="divFile" style="border:solid;display:none" class="btn-outline-primary">
+                </div> *@
+                <div id="divFile" style="border:solid;display:solid" class="btn-outline-primary">
                     <input type="file" id="ImageFile" name="ImageFile" asp-for="ImageFile" />
                     <span asp-validation-for="ImageFile" class="text-danger"></span>
                 </div>

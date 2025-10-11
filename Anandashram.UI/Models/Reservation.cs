@@ -1,4 +1,6 @@
-﻿namespace Anandashram.Models
+﻿using System.Runtime.InteropServices;
+
+namespace Anandashram.Models
 {
     public class Reservation
     {
@@ -15,35 +17,26 @@
 
         public virtual Room Room { get; set; }
 
-        //[Required]
-        //[ForeignKey("Building")]
-        //public string BuildingId { get; set; }
-        //[Required]
-        //[ForeignKey("Block")]
-        //public string BlockId { get; set; }
-        //[Required]
-        //[ForeignKey("Floor")]
-        //public string FloorId { get; set; }
-        [Required]
-
-        //public virtual Building Building { get; private set; }
-        //public virtual Block Block { get; private set; }
-        //public virtual Floor Floor { get; private set; }
-
-        [Range(1, 50, ErrorMessage = "No of People Must be > 0")]
-
-        [NotMapped]
-        public int NewAllocation { get; set; }
-        
-
         [NotMapped]
         public int RemainingCapacity { get; set; }
 
         public int Allocated { get; set; }
 
+        [DisplayFormat(DataFormatString = "{0:dd/MM/yyyy}")]
         public DateTime FromDate { get; set; }
+        [DisplayFormat(DataFormatString = "{0:dd/MM/yyyy}")]
         public DateTime ToDate { get; set; }
 
         public bool Closed { get; set; }
+
+        public string CreatedBy { get; set; } = null!;
+
+        public string? ModifiedBy { get; set; }
+
+        [DisplayFormat(DataFormatString = "{0:dd/MM/yyyy}")]
+        public DateTime CreatedDate { get; set; }
+
+        [DisplayFormat(DataFormatString = "{0:dd/MM/yyyy}")]
+        public DateTime? ModifiedDate { get; set; }
     }
 }
