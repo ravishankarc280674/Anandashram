@@ -274,7 +274,7 @@ else
            
             <div class="collapse mt-12 border-2" id="manageReservationDiv">
                 <div class="card card-body">
-                <form id="AddOrEditReservationForm" onsubmit="return saveNewDetails(this);" asp-action="AddReservation" asp-route-id="@Model.Id" asp-route-pg="@pg" asp-route-SearchText="@ViewBag.SearchText" asp-route-PageSize="@ViewBag.PageSize">
+                <form id="AddOrEditReservationForm" onsubmit="return saveNewDetails(this);"  asp-route-id="@Model.Id" asp-route-pg="@pg" asp-route-SearchText="@ViewBag.SearchText" asp-route-PageSize="@ViewBag.PageSize">
 
                     <div class="col-12 ml-5">
                         <div class="row col-11 ml-2">
@@ -285,7 +285,7 @@ else
                                 <label asp-for="StartDate" class="control-label"></label>
                             </dt>
                             <dd class="col-md-4 form-group">
-                                <input asp-for="StartDate" class="form-control" />
+                                    <input type="date"  asp-for="StartDate" class="form-control" id="reg-start-date" />
                                 <span asp-validation-for="StartDate" class="text-danger"></span>
                             </dd>
 
@@ -293,7 +293,7 @@ else
                                 <label asp-for="EndDate" class="control-label"></label>
                             </dt>
                             <dd class="col-md-4 form-group">
-                                <input asp-for="EndDate" class="form-control" />
+                                <input type="date" asp-for="EndDate" class="form-control" id="reg-end-date"/>
                                 <span asp-validation-for="EndDate" class="text-danger"></span>
                             </dd>
                         </dl>
@@ -611,17 +611,50 @@ else
         function saveNewDetails(data){
             var table = document.getElementById('RegTable');
                 var rows = table.getElementsByTagName('tr');
+                let registrationList=[];
+                var startDate =  document.getElementById("reg-start-date").value;
+                var endDate =  document.getElementById("reg-end-date").value;
+                
+               for (let i = 2; i < table.rows.length; i++) {
+                var row = table.rows[i];
+                // Check if the row contains the specified class name
+                if (row.classList.contains("rowClass")) {
+                   var roomSelected = row.querySelector('.dropdown').value;
+                   var allot =  row.querySelector('.class-allot').value;
+                  if(roomSelected>0 && allot>0)
+                {
+                    registrationList[i] = {
+                        DevoteeId : document.getElementById('DevoteeId').value,
+                        RoomId : roomSelected,
+                        Allot : allot,
+                        StartDate: new Date(startDate).toLocaleDateString('en-GB'),
+                        EndDate:new Date(endDate).toLocaleDateString('en-GB'),
+                        CreatedDate:new Date().toLocaleDateString('en-GB')
+                    };
+                    
+                }
+                
+                  }
+                }
+                if(registrationList.length>0)
+                {
+                    $.ajax({
+                    type: "POST",
+                    url: '/Devotee/AddReservation',
+                    data: {registrationList:registrationList},
+                    success: function (response) {
+                      $.notify("Submitted Successfully", { globalPosition: "top centre", className:"Success" });
+                        window.location.reload();
+                    },
+                    error: function () {
+                        alert('Error saving.');
+                    },
+
+                });
+                }
                 debugger;
-                        for (let i = 2; i < table.rows.length; i++) {
-            var row = table.rows[i];
-            // Check if the row contains the specified class name
-            if (row.classList.contains("rowClass")) {
-               var roomSelected = row.querySelector('.dropdown').value;
-               var allot =  row.querySelector('.class-allot').value;
-              alert(roomSelected);
-              alert(allot);
-              }
-            }
+                    console.log(registrationList);
+                    alert("process here");
           }
     </script>
 }

@@ -331,9 +331,9 @@ namespace Anandashram.Controllers
             return Json(new { Success = "true", Data = room });
         }
 
-        public ActionResult AddReservation(List<Reservation> reservations,int Id)
+        public ActionResult AddReservation(List<Reservation> registrationList)
         {
-            return RedirectToAction("AddOrEdit", new { Id = Id });
+            return RedirectToAction("AddOrEdit");
         }
     }
 }
