@@ -282,20 +282,23 @@ else
 
                         <dl class="row">
                             <dt class="col-md-2">
-                                <label asp-for="StartDate" class="control-label"></label>
+                                <label class="control-label">Check In Date</label>
                             </dt>
-                            <dd class="col-md-4 form-group">
-                                    <input type="date"  asp-for="StartDate" class="form-control" id="reg-start-date" />
-                                <span asp-validation-for="StartDate" class="text-danger"></span>
+                            <dd class="col-md-3 form-group">
+                                    <input type="date" class="form-control" id="reg-start-date" value="@DateTime.Now" />
                             </dd>
 
                             <dt class="col-md-2">
-                                <label asp-for="EndDate" class="control-label"></label>
+                                <label  class="control-label">Check Out Date</label>
                             </dt>
-                            <dd class="col-md-4 form-group">
-                                <input type="date" asp-for="EndDate" class="form-control" id="reg-end-date"/>
-                                <span asp-validation-for="EndDate" class="text-danger"></span>
+                            <dd class="col-md-3 form-group">
+                                <input type="date" class="form-control" id="reg-end-date" value="@DateTime.Now"/>
                             </dd>
+                                <dd class="col-md-2 form-group">
+                                    <div class="col-2">
+                                        <input type="button" value="Get Rooms" class="btn btn-outline-success btn-block" onclick="GetRooms(this)" />
+                                    </div>
+                                </dd>
                         </dl>
                         <table id="RegTable" class="table table-borderless table-sm mb-0 pb-0 col-md-12">
                             <thead>
@@ -338,7 +341,7 @@ else
                                 </tr>
                             </thead>
 
-                            <tbody>
+                                <tbody id="tableBody">
                                     <tr hidden="hidden" class="rowClass">
                                         <td>
                                             <select class="form-control dropdown" asp-items="ViewBag.RoomsList"></select>
@@ -396,7 +399,7 @@ else
                                         @Model.ReservationCharts[i].Room.Capacity
                                     </td>
                                     <td>
-                                        
+                                        @Model.ReservationCharts[i].Remaining
                                     </td>
                                     <td>
                                         @Model.ReservationCharts[i].Allocated
@@ -538,7 +541,7 @@ else
                     var currentRow = $(this).closest('tr');
                               $.ajax({
                                     type: 'POST',
-                                    url: '/Devotee/GetFilteredRoom',
+                                    url: '/Devotee/GetSelectedRoom',
                                     data: { Id: id }, // Parameters sent to the controller
                             success: function (Data) {
                                 var room = Data.data;
@@ -546,7 +549,7 @@ else
                                 currentRow.find('.block-label').text(room.blockName);
                                 currentRow.find('.floor-label').text(room.floorName);
                                 currentRow.find('.maxCapacity-label').text(room.capacity);
-                                currentRow.find('.remaining-label').text(room.remainingCapacity);
+                                currentRow.find('.remaining-label').text(room.remaining);
                                 currentRow.find('.alreadyAllocate-label').text(room.allocated);
                                 currentRow.find('.fromDate-label').text(room.fromDate);
                                 currentRow.find('.ToDate-label').text(room.toDate);
@@ -609,12 +612,13 @@ else
         }
         
         function AddItem() {
-                var table = document.getElementById('RegTable');
+                var table = document.getElementById('tableBody');
+                debugger;
                 var rows = table.getElementsByTagName('tr');
-                 var rowOuterHtml = rows[1].outerHTML;
+                 var rowOuterHtml = rows[0].outerHTML;
                  var newRow = table.insertRow();
                  newRow.classList.add("rowClass");
-                 newRow.innerHTML = rowOuterHtml;
+                 newRow.innerHTML = rowOuterHtml; 
         }
 
         function DeleteItem(btn) {
@@ -622,6 +626,27 @@ else
                  var row = btn.parentNode.parentNode.rowIndex;
                  table.deleteRow(row);
         }
+
+        function GetRooms(btn) {
+            debugger;
+                   var startDate =  document.getElementById("reg-start-date").value;
+                var endDate =  document.getElementById("reg-end-date").value;
+                $.ajax({
+                    type: "POST",
+                    url: '/Devotee/GetFilteredRooms',
+                    contentType:"application/json; charset=utf-8",
+                    dataType:"json",
+                    data: {StartDate:startDate,EndDate:endDate},
+                    success: function (response) {
+                     
+                    },
+                    error: function () {
+                        alert('Error');
+                    },
+
+                });
+        }
+
 
         function saveNewDetails(data){
             var table = document.getElementById('RegTable');

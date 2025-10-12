@@ -18,7 +18,7 @@ namespace Anandashram.Models
         public virtual Room Room { get; set; }
 
         [NotMapped]
-        public int RemainingCapacity { get; set; }
+        public int Remaining { get; set; }
 
         public int Allocated { get; set; }
 

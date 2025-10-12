@@ -1,4 +1,7 @@
-﻿namespace Anandashram.Repositories
+﻿using AspNetCoreGeneratedDocument;
+using System.Security.Cryptography.Xml;
+
+namespace Anandashram.Repositories
 {
     public class RoomRepository : IRoom
     {
@@ -100,17 +103,37 @@
 
         public List<Room> GetFilteredRooms()
         {
-           return  _context.Rooms.Include(e => e.Building)
+            
+            return _context.Rooms.Include(e => e.Building)
                     .Include(e => e.Block)
                     .Include(e => e.Floor).ToList();
-
         }
-        public Room GetFilteredRoom(int Id) // to be changed future
+        public Room GetSelectedRoom(int Id) // to be changed future
         {
-            Room room = _context.Rooms.Where(u => u.Id == Id)
-                            .Include(e => e.Building)
-                            .Include(e => e.Block)
-                            .Include(e => e.Floor).FirstOrDefault();
+            Room room =_context.Rooms.Where(u => u.Id == Id).Include(e => e.Building)
+                    .Include(e => e.Block)
+                    .Include(e => e.Floor)
+                    .GroupJoin(_context.Reservations, r => r.Id, rs => rs.RoomId, (r, rss) => new { r, rss })
+                    .Select(result => new Room
+                    {
+                       Building = result.r.Building,
+                       Floor= result.r.Floor,
+                       Block= result.r.Block,
+                       Id= result.r.Id,
+                       Name= result.r.Name,
+                       BuildingId= result.r.BuildingId,
+                       FloorId = result.r.FloorId,
+                       BlockId = result.r.BlockId,
+                       Capacity = result.r.Capacity,
+                       CreatedBy = result.r.CreatedBy,
+                       CreatedDate = result.r.CreatedDate,
+                       Description = result.r.Description,
+                       ModifiedBy = result.r.ModifiedBy,
+                       ModifiedDate = result.r.ModifiedDate,
+                        Remaining = result.r.Capacity - (result.rss.Where(rs => rs.Closed == false).Sum(rs => rs.Allocated))
+                    }).FirstOrDefault();
+            
+            
             return room == null ? new Room() : room;
         }
     }

@@ -33,6 +33,8 @@ public partial class Room
 
     [Required]
     public int Capacity { get; set; }
+    [NotMapped]
+    public int Remaining { get; set; } = 0;
     public string CreatedBy { get; set; } = null!;
     public string? ModifiedBy { get; set; }
     public DateTime CreatedDate { get; set; }

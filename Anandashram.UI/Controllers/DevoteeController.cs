@@ -95,9 +95,6 @@ namespace Anandashram.Controllers
             {
                 return NotFound();
             }
-            //AddFile file = new AddFile();
-            //file.DevoteeCode = devotee.Code;
-            //ViewBag.AddFile = file;
             this.ViewBag.UploadedFiles = _fileManagement.GetUploadedFiles(devotee.Id, devotee.Code);
 
             return View(devotee);
@@ -325,9 +322,9 @@ namespace Anandashram.Controllers
             return lstRooms;
         }
 
-        public JsonResult GetFilteredRoom(int Id)
+        public JsonResult GetSelectedRoom(int Id)
         {
-            var room = _roomRepo.GetFilteredRoom(Id);
+            var room = _roomRepo.GetSelectedRoom(Id);
             return Json(new { Success = "true", Data = room });
         }
 
