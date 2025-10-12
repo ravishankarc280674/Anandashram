@@ -45,5 +45,18 @@ namespace Anandashram.Repositories
             await _context.SaveChangesAsync();
             return reservationList;
         }
+
+        public async Task CloseReservation(int id, int devoteeId)
+        {
+            Reservation reservation = _context.Reservations.Where(n => n.Id == id).FirstOrDefault();
+            if (reservation != null)
+            {
+                reservation.Closed = true;
+                reservation.ToDate = DateTime.Now;
+                _context.Reservations.Update(reservation);
+                _context.Entry(reservation).State = EntityState.Modified;
+                await _context.SaveChangesAsync();
+            }
+        }
     }
 }

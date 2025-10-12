@@ -296,7 +296,7 @@ else
                             </dd>
                                 <dd class="col-md-2 form-group">
                                     <div class="col-2">
-                                        <input type="button" value="Get Rooms" class="btn btn-outline-success btn-block" onclick="GetRooms(this)" />
+                                        <input type="button" value="Close Reservation(s)" class="btn btn-outline-success btn-block" onclick="CloseReservations(this)" />
                                     </div>
                                 </dd>
                         </dl>
@@ -382,11 +382,16 @@ else
                                     </tr>
                                     @for (int i = 0; i < Model.ReservationCharts.Count; i++)
                                     {
-                                        <tr>
-                                    <td>
+                                        string rowColor = "";
+                                        if (Model.ReservationCharts[i].Closed)
+                                        {
+                                            rowColor = "bg-warning";
+                                        }
+                                        <tr class="@rowColor">
+                                            <td >
                                         <select asp-for="@Model.ReservationCharts[i].RoomId" class="form-control" asp-items="ViewBag.RoomsList" disabled></select>
                                     </td>
-                                    <td>
+                                            <td>
                                         @Model.ReservationCharts[i].Room.BuildingName
                                     </td>
                                     <td>
@@ -409,7 +414,7 @@ else
 
                                     </td>
                                     <td>
-                                                @Model.ReservationCharts[i].ToDate.ToString("dd/MM/yyyy")
+                                        @Model.ReservationCharts[i].ToDate.ToString("dd/MM/yyyy")
                                     </td>
                                     <td style="width:100px">
                                                 
@@ -417,10 +422,15 @@ else
                                             <td style="width:60px;">
                                             @if (Model.ReservationCharts[i].Closed == false)
                                             {
-                                                <button id='btnclose' type="button" class="btn btn-sm btn-success visible" onclick="CloseItem(this)">
+                                                    <button id='btnclose' type="button" class="btn btn-sm btn-success visible" 
+                                                    onclick="return CloseItem(@Model.ReservationCharts[i].Id,@Model.ReservationCharts[i].DevoteeId)">
                                                     Close
-                                                </button>
-                                            }
+                                                    </button>
+                                                }
+                                                else
+                                                {
+                                                    <p class="font-weight-bold .text-success">Closed</p>
+                                                }
                                             </td>
                                         </tr>
                                     }
@@ -688,6 +698,7 @@ else
                     data: JSON.stringify(reservationList),
                     success: function (response) {
                       $.notify("Submitted Successfully", { globalPosition: "top centre", className:"Success" });
+                      return true;
                     },
                     error: function () {
                         alert('Error saving.');
@@ -696,6 +707,25 @@ else
                 });
                 }
                    
+          }
+
+          function CloseItem(id,devoteeId){
+              debugger;
+            $.ajax({
+                    type: "POST",
+                    url: '/Devotee/CloseReservation',
+                    contentType:"application/json; charset=utf-8",
+                    dataType:"json",
+                    data:{id: id,devoteeId : devoteeId},
+                    success: function (response) {
+                      $.notify("Submitted Successfully", { globalPosition: "top centre", className:"Success" });
+                      return true;
+                    },
+                    error: function () {
+                        alert('Error saving.');
+                    },
+
+                });
           }
     </script>
 }

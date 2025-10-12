@@ -4,6 +4,7 @@ using Anandashram.Models;
 using Microsoft.AspNetCore.Mvc.Formatters;
 using System.Net.Mime;
 using System.Threading.Tasks;
+using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace Anandashram.Controllers
 {
@@ -332,8 +333,15 @@ namespace Anandashram.Controllers
         public async Task<IActionResult> AddReservation([FromBody] List<Reservation> data)
         {
             foreach (Reservation r in data) { r.CreatedDate = DateTime.Now; r.CreatedBy = this.User.FindFirstValue(ClaimTypes.NameIdentifier); };
-            List<Reservation> reservationList = await _reservationRepo.AddReservation(data); 
-            return RedirectToAction("AddOrEdit", new { Id = reservationList[0].DevoteeId });
+            List<Reservation> reservationList = await _reservationRepo.AddReservation(data);
+            return Json(new { isValid = true, html = Helper.RenderRazorViewToString(this, "AddOrEdit", reservationList[0].DevoteeId) });
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> CloseReservation(int id,int devoteeId)
+        {
+            await _reservationRepo.CloseReservation(id, devoteeId);
+            return Json(new { isValid = true, html = Helper.RenderRazorViewToString(this, "AddOrEdit", devoteeId) });
         }
     }
 }
