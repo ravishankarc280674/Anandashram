@@ -42,7 +42,7 @@ namespace Anandashram.UI.Tools.Models
                 sortableColumn.SortExpression = sortableColumn.ColumnName;
                 if(sortExpression == sortableColumn.ColumnName.ToLower())  //put or condition if more than 1 sort
                 {
-                    this.SortedProperty = sortableColumn.ColumnName + "_desc";
+                    this.SortedProperty = sortableColumn.ColumnName;
                     this.SortedOrder = SortOrder.Ascending;
                     sortableColumn.SortIcon = DownIcon;
                     sortableColumn.SortExpression = sortableColumn.ColumnName + "_desc";

@@ -56,7 +56,7 @@ else
             {
               <div class="col-md-12 d-flex">
               
-                <div class="col-md-5">
+                <div class="col-md-5 ">
 
                         <table style="border:none;">
                 <tr>
@@ -79,11 +79,11 @@ else
                     </table>
                    
                 </div>
-                    <div class="form-group col-2">
+                    <div class="col-md-2">
                     </div>
-                    <div class="form-group col-5 text-end">
+                    <div class="col-md-5 text-end">
                     
-                    <table>
+                    <table align="right">
                             <tr>
                         <td colspan="3">
                                         <div class="col text-end fw-bold">
@@ -101,7 +101,7 @@ else
                             @foreach(var fileUpload in uploadedFiles)
                                 {
                                    <tr>
-                                        <td class="col-sm-10">
+                                        <td class="col-sm-9">
                                             @fileUpload.FileName
                                         </td>
                                         <td><span class="btn btn-sm btn-outline-secondary">@Html.ActionLink("", "GetDocument", new { fileName = @fileUpload.FileName, filePath = @fileUpload.FilePath }, new { @class = "fa-solid fa-download" })</span></td>
@@ -285,24 +285,24 @@ else
                                 <label class="control-label">Check In Date</label>
                             </dt>
                             <dd class="col-md-3 form-group">
-                                    <input type="date" class="form-control" id="reg-start-date" value="@DateTime.Now" />
+                                    <input type="date" class="form-control" id="reg-start-date" value="@DateTime.Today.ToString("yyyy/MM/dd")" />
                             </dd>
 
                             <dt class="col-md-2">
                                 <label  class="control-label">Check Out Date</label>
                             </dt>
                             <dd class="col-md-3 form-group">
-                                <input type="date" class="form-control" id="reg-end-date" value="@DateTime.Now"/>
+                                    <input type="date" class="form-control" id="reg-end-date" value="@DateTime.Today.ToString("yyyy/MM/dd")" />
                             </dd>
                                 <dd class="col-md-2 form-group">
                                     <div class="col-2">
-                                        <input type="button" value="Close Reservation(s)" class="btn btn-outline-success btn-block" onclick="CloseReservations(this)" />
+                                        <input type="button" value="Close All Reservation(s)" class="btn btn-outline-success btn-block" onclick="CloseReservations(this)" />
                                     </div>
                                 </dd>
                         </dl>
                         <table id="RegTable" class="table table-borderless table-sm mb-0 pb-0 col-md-12">
                             <thead>
-                                <tr>
+                                    <tr style="background: #d4d454">
                                     <th style="width:110px">
                                         Room
                                     </th>
@@ -315,6 +315,12 @@ else
                                     <th>
                                         Floor
                                     </th>
+                                        <th>
+                                            From
+                                        </th>
+                                        <th>
+                                            To
+                                        </th>
                                     <th>
                                         Capacity
                                     </th>
@@ -324,12 +330,7 @@ else
                                     <th>
                                        Alloted
                                     </th>
-                                    <th>
-                                        From
-                                    </th>
-                                    <th>
-                                        To
-                                    </th>
+                                   
                                     <th>
                                         Allot
                                     </th>
@@ -356,23 +357,24 @@ else
                                             <label class="floor-label" />
                                         </td>
                                         <td>
+                                            <label class="fromDate-label" />
+                                        </td>
+                                        <td>
+                                            <label class="toDate-label" />
+                                        </td>
+                                        <td>
                                             <label class="maxCapacity-label" />
                                         </td>
                                         <td>
                                             <label class="remaining-label" />
                                         </td>
                                         <td>
-                                            <label class="alreadyAllocate-label" />
+                                            <label class="alreadyAllocate-label">0</label>
                                         </td>
 
-                                        <td>
-                                            <label class="fromDate-label" />
-                                        </td>
-                                        <td>
-                                            <label class="toDate-label" />
-                                        </td>
+                                      
                                         <td style="width:100px">
-                                            <input type="number" step="1" min="0" max="100" class="form-control class-allot" />
+                                            <input type="number" value="0" step="1" min="0" max="100" class="form-control class-allot" />
                                         </td>
                                         <td style="width:60px;">
                                             <button id='btnremove' type="button" class="btn btn-sm btn-danger visible" onclick="DeleteItem(this)">
@@ -400,22 +402,23 @@ else
                                     <td>
                                         @Model.ReservationCharts[i].Room.FloorName
                                     </td>
+                                            <td>
+                                                @Model.ReservationCharts[i].FromDate.ToString("dd/MM/yyyy")
+
+                                            </td>
+                                            <td>
+                                                @Model.ReservationCharts[i].ToDate.ToString("dd/MM/yyyy")
+                                            </td>
                                     <td>
                                         @Model.ReservationCharts[i].Room.Capacity
                                     </td>
                                     <td>
                                         @Model.ReservationCharts[i].Remaining
                                     </td>
-                                    <td>
+                                    <td class="total-alloted">
                                         @Model.ReservationCharts[i].Allocated
                                     </td>
-                                    <td>
-                                        @Model.ReservationCharts[i].FromDate.ToString("dd/MM/yyyy")
-
-                                    </td>
-                                    <td>
-                                        @Model.ReservationCharts[i].ToDate.ToString("dd/MM/yyyy")
-                                    </td>
+                                   
                                     <td style="width:100px">
                                                 
                                             </td>
@@ -429,7 +432,7 @@ else
                                                 }
                                                 else
                                                 {
-                                                    <p class="font-weight-bold .text-success">Closed</p>
+                                                    <p class="fw-bold text-success">Closed</p>
                                                 }
                                             </td>
                                         </tr>
@@ -447,24 +450,27 @@ else
                                         <td>
                                             <label class="floor-label"/>
                                         </td>
-                                         <td>
-                                            <label class="maxCapacity-label" />
-                                        </td>
-                                        <td>
-                                            <label class="remaining-label" />
-                                        </td>
-                                        <td>
-                                            <label class="alreadyAllocate-label" />
-                                        </td>
-                                      
+                                        
                                         <td>
                                             <label class="fromDate-label" />
                                         </td>
                                         <td>
                                             <label class="toDate-label" />
                                         </td>
+                                        <td>
+                                            <label class="maxCapacity-label" />
+                                        </td>
+                                        <td>
+                                            <label class="remaining-label" />
+                                        </td>
+                                        
+                                        <td>
+                                            <label class="alreadyAllocate-label">0</label>
+                                        </td>
+                                      
+                                      
                                         <td style="width:100px">
-                                            <input type="number" step="1" min="0" max="100" class="form-control class-allot" />
+                                            <input type="number" value="0" step="1" min="0" max="100" class="form-control class-allot" />
                                         </td>
                                         <td style="width:60px;">
                                             <button id='btnremove' type="button" class="btn btn-sm btn-danger visible" onclick="DeleteItem(this)">
@@ -473,27 +479,27 @@ else
                                         </td>
                                     </tr>
                            </tbody>
-                           <tfoot>
+                                <tfoot id="tableFooter">
                                <tr>
-                                   <th colspan="6">
-                                       Total : 
+                                   <th colspan="8">
+                                       Total Allocated: 
                                    </th>
+                                        <th class="total-fixed">
+                                            
+                                        </th>
+                                        <th colspan=2">
+                                            </th>
                                </tr>
                            </tfoot>
                         </table>
                     </div>
                     </div>
+                    <br />
+              @*       <div class="row">
+                        <div class="form-group btn-group"> *@
                      
                     <div class="form-group btn-group col-12">
-                        <div class="col-1"></div>
-                        <div class="col-5">
                             <input type="submit" value="Update" class="btn btn-primary btn-block" />
-                        </div>
-                        <div class="col-5">
-                            <a class="btn btn-secondary btn-block" asp-action="index"
-                               asp-route-pg="@TempData.Peek("CurrentPage")">Cancel</a>
-                        </div>
-                        <div class="col-1"></div>
                     </div>
         </form>
             </div>
@@ -544,6 +550,7 @@ else
         await Html.RenderPartialAsync("_ValidationScriptsPartial");
     }
     <script>
+        document.addEventListener("DOMContentLoaded",calculateTotal);
         // $(document).ready(function () {
            $(document).on('change', '.dropdown',function () {
             //     var rooms =
@@ -623,7 +630,6 @@ else
         
         function AddItem() {
                 var table = document.getElementById('tableBody');
-                debugger;
                 var rows = table.getElementsByTagName('tr');
                  var rowOuterHtml = rows[0].outerHTML;
                  var newRow = table.insertRow();
@@ -653,7 +659,6 @@ else
                     error: function () {
                         alert('Error');
                     },
-
                 });
         }
 
@@ -687,7 +692,7 @@ else
                 
                   }
                 }
-
+                debugger;
                 if(reservationList.length>0)
                 {
                     $.ajax({
@@ -695,10 +700,11 @@ else
                     url: '/Devotee/AddReservation',
                     contentType:"application/json; charset=utf-8",
                     dataType:"json",
-                    data: JSON.stringify(reservationList),
+                    data:JSON.stringify(reservationList),
                     success: function (response) {
                       $.notify("Submitted Successfully", { globalPosition: "top centre", className:"Success" });
-                      return true;
+                      window.location.reload();
+                     // return true;
                     },
                     error: function () {
                         alert('Error saving.');
@@ -710,15 +716,13 @@ else
           }
 
           function CloseItem(id,devoteeId){
-              debugger;
             $.ajax({
                     type: "POST",
                     url: '/Devotee/CloseReservation',
-                    contentType:"application/json; charset=utf-8",
-                    dataType:"json",
-                    data:{id: id,devoteeId : devoteeId},
+                    data:{Id: id,DevoteeId : devoteeId},
                     success: function (response) {
                       $.notify("Submitted Successfully", { globalPosition: "top centre", className:"Success" });
+                      window.location.reload();
                       return true;
                     },
                     error: function () {
@@ -726,6 +730,28 @@ else
                     },
 
                 });
+          }
+          function calculateTotal(){
+              debugger;
+                var table = document.getElementById('tableBody');
+                var rows = table.getElementsByTagName('tr');
+                // var cols = table.querySelectorAll('total-alloted');
+                let sum=0;
+
+                for (let i = 1; i < table.rows.length; i++) {
+                     var row = table.rows[i];
+                    if (!row.classList.contains("rowClass")) {
+                        if(row.cells[10].textContent.trim() != 'Closed')
+                        {
+                            sum += Number(row.cells[8].textContent);
+                        }
+                    }
+
+                }
+                 var tableFoot = document.getElementById('tableFooter');
+                 var rowFooter = tableFoot.rows[0];
+                var col=rowFooter.cells[1];
+                col.textContent = sum;
           }
     </script>
 }

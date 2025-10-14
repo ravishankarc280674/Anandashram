@@ -118,7 +118,6 @@ namespace Anandashram.Controllers
                 AddFile file = new AddFile();
                 devotee = await _devoteeRepo.GetDevotee(Id);
                 devotee.ReservationCharts =await _reservationRepo.ReservationList(Id);
-                //devotee.ReservationCharts.Add(new Reservation() { Id = 0 });
                 ViewBag.RoomsList = GetFilteredRooms();
                 TempData.Keep();
                 if (devotee == null)
@@ -333,15 +332,15 @@ namespace Anandashram.Controllers
         public async Task<IActionResult> AddReservation([FromBody] List<Reservation> data)
         {
             foreach (Reservation r in data) { r.CreatedDate = DateTime.Now; r.CreatedBy = this.User.FindFirstValue(ClaimTypes.NameIdentifier); };
-            List<Reservation> reservationList = await _reservationRepo.AddReservation(data);
-            return Json(new { isValid = true, html = Helper.RenderRazorViewToString(this, "AddOrEdit", reservationList[0].DevoteeId) });
+            List<Reservation> reservationListnew = await _reservationRepo.AddReservation(data);
+            return Json(new { isValid = true, html = Helper.RenderRazorViewToString(this, "AddOrEdit", reservationListnew[0].DevoteeId) });
         }
 
         [HttpPost]
-        public async Task<IActionResult> CloseReservation(int id,int devoteeId)
+        public async Task<IActionResult> CloseReservation(int Id,int DevoteeId)
         {
-            await _reservationRepo.CloseReservation(id, devoteeId);
-            return Json(new { isValid = true, html = Helper.RenderRazorViewToString(this, "AddOrEdit", devoteeId) });
+            await _reservationRepo.CloseReservation(Id, DevoteeId); 
+            return Json(new { isValid = true, html = Helper.RenderRazorViewToString(this, "AddOrEdit", DevoteeId) });
         }
     }
 }
