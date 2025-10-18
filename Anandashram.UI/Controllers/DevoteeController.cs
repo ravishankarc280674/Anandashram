@@ -27,7 +27,7 @@ namespace Anandashram.Controllers
         }
 
         // GET: Devotee
-        public async Task<IActionResult> Index(string sortExpression = "", string SearchText = "", int pg = 1, int PageSize = 5, bool Closed=false)
+        public async Task<IActionResult> Index(string sortExpression = "", string SearchText = "", int pg = 1, int PageSize = 100, bool Closed=false)
         {
             if (pg < 1) pg = 1;
 
@@ -67,16 +67,16 @@ namespace Anandashram.Controllers
             return devoteeCategories;
 
         }
-        private List<SelectListItem> GetPageSizes(int selectedPageSize = 5)
+        private List<SelectListItem> GetPageSizes(int selectedPageSize =100)
         {
             var pagesSizes = new List<SelectListItem>();
 
-            if (selectedPageSize == 5)
-                pagesSizes.Add(new SelectListItem("5", "5", true));
+            if (selectedPageSize ==100)
+                pagesSizes.Add(new SelectListItem("100", "100", true));
             else
-                pagesSizes.Add(new SelectListItem("5", "5"));
+                pagesSizes.Add(new SelectListItem("100", "100"));
 
-            for (int lp = 10; lp <= 100; lp += 10)
+            for (int lp = 100; lp <= 1000; lp += 100)
             {
                 if (lp == selectedPageSize)
                 { pagesSizes.Add(new SelectListItem(lp.ToString(), lp.ToString(), true)); }
@@ -161,7 +161,7 @@ namespace Anandashram.Controllers
                         {
                             Devotee newDevotee = new Devotee() {
                                 DevoteeCategoryId = devotee.DevoteeCategoryId,
-                                Description = devotee.Description,
+                               // Description = devotee.Description,
                                 CreatedBy = this.User.FindFirstValue(ClaimTypes.NameIdentifier),
                                 CreatedDate = DateTime.Now,
                                 Country = devotee.Country,
@@ -329,11 +329,13 @@ namespace Anandashram.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> AddReservation([FromBody] List<Reservation> data)
+        public  async Task<IActionResult> AddReservation([FromBody] List<Reservation> data)
         {
+            int DevoteeId = data[0].DevoteeId;
             foreach (Reservation r in data) { r.CreatedDate = DateTime.Now; r.CreatedBy = this.User.FindFirstValue(ClaimTypes.NameIdentifier); };
-            List<Reservation> reservationListnew = await _reservationRepo.AddReservation(data);
-            return Json(new { isValid = true, html = Helper.RenderRazorViewToString(this, "AddOrEdit", reservationListnew[0].DevoteeId) });
+           await _reservationRepo.AddReservation(data);
+            return Json(new { isValid = true, html = Helper.RenderRazorViewToString(this, "AddOrEdit", DevoteeId) });
+
         }
 
         [HttpPost]

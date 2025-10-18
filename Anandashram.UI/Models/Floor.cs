@@ -9,9 +9,11 @@ public class Floor
 
     [Required(ErrorMessage = "Name is Required")]
     [DisplayName("Name")]
-    [Column(TypeName = "nvarchar(100)")]
-    [MaxLength(100)] 
+    [StringLength(100, ErrorMessage = "Max 100 chars allowed")]
     public string Name { get; set; } = null!;
+
+    [DisplayName("Description")]
+    [StringLength(500, ErrorMessage = "Max 500 chars allowed")]
     public string? Description { get; set; }
     public string CreatedBy { get; set; } = null!;
 

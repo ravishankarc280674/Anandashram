@@ -146,7 +146,7 @@ else
                     <label asp-for="StartDate" class="control-label"></label>
                 </dt>
                 <dd class="col-md-4 form-group">
-                    <input  asp-for="StartDate" class="form-control" />
+                    <input type="date" asp-for="StartDate" class="form-control" />
                     <span asp-validation-for="StartDate" class="text-danger"></span>
                 </dd>
               
@@ -154,7 +154,7 @@ else
                     <label asp-for="EndDate" class="control-label"></label>
                 </dt>
                 <dd class="col-md-4 form-group">
-                    <input  asp-for="EndDate" class="form-control" />
+                    <input type="date"  asp-for="EndDate" class="form-control" />
                     <span asp-validation-for="EndDate" class="text-danger"></span>
                 </dd>
             </dl>
@@ -163,7 +163,7 @@ else
                     <label asp-for="NoOfPeople" class="control-label"></label>
                 </dt>
                 <dd class="col-md-4">
-                    <input asp-for="NoOfPeople" class="form-control" />
+                    <input asp-for="NoOfPeople" class="form-control" type="number"  step="1" min="1" max="999" id="NoOfPeople"/>
                     <span asp-validation-for="NoOfPeople" class="text-danger"></span>
                 </dd>
                 <dt class="col-md-2">
@@ -274,7 +274,7 @@ else
            
             <div class="collapse mt-12 border-2" id="manageReservationDiv">
                 <div class="card card-body">
-                <form id="AddOrEditReservationForm" onsubmit="saveNewDetails(this);"  asp-route-id="@Model.Id" asp-route-pg="@pg" asp-route-SearchText="@ViewBag.SearchText" asp-route-PageSize="@ViewBag.PageSize">
+                <form id="AddOrEditReservationForm" onsubmit="return saveNewDetails();"  asp-route-id="@Model.Id" asp-route-pg="@pg" asp-route-SearchText="@ViewBag.SearchText" asp-route-PageSize="@ViewBag.PageSize">
 
                     <div class="col-12 ml-5">
                         <div class="row col-11 ml-2">
@@ -644,7 +644,6 @@ else
         }
 
         function GetRooms(btn) {
-            debugger;
                    var startDate =  document.getElementById("reg-start-date").value;
                 var endDate =  document.getElementById("reg-end-date").value;
                 $.ajax({
@@ -663,38 +662,60 @@ else
         }
 
 
-        function saveNewDetails(data){
+        function saveNewDetails(){
             var table = document.getElementById('RegTable');
-                var rows = table.getElementsByTagName('tr');
+                //var rows = table.getElementsByTagName('tr');
                  let reservationList=[];
                  let index=0;
                 var startDate =  document.getElementById("reg-start-date").value;
                 var endDate =  document.getElementById("reg-end-date").value;
-                
+                var noOfDevotees =  document.getElementById("NoOfPeople").value;
+                let sumNewAllot=0;
+                let totalAllocated = 0;
                for (let i = 2; i < table.rows.length; i++) {
                 var row = table.rows[i];
                 // Check if the row contains the specified class name
                 if (row.classList.contains("rowClass")) {
-                   var roomSelected = row.querySelector('.dropdown').value;
+                  
+                   var selectedElement =row.querySelector('.dropdown');
+                   var roomSelected = selectedElement.value;
+                   var roomSelectedText = selectedElement.options[selectedElement.selectedIndex].text;
                    var allot =  row.querySelector('.class-allot').value;
-                   
-                  if(roomSelected>0 && allot>0)
-                {
-                    reservationList[index++] = {
-                        DevoteeId : document.getElementById('DevoteeId').value,
-                        RoomId : roomSelected,
-                        Allocated : allot,
-                        FromDate: new Date(startDate),
-                        ToDate:new Date(endDate)
-                    };
+                   var remaining =  row.querySelector('.remaining-label').textContent.trim();
+                    sumNewAllot += Number(allot);
+                    if(roomSelected>0 && allot>0)
+                        {
+                            if(allot > remaining)
+                               {
+                                    $.notify("Room: \""  + roomSelectedText + "\"  -  New Allotment: " + allot +" cannot be greater than Remaining: " + remaining, { globalPosition: "top centre", className:"error" });
+                                    return false;
+                               }
+                            reservationList[index++] = {
+                                DevoteeId : document.getElementById('DevoteeId').value,
+                                RoomId : roomSelected,
+                                Allocated : allot,
+                                FromDate: new Date(startDate),
+                                ToDate:new Date(endDate)
+                            };
                     
-                }
+                        }
+               
                 
                   }
                 }
-                debugger;
                 if(reservationList.length>0)
                 {
+                  
+                     var tableFoot = document.getElementById('tableFooter');
+                         var rowFooter = tableFoot.rows[0];
+                        var col=rowFooter.cells[1];
+                        totalAllocated =  col.textContent;
+                        if(noOfDevotees - sumNewAllot -totalAllocated < 0)
+                            {
+                                $.notify("Allocated and new Allocation cannot be greater than No of Devotees: "  + noOfDevotees, { globalPosition: "top centre", className:"error" });
+                                return false;
+                            }
+                       
                     $.ajax({
                     type: "POST",
                     url: '/Devotee/AddReservation',
@@ -704,13 +725,18 @@ else
                     success: function (response) {
                       $.notify("Submitted Successfully", { globalPosition: "top centre", className:"Success" });
                       window.location.reload();
-                     // return true;
+                      return true;
                     },
                     error: function () {
                         alert('Error saving.');
                     },
 
                 });
+                }
+                else
+                {
+                      $.notify("No Details to Update", { globalPosition: "top centre", className:"Failed" });
+                    return false;
                 }
                    
           }
@@ -732,7 +758,6 @@ else
                 });
           }
           function calculateTotal(){
-              debugger;
                 var table = document.getElementById('tableBody');
                 var rows = table.getElementsByTagName('tr');
                 // var cols = table.querySelectorAll('total-alloted');

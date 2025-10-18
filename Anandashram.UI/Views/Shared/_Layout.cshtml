@@ -9,11 +9,16 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Anandashram Devtee Registration</title>
-    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
-    <link href="~/font-awesome/css/all.min.css" rel="stylesheet" />
-    <link href="~/font-awesome/css/all.css" rel="stylesheet" />
-    <link href="https://fonts.googleapis.com/css2?family=Open+Sans:ital@0;1&family=Roboto:ital,wght@0,100..900;1,100..900&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
+    <environment include="Development">
+        <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+        <link href="~/font-awesome/css/all.min.css" rel="stylesheet" />
+        <link href="~/font-awesome/css/all.css" rel="stylesheet" />
+        <link href="https://fonts.googleapis.com/css2?family=Open+Sans:ital@0;1&family=Roboto:ital,wght@0,100..900;1,100..900&display=swap" rel="stylesheet">
+        <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
+    </environment>
+    <environment exclude="Development">
+        <link rel="stylesheet" href="~/css/site.min.css" />
+     </environment>
 </head>
 @{
             string menuTextColor = "text-white";
@@ -64,7 +69,17 @@
                                             <a class="nav-link @menuTextColor" asp-area="" asp-controller="Room" asp-action="Index">Room</a>
                                         </li>
                                      </ul>
-                                </li> 
+                                </li>
+                                <li class="dropdown nav-item pr-2">
+                                    <a class="nav-link dropdown-toggle @menuTextColor" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
+                                        Reservation
+                                    </a>
+                                    <ul class="dropdown-menu" style="background:linear-gradient(to right,#28340B,#197696);">
+                                        <li class="nav-item">
+                                            <a class="nav-link @menuTextColor" asp-area="" asp-controller="Reservation" asp-action="ReservationSummary">Summary</a>
+                                        </li>
+                                    </ul>
+                                </li>
                             }
                         </ul>
                         <partial name="_LoginPartial" />
@@ -149,13 +164,13 @@
             &copy; 2025 - Anandashram - <a asp-area="" asp-controller="Home" asp-action="Privacy" class="@menuTextColor">Privacy</a>
         </div>
     </footer>
-    <environment include="Development">
-    <script src="~/webcamjs/webcam.js"></script>
-        <script src="~/lib/jquery/jquery.js"></script>
-    <script src="~/lib/jquery/dist/jquery.js"></script>
-
-    <script src="~/js/site.js" asp-append-version="true"></script>
-    <script src="~/js/notify.min.js" asp-append-version="true"></script>
+        <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+        <script src="~/webcamjs/webcam.min.js"></script>
+        <script src="~/webcamjs/webcam.js"></script>
+        <script src="~/lib/jquery/dist/jquery.min.js"></script>
+        <script src="~/lib/jquery/dist/jquery.js"></script>
+        <script src="~/js/site.js" asp-append-version="true"></script>
+        <script src="~/js/notify.min.js" asp-append-version="true"></script>
     @await RenderSectionAsync("Scripts", required: false)
 </body>
 </html>

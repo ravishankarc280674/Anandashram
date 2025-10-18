@@ -1,0 +1,36 @@
+[
+  //{
+  //  "outputFileName": "wwwroot/js/jquery.min.js",
+  //  "inputFiles": [
+  //    "wwwroot/lib/jquery/dist/jquery.js"
+  //  ]
+  //},
+  {
+    "outputFileName": "wwwroot/css/site.min.css",
+    "inputFiles": [
+      "wwwroot/lib/jquery/dist/jquery.js",
+      "wwwroot/lib/bootstrap/dist/css/bootstrap.css",
+      "wwwroot/css/site.css",
+      "wwwroot/webcamjs/webcam.min.js",
+      "wwwroot/lib/jquery-validate/jquery.validate.js",
+      "wwwroot/lib/jquery-validation-unobtrusive/jquery.validate.unobtrusive.js"
+    ]
+  }
+  //{
+  //  "outputFileName": "wwwroot/lib/jquery-validate/jquery.validate.min.js",
+  //  "inputFiles": [
+  //    "wwwroot/lib/jquery-validate/jquery.validate.js"
+  //  ]
+  //},
+  //{
+  //  "outputFileName": "wwwroot/webcamjs/webcam.min.js",
+  //  "inputFiles": [
+  //  ]
+  //}
+  //{
+  //  "outputFileName": "wwwroot/jquery-validation-unobtrusive/jquery.validate.unobtrusive.min.js",
+  //  "inputFiles": [
+  //    "wwwroot/jquery-validation-unobtrusive/jquery.validate.unobtrusive.js"
+  //  ]
+  //}
+]

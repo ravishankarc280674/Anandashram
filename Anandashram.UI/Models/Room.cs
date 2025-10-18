@@ -10,11 +10,15 @@ public partial class Room
     [Key]
     public int Id { get; set; }
 
-    [Required]
-    [MaxLength(100)]
+    [Required(ErrorMessage = "Name is Required")]
+    [DisplayName("Name")]
+    [StringLength(100, ErrorMessage = "Max 100 chars allowed")]
     public string Name { get; set; } = null!;
+
+    [DisplayName("Description")]
+    [StringLength(500, ErrorMessage = "Max 500 chars allowed")]
     public string? Description { get; set; }
-    
+
     [Required]
     [ForeignKey("Building")]
     [DisplayName("Building")]
