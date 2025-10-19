@@ -51,11 +51,11 @@ public partial class Devotee
     public string? PinCode { get; set; }
 
     [DisplayName("Check In Date")]
-    [DisplayFormat(DataFormatString = "{0:dd/MM/yyyy}")]
+    [DisplayFormat(DataFormatString = "{dd/MM/yyyy}")]
     public DateTime StartDate { get; set; } = DateTime.Now;
 
     [DisplayName("Check Out Date")]
-    [DisplayFormat(DataFormatString = "{0:dd/MM/yyyy}")]
+    [DisplayFormat(DataFormatString = "{dd/MM/yyyy}")]
     public DateTime EndDate { get; set; } = DateTime.Now;
     [Required]
     public string CreatedBy { get; set; } = null!;

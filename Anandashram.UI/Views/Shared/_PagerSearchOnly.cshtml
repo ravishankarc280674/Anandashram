@@ -32,6 +32,8 @@
 	</div>
     <div class="container mt-1 justify-content-end">
         <ul class="pagination justify-content-end">
+            @if(Model !=null)
+            {
             @if(Model.ViewType !="Tile")
             {
             <li class="page-item">
@@ -53,6 +55,7 @@
                         </span>
                     </a>
             </li>
+            }
             }
     </div>
 </div>

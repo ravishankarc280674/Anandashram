@@ -5,8 +5,11 @@ namespace Anandashram.Models;
 
 public partial class Room
 {
-    
 
+    public Room()
+    {
+        //Reservations = new List<Reservation>();
+    }
     [Key]
     public int Id { get; set; }
 
@@ -37,8 +40,15 @@ public partial class Room
 
     [Required]
     public int Capacity { get; set; }
+
     [NotMapped]
-    public int Remaining { get; set; } = 0;
+    public int Remaining { get; set; }
+    [NotMapped]
+    public int RemainingCount { get
+        {
+            return Capacity - Occupied;
+        }
+        }
     public string CreatedBy { get; set; } = null!;
     public string? ModifiedBy { get; set; }
     public DateTime CreatedDate { get; set; }
@@ -53,4 +63,18 @@ public partial class Room
     public string BlockName { get { if (Block != null) return this.Block.Name; else return string.Empty; } }
     [NotMapped]
     public string FloorName { get { if (Floor != null) return this.Floor.Name; else return string.Empty; } }
+    public List<Reservation> Reservations { get; set; }
+
+    [NotMapped]
+    public int Occupied
+    {
+        get
+        {
+            if (Reservations != null)
+            {
+                return Reservations.Sum(r => r.Allocated);
+            }
+            else return 0;
+        }
+    }
 }

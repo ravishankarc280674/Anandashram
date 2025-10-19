@@ -7,5 +7,6 @@ namespace Anandashram.Interfaces
         Task AddReservation(List<Reservation> reservationList);
         Task CloseReservation(int id, int devoteeId);
         Task<List<Reservation>> ReservationList(int DevoteeId);
+
     }
 }

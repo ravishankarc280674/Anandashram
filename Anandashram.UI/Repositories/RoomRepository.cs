@@ -1,4 +1,6 @@
 ﻿using AspNetCoreGeneratedDocument;
+using Microsoft.EntityFrameworkCore.Internal;
+using System.Net;
 using System.Security.Cryptography.Xml;
 
 namespace Anandashram.Repositories
@@ -135,6 +137,33 @@ namespace Anandashram.Repositories
             
             
             return room == null ? new Room() : room;
+        }
+        public async Task<List<Room>> GeRoomReservations(string SortProperty, SortOrder sortOrder, string SearchText = "")
+        {
+            List<Room> roomList = await _context.Rooms.Include(e => e.Building)
+                            .Include(e => e.Block)
+                            .Include(e => e.Floor)
+                            .Include(e => e.Reservations.Where(e => e.Closed == false)).ThenInclude(e => e.Devotee).ToListAsync();
+
+            //}
+            //else
+            //{
+            //    roomList= _context.Rooms.Include(e => e.Building)
+            //           .Include(e => e.Block)
+            //           .Include(e => e.Floor).GroupJoin(_context.Reservations, ro => ro.Id, res => res.RoomId,
+            //           (ro, resGroup) => new { ro, resGroup }
+            //           )
+            //           .SelectMany(
+            //               x => x.resGroup.DefaultIfEmpty(),
+            //               (x, ro) => new
+            //               {
+            //                   Room = x.ro,
+            //                   reservations = x.resGroup
+            //               }
+            //           );
+            //}
+
+            return roomList;
         }
     }
 }

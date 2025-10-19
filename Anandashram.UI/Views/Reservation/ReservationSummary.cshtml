@@ -69,7 +69,7 @@
                         <table class="table table-sm">
                             <thead>
                                     <tr class="fa-border-all" style="background:#1cfcfc">
-                                        <th class="text-start">Block</th>
+                                        <th class="text-start" style="padding-left:40px;">Block</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -78,7 +78,7 @@
                                         string trHtmlblock = $"<tr data-bs-toggle='collapse-block' data-bs-target=\"#floor-{distinctBlock.BlockId}\" aria-expanded='false' aria-controls=\"collapseRow-{distinctBlock.BlockId}\" class='clickable-row-block'>";
                                      @Html.Raw(trHtmlblock);
                                             var blockRowsList = Model.Where(p => p.BlockId == distinctBlock.BlockId && p.BuildingId == distinctBlock.BuildingId).ToList();
-                                    <td class="text-start">
+                                    <td class="text-start" style="padding-left:40px">
                                         @distinctBlock.BlockName
                                             <i class="fas fa-chevron-down"></i>
                                          </td> 
@@ -90,7 +90,7 @@
                                                 <table class="table table-sm">
                                                     <thead>
                                                         <tr class="fa-border-all" style="background:#f16161">
-                                                            <th class="text-start">Floor</th>
+                                                            <th class="text-start" style="padding-left: 80px;">Floor</th>
                                                         </tr>
                                                     </thead>
                                                     <tbody>
@@ -98,20 +98,20 @@
                                                                 {
                                                                    string trHtmlfloor = $"<tr data-bs-toggle='collapse-floor' data-bs-target=\"#room-{distinctFloor.FloorId}\" aria-expanded='false' aria-controls=\"collapseRow-{distinctFloor.FloorId}\" class='clickable-row-floor'>";
                                                                    @Html.Raw(trHtmlfloor);
-                                                        <td class="text-start">
+                                                        <td class="text-start" style="padding-left:80px">
                                                             @distinctFloor.FloorName
                                                                         <i class="fas fa-chevron-down"></i>
                                                                     </td>
                                                                     @Html.Raw("</tr>");
                                                                     var floorRoomsList = Model.Where(p => p.BlockId == distinctBlock.BlockId && p.BuildingId == distinctBlock.BuildingId && p.FloorId == distinctFloor.FloorId).ToList();
-                                                        <tr id="#floor-@distinctBlock.BlockId" class="collapse-block">
+                                                        <tr id="#floor-@distinctBlock.BlockId" class="collapse-block" style="padding-left:120px">
                                                             <td>
                                                                 @{
                                                                     //var distinctRooms = floorRoomsList.DistinctBy(p => p.FloorId).Select(g => new { g.BuildingId, g.BlockId, g.FloorId, g.FloorName,g.Id,g.Name,g.Capacity });
                                                                     <table class="table table-sm">
                                                                         <thead>
-                                                                            <tr class="fa-border-all" style="background:#d4d454">
-                                                                                <th class="text-start">Room</th>
+                                                                            <tr class="fa-border-all" style="background:#5a5afa">
+                                                                                <th class="text-start" style="padding-left:120px">Room</th>
                                                                             </tr>
                                                                         </thead>
                                                                         <tbody>
@@ -119,11 +119,11 @@
                                                                                         {
                                                                                             string trHtmlroom = $"<tr data-bs-toggle='collapse-room' data-bs-target=\"#room-{distinctRoom.Id}\" aria-expanded='false' aria-controls=\"collapseRow-{distinctRoom.Id}\" class='clickable-row-room'>";
                                                                                             @Html.Raw(trHtmlroom);
-                                                                            <td class="text-start">
-                                                                                            @distinctRoom.Name
-                                                                                            <i class="fas fa-chevron-down"></i>
-                                                                                        </td>
-                                                                                        @Html.Raw("</tr>");
+                                                                                            <td class="text-start" style="padding-left:120px">
+                                                                                                @distinctRoom.Name
+                                                                                                <i class="fas fa-chevron-down"></i>
+                                                                                            </td>
+                                                                                            @Html.Raw("</tr>");
                                                                                         }
                                                                                     </tbody>
                                                                             </table>
