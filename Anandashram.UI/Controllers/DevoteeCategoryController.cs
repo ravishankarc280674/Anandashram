@@ -1,5 +1,7 @@
 ﻿
 using Anandashram.UI.Tools.Models;
+using FastReport;
+using Microsoft.AspNetCore.Hosting;
 using Microsoft.IdentityModel.Tokens;
 using System.Drawing.Printing;
 using System.Threading.Tasks;
@@ -10,13 +12,19 @@ namespace Anandashram.Controllers
     {
         //  private readonly ApplicationDbContext _context;
         private readonly IDevoteeCategory _devoteeCategoryRepo;
-
-        public DevoteeCategoryController(IDevoteeCategory devoteeCategoryRepo)
+        
+        public DevoteeCategoryController(IDevoteeCategory devoteeCategoryRepo, IWebHostEnvironment env)
         {
-            // _context = context;
             _devoteeCategoryRepo = devoteeCategoryRepo;
         }
-
+        //public FileResult Generate()
+        //{
+        //    FastReport.Utils.Config.WebMode= true;
+        //    Report rep=new Report();
+        //    string path = Path.Combine(_env.ContentRootPath,"Reports","DevoteeCategory.frx");
+        //    rep.Load(path);
+        //    return View();
+        //}  
         // GET: DevoteeCategory
         public async Task<IActionResult> Index(string sortExpression = "", string SearchText = "", int pg = 1, int PageSize = 5)
         {

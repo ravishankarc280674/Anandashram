@@ -8,12 +8,12 @@
   {
     "outputFileName": "wwwroot/css/site.min.css",
     "inputFiles": [
-      "wwwroot/lib/jquery/dist/jquery.js",
+      //"wwwroot/lib/jquery/dist/jquery.js",
       "wwwroot/lib/bootstrap/dist/css/bootstrap.css",
-      "wwwroot/css/site.css",
-      "wwwroot/webcamjs/webcam.min.js",
-      "wwwroot/lib/jquery-validate/jquery.validate.js",
-      "wwwroot/lib/jquery-validation-unobtrusive/jquery.validate.unobtrusive.js"
+      "wwwroot/css/site.css"
+      //"wwwroot/webcamjs/webcam.min.js",
+      //"wwwroot/lib/jquery-validate/jquery.validate.js",
+      //"wwwroot/lib/jquery-validation-unobtrusive/jquery.validate.unobtrusive.js"
     ]
   }
   //{

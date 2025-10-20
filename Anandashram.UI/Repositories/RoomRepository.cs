@@ -140,30 +140,46 @@ namespace Anandashram.Repositories
         }
         public async Task<List<Room>> GeRoomReservations(string SortProperty, SortOrder sortOrder, string SearchText = "")
         {
-            List<Room> roomList = await _context.Rooms.Include(e => e.Building)
+            List<Room> roomList;
+            if (!string.IsNullOrEmpty(SearchText))
+            {
+                roomList = await _context.Rooms.Include(e => e.Building)
+                            .Include(e => e.Block)
+                            .Include(e => e.Floor)
+                            .Where(n => n.Name.Contains(SearchText, StringComparison.OrdinalIgnoreCase)
+                                                || n.Block.Name.Contains(SearchText, StringComparison.OrdinalIgnoreCase)
+                                                || n.Building.Name.Contains(SearchText, StringComparison.OrdinalIgnoreCase)
+                                                || n.Floor.Name.Contains(SearchText, StringComparison.OrdinalIgnoreCase))
+                            .Include(e => e.Reservations.Where(e => e.Closed == false)).ThenInclude(e => e.Devotee).ToListAsync();
+            }
+            else
+            {
+
+                roomList = await _context.Rooms.Include(e => e.Building)
                             .Include(e => e.Block)
                             .Include(e => e.Floor)
                             .Include(e => e.Reservations.Where(e => e.Closed == false)).ThenInclude(e => e.Devotee).ToListAsync();
+            }
 
-            //}
-            //else
-            //{
-            //    roomList= _context.Rooms.Include(e => e.Building)
-            //           .Include(e => e.Block)
-            //           .Include(e => e.Floor).GroupJoin(_context.Reservations, ro => ro.Id, res => res.RoomId,
-            //           (ro, resGroup) => new { ro, resGroup }
-            //           )
-            //           .SelectMany(
-            //               x => x.resGroup.DefaultIfEmpty(),
-            //               (x, ro) => new
-            //               {
-            //                   Room = x.ro,
-            //                   reservations = x.resGroup
-            //               }
-            //           );
-            //}
+                //}
+                //else
+                //{
+                //    roomList= _context.Rooms.Include(e => e.Building)
+                //           .Include(e => e.Block)
+                //           .Include(e => e.Floor).GroupJoin(_context.Reservations, ro => ro.Id, res => res.RoomId,
+                //           (ro, resGroup) => new { ro, resGroup }
+                //           )
+                //           .SelectMany(
+                //               x => x.resGroup.DefaultIfEmpty(),
+                //               (x, ro) => new
+                //               {
+                //                   Room = x.ro,
+                //                   reservations = x.resGroup
+                //               }
+                //           );
+                //}
 
-            return roomList;
+                return roomList;
         }
     }
 }

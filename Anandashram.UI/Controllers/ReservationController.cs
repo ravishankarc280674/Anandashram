@@ -28,26 +28,17 @@ namespace Anandashram.Controllers
             return View();
         }
 
-        public async Task<IActionResult> ReservationList(string sortExpression = "", string SearchText = "", int pg = 1, int PageSize = 5000, string view = "Grid")
+        public async Task<IActionResult> ReservationList(string sortExpression = "", string SearchText = "", int pg = 1, int PageSize = 5000)
         {
-            if (pg < 1) pg = 1;
-
-            SortModel sortModel = new SortModel();//ApplySort(sortExpression);
+            SortModel sortModel = new SortModel();
             sortModel.AddColumn("name");
-            sortModel.AddColumn("description");
+            sortModel.AddColumn("buildingname");
+            sortModel.AddColumn("blockname");
+            sortModel.AddColumn("floorname");
             sortModel.ApplySort(sortExpression);
             ViewData["SortModel"] = sortModel;
-            ViewBag.PageSize = PageSize;
             ViewBag.SearchText = SearchText;
-            ViewBag.view = view;
-            TempData["CurrentPage"] = pg;
             List<Room> ReservationList = await _roomRepo.GeRoomReservations(sortModel.SortedProperty, sortModel.SortedOrder, SearchText);
-
-            //var pager = new PageModel(RoomList.TotalRecords, pg, PageSize) { Action = "Index", Controller = "Room", SearchText = SearchText };
-            //pager.SortExpression = sortExpression;
-            //pager.ViewType = view;
-            //this.ViewBag.Pager = pager;
-            //return View(RoomList);
             return View(ReservationList);
         }
     }

@@ -1,0 +1,112 @@
+﻿@model Anandashram.Models.Company
+
+@{
+    string currentModel = Helper.GetTypeNames(Model.GetType().ToString());
+    ViewData["Title"] = currentModel;
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="card">
+    <div class="col-md-12">
+        <form asp-action="SaveCompany">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <input type="hidden" asp-for="Id" />
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            
+            <dl class="row">
+                <dt class="col-md-2">
+                    <label asp-for="Name" class="control-label"></label>
+                </dt>
+                <dd class="col-md-4">
+                    <input asp-for="Name" class="form-control" />
+                    <span asp-validation-for="Name" class="text-danger"></span>
+                </dd>
+                <dt class="col-md-2">
+                    <label asp-for="Established" class="control-label"></label>
+                </dt>
+                <dd class="form-group col-md-4">
+                    <input type="number" asp-for="Established" class="form-control" step="1" min="1900" max="3000" />
+                    <span asp-validation-for="Established" class="text-danger"></span>
+                </dd>
+            </dl>
+       
+            <dl class="row">
+                <dt class="col-md-2">
+                    <label asp-for="AddressLine1" class="control-label"></label>
+                </dt>
+                <dd class="col-md-4">
+                    <input asp-for="AddressLine1" class="form-control" />
+                    <span asp-validation-for="AddressLine1" class="text-danger"></span>
+                </dd>
+            </dl>
+
+            <dl class="row">
+                <dt class="col-md-2">
+
+                </dt>
+                <dd class="col-md-4">
+                    <input asp-for="AddressLine2" class="form-control" />
+                    <span asp-validation-for="AddressLine2" class="text-danger"></span>
+                </dd>
+            </dl>
+            <dl class="row">
+                <dt class="col-md-2">
+                    <label asp-for="State" class="control-label"></label>
+                </dt>
+                <dd class="col-md-4">
+                    <input asp-for="State" class="form-control" />
+                    <span asp-validation-for="State" class="text-danger"></span>
+                </dd>
+                <dt class="col-md-2">
+                    <label asp-for="Country" class="control-label"></label>
+                </dt>
+                <dd class="col-md-4">
+                    <input asp-for="Country" class="form-control" />
+                    <span asp-validation-for="Country" class="text-danger"></span>
+                </dd>
+            </dl>
+            <dl class="row">
+                <dt class="col-md-2">
+                    <label asp-for="PinCode" class="control-label"></label>
+                </dt>
+                <dd class="col-md-4">
+                    <input asp-for="PinCode" class="form-control" />
+                    <span asp-validation-for="PinCode" class="text-danger"></span>
+                </dd>
+            </dl>
+            <dl class="row">
+                <dt class="col-md-2">
+                    <label asp-for="Mobile" class="control-label"></label>
+                </dt>
+                <dd class="col-md-4">
+                    <input asp-for="Mobile" class="form-control" />
+                    <span asp-validation-for="Mobile" class="text-danger"></span>
+                </dd>
+                <dt class="col-md-2">
+                    <label asp-for="Email" class="control-label"></label>
+                </dt>
+                <dd class="col-md-4">
+                    <input asp-for="Email" class="form-control" />
+                    <span asp-validation-for="Email" class="text-danger"></span>
+                </dd>
+            </dl>
+            <dl class="row">
+                <dt class="col-md-2">
+                    <label asp-for="Website" class="control-label"></label>
+                </dt>
+                <dd class="col-md-10">
+                    <input asp-for="Website" class="form-control" />
+                    <span asp-validation-for="Website" class="text-danger"></span>
+                </dd>
+                </dl>
+            <br />
+            <div class="row">
+                <div class="form-group btn-group">
+                        <input type="submit" value="Submit" class="btn btn-primary" />&nbsp;
+                        <a class="btn btn-secondary" asp-controller="Home" asp-action="index">Back</a>
+                </div>
+            </div>
+        </form>
+    </div>
+
+</div>

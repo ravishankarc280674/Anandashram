@@ -84,11 +84,11 @@
                         <thead>
                                 <tr class="fa-border-all" style="background:#f16161">
                                     <th class="text-center  text-white" colspan="4" style="padding-left:40px;">
-                                        Capacity : @distinctRoom.Capacity -
-                                        Occupied: @distinctRoom.Occupied  - Remaining: @distinctRoom.RemainingCount
+                                        Capacity : @distinctRoom.Capacity &nbsp;&nbsp;&nbsp;&nbsp; - &nbsp;&nbsp;&nbsp;&nbsp;
+                                        Occupied: @distinctRoom.Occupied  &nbsp;&nbsp;&nbsp;&nbsp;  - &nbsp;&nbsp;&nbsp;&nbsp;  Remaining: @distinctRoom.RemainingCount
                                     </th>
                                 </tr>
-                            <tr class="fa-border-all" style="background:#1cfcfc">
+                                <tr class="fa-border-all" style="background:#1cfcfc">
                                     <th class="text-center" style="padding-left:40px;">Devotee Code</th>
                                     <th class="text-center" style="padding-left:40px;">Devotee Name</th>
                                     <th class="text-center" style="padding-left:40px;">Check-In</th>
@@ -102,7 +102,8 @@
                                         {
                                             foreach (var reservation in reservationList)
                                             {
-                                            @Html.Raw($"<tr style='background:#fafafa'>");
+                                            @Html.Raw($"<tr style=\"background:#f5d1f1\">")
+                                            ;
                                         <td>
                                             <a asp-action="AddOrEdit" asp-controller="Devotee" asp-route-id="@reservation.Devotee.Id">
                                                 <span style="color: purple" asp-controller="Devotee" asp-action="AddOrEdit" asp-route-id="@reservation.Devotee.Id">@reservation.Devotee.Code</span>
@@ -117,7 +118,7 @@
                                         else
                                         {
                                             <tr>
-                                                <td colspan="4" class="text-center fw-bold">No Records Found</td>
+                                        <td colspan="4" class="text-center fw-bold" style="background:#f5d1f1">No Records Found</td>
                                             </tr>
                                         }
 
