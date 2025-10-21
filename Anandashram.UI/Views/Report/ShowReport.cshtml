@@ -1,0 +1,16 @@
+﻿@model FastReport.Web.WebReport
+
+@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<h4>Reports</h4>
+<hr />
+@if (Model != null)
+{
+    @await Model.Render()
+}
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+}

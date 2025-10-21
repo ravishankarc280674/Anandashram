@@ -14,6 +14,6 @@ namespace Anandashram.Interfaces
 
         bool IsDevoteeCategoryNameExists(string name);
         bool IsDevoteeCategoryNameExists(string name, int Id);
-        IEnumerable<DevoteeCategory> GetDevoteeCategories();
+        List<DevoteeCategory> GetDevoteeCategories();
     }
 }

@@ -94,9 +94,10 @@ namespace Anandashram.Repositories
             else
                 return false;
         }
-        public IEnumerable<DevoteeCategory> GetDevoteeCategories()
+        public  List<DevoteeCategory> GetDevoteeCategories()
         {
             return _context.DevoteeCategories.ToList();
         }
+
     }
 }
