@@ -1,4 +1,6 @@
-﻿namespace Anandashram.Interfaces
+﻿using System.Data;
+
+namespace Anandashram.Interfaces
 {
     public interface IDevotee
     {
@@ -13,6 +15,6 @@
 
         bool IsDevoteeNameExists(string name);
         bool IsDevoteeNameExists(string name, int Id);
-
+        Task<List<Devotee>> GetAllDevotees(bool Checked);
     }
 }

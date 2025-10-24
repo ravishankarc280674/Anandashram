@@ -1,4 +1,5 @@
 ﻿
+using Anandashram.UI.Tools.Models;
 using Microsoft.EntityFrameworkCore.Query.SqlExpressions;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion.Internal;
 using SQLitePCL;
@@ -38,13 +39,61 @@ namespace Anandashram.Repositories
 
         private List<Devotee> DoSort(List<Devotee> devotees, string SortProperty, SortOrder sortOrder)
         {
-
             if (SortProperty.ToLower() == "name")
             {
                 if (sortOrder == SortOrder.Ascending)
                     devotees = devotees.OrderBy(n => n.Name).ToList();
                 else
                     devotees = devotees.OrderByDescending(n => n.Name).ToList();
+            }
+            else if (SortProperty.ToLower() == "code")
+            {
+                if (sortOrder == SortOrder.Ascending)
+                    devotees = devotees.OrderBy(n => n.Code).ToList();
+                else
+                    devotees = devotees.OrderByDescending(n => n.Code).ToList();
+            }
+            else if (SortProperty.ToLower() == "devoteecategoryname")
+            {
+                if (sortOrder == SortOrder.Ascending)
+                    devotees = devotees.OrderBy(n => n.DevoteeCategoryName).ToList();
+                else
+                    devotees = devotees.OrderByDescending(n => n.DevoteeCategoryName).ToList();
+            }
+            else if (SortProperty.ToLower() == "mobile")
+            {
+                if (sortOrder == SortOrder.Ascending)
+                    devotees = devotees.OrderBy(n => n.Mobile).ToList();
+                else
+                    devotees = devotees.OrderByDescending(n => n.Mobile).ToList();
+            }
+            else if (SortProperty.ToLower() == "email")
+            {
+                if (sortOrder == SortOrder.Ascending)
+                    devotees = devotees.OrderBy(n => n.Email).ToList();
+                else
+                    devotees = devotees.OrderByDescending(n => n.Email).ToList();
+            }
+            else if (SortProperty.ToLower() == "startdate")
+            {
+                if (sortOrder == SortOrder.Ascending)
+                    devotees = devotees.OrderBy(n => n.StartDate).ToList();
+                else
+                    devotees = devotees.OrderByDescending(n => n.StartDate).ToList();
+            }
+            else if (SortProperty.ToLower() == "document")
+            {
+                if (sortOrder == SortOrder.Ascending)
+                    devotees = devotees.OrderBy(n => n.Document).ToList();
+                else
+                    devotees = devotees.OrderByDescending(n => n.Document).ToList();
+            }
+            else if (SortProperty.ToLower() == "enddate")
+            {
+                if (sortOrder == SortOrder.Ascending)
+                    devotees = devotees.OrderBy(n => n.EndDate).ToList();
+                else
+                    devotees = devotees.OrderByDescending(n => n.EndDate).ToList();
             }
             else
             {
@@ -53,35 +102,40 @@ namespace Anandashram.Repositories
                 else
                     devotees = devotees.OrderByDescending(d => d.Description).ToList();
             }
-
+            
             return devotees;
         }
 
         public async Task<PaginatedList<Devotee>> GetItems(string SortProperty, SortOrder sortOrder, string SearchText = "", int pg = 1, int pageSize = 5, bool Checked = false)
         {
             List<Devotee> devotees = new List<Devotee>();
-
-            if (!Checked)
+            devotees = await GetAllDevotees(Checked);
+            if (!string.IsNullOrEmpty(SearchText))
             {
-                devotees = await _context.Devotees.Include(d => d.DevoteeCategory).Where(n => n.Closed == false).ToListAsync();
+                devotees = devotees.Where(n => n.Code.Contains(SearchText, StringComparison.OrdinalIgnoreCase)
+                                            || n.Name.Contains(SearchText, StringComparison.OrdinalIgnoreCase)
+                                            || (n.Description ?? "").Contains(SearchText, StringComparison.OrdinalIgnoreCase)
+                                            || (n.Document ?? "").Contains(SearchText, StringComparison.OrdinalIgnoreCase)
+                                            || (n.Email ?? "").Contains(SearchText, StringComparison.OrdinalIgnoreCase)
+                                            || (n.Mobile ?? "").Contains(SearchText, StringComparison.OrdinalIgnoreCase)
+                                            || n.DevoteeCategory.Name.Contains(SearchText, StringComparison.OrdinalIgnoreCase)).ToList();
             }
-            else
-            {
-                devotees = await _context.Devotees.Include(d => d.DevoteeCategory).ToListAsync();
-            }
-                if (!string.IsNullOrEmpty(SearchText))
-                {
-                    devotees = devotees.Where(n => n.Code.Contains(SearchText, StringComparison.OrdinalIgnoreCase) 
-                                                || n.Name.Contains(SearchText, StringComparison.OrdinalIgnoreCase) 
-                                                || (n.Description ?? "").Contains(SearchText, StringComparison.OrdinalIgnoreCase)
-                                                || (n.Document ?? "").Contains(SearchText, StringComparison.OrdinalIgnoreCase)
-                                                || (n.Email ?? "").Contains(SearchText, StringComparison.OrdinalIgnoreCase)
-                                                || (n.Mobile ?? "").Contains(SearchText, StringComparison.OrdinalIgnoreCase)
-                                                || n.DevoteeCategory.Name.Contains(SearchText,StringComparison.OrdinalIgnoreCase)).ToList();
-                }
             devotees = DoSort(devotees, SortProperty, sortOrder);
             PaginatedList<Devotee> retDevotees = new PaginatedList<Devotee>(devotees, pg, pageSize);
             return retDevotees;
+        }
+
+        public async Task<List<Devotee>> GetAllDevotees(bool Checked)
+        {
+            if (!Checked)
+            {
+                return await _context.Devotees.Include(d => d.DevoteeCategory).Where(n => n.Closed == false).ToListAsync();
+            }
+            else
+            {
+                return await _context.Devotees.Include(d => d.DevoteeCategory).ToListAsync();
+            }
+
         }
 
         public async Task<Devotee> GetDevotee(int id)
@@ -112,7 +166,5 @@ namespace Anandashram.Repositories
         {
             return _context.Devotees.ToList();
         }
-        
-       
     }
 }

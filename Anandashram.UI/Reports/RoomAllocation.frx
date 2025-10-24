@@ -1,0 +1,70 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Report ScriptLanguage="CSharp" ReportInfo.Created="10/22/2025 12:03:18" ReportInfo.Modified="10/22/2025 16:24:26" ReportInfo.CreatorVersion="2026.1.0.0">
+  <Dictionary>
+    <BusinessObjectDataSource Name="RoomAllocation" ReferenceName="RoomAllocationRef" DataType="System.Int32" Enabled="true">
+      <Column Name="Name" DataType="System.String"/>
+      <Column Name="Capacity" DataType="System.Int32"/>
+    </BusinessObjectDataSource>
+    <BusinessObjectDataSource Name="Company" ReferenceName="CompanyRef" DataType="System.Int32" Enabled="true">
+      <Column Name="Name" DataType="System.String"/>
+      <Column Name="Established" DataType="System.Int32"/>
+      <Column Name="AddressLine1" DataType="System.String"/>
+      <Column Name="AddressLine2" DataType="System.String"/>
+      <Column Name="State" DataType="System.String"/>
+      <Column Name="Country" DataType="System.String"/>
+      <Column Name="PinCode" DataType="System.String"/>
+      <Column Name="Mobile" DataType="System.String"/>
+      <Column Name="Email" DataType="System.String"/>
+      <Column Name="Website" DataType="System.String"/>
+    </BusinessObjectDataSource>
+    <Parameter Name="Title" DataType="System.String" AsString=""/>
+    <Total Name="AllocatedTotal" Expression="[RoomAllocation.Occupied]" Evaluator="Data1" PrintOn="PageFooter1" ResetAfterPrint="false" IncludeInvisibleRows="true"/>
+    <Total Name="CapacityTotal" Expression="[RoomAllocation.Capacity]" Evaluator="Data1" PrintOn="PageFooter1" ResetAfterPrint="false" IncludeInvisibleRows="true"/>
+    <Total Name="RemainingTotal" Expression="[RoomAllocation.RemainingCount]" Evaluator="Data1" PrintOn="PageFooter1" ResetAfterPrint="false" IncludeInvisibleRows="true"/>
+  </Dictionary>
+  <ReportPage Name="General" Watermark.Font="Arial, 60pt">
+    <ReportTitleBand Name="ReportTitle1" Width="718.2" Height="170.1">
+      <TextObject Name="Text10" Width="718.2" Height="18.9" Text="[Company.Name]" AutoWidth="true" HorzAlign="Center" VertAlign="Center" Font="Arial, 14.25pt, style=Bold"/>
+      <TextObject Name="Text17" Top="18.9" Width="718.2" Height="18.9" Text="Estd: [Company.Established]" HorzAlign="Center" Font="Arial, 11.25pt"/>
+      <TextObject Name="Text18" Top="122.85" Width="718.2" Height="37.8" Border.Lines="Top, Bottom" Border.TopLine.Style="Double" Border.BottomLine.Style="Double" Text="Rooms Allocation Status as of:  [Date]" HorzAlign="Center" VertAlign="Center" Font="Arial, 12pt, style=Bold"/>
+      <TextObject Name="Text19" Top="37.8" Width="718.2" Height="20.79" Text="[Company.AddressLine1] [Company.AddressLine2]" HorzAlign="Center" Font="Arial, 11.25pt"/>
+      <TextObject Name="Text20" Top="56.7" Width="718.2" Height="28.35" Text="[Company.State], [Company.Country] - [Company.PinCode]" HorzAlign="Center" Font="Arial, 11.25pt"/>
+      <TextObject Name="Text24" Top="75.6" Width="718.2" Height="18.9" Text="Mobile: [Company.Mobile], Email: [Company.Email]" HorzAlign="Center" Font="Arial, 11.25pt"/>
+      <TextObject Name="Text25" Top="94.5" Width="718.2" Height="18.9" Text="Website: [Company.Website]" HorzAlign="Center" Font="Arial, 11.25pt"/>
+    </ReportTitleBand>
+    <PageHeaderBand Name="PageHeader1" Top="174.1" Width="718.2" Height="20.9" Border.Lines="Top, Bottom" Fill.Color="LightGray">
+      <TextObject Name="Text7" Left="9.45" Width="64.5" Height="18.9" Text="Room" HorzAlign="Center" VertAlign="Center" Font="Arial, 10pt, style=Bold"/>
+      <TextObject Name="Text8" Left="92.85" Width="94.5" Height="18.9" Text="Building" HorzAlign="Center" VertAlign="Center" Font="Arial, 10pt, style=Bold"/>
+      <TextObject Name="Text9" Left="200.25" Width="160.5" Height="18.9" Text="Block" HorzAlign="Center" VertAlign="Center" Font="Arial, 10pt, style=Bold"/>
+      <TextObject Name="Text0" Left="360.2" Width="94.5" Height="18.9" Text="Floor" HorzAlign="Center" VertAlign="Center" Font="Arial, 10pt, style=Bold"/>
+      <TextObject Name="Text1" Left="459.05" Width="74.5" Height="18.9" Text="Capacity" HorzAlign="Center" VertAlign="Center" Font="Arial, 10pt, style=Bold"/>
+      <TextObject Name="Text1" Left="523.05" Width="80.5" Height="18.9" Text="Occupied" HorzAlign="Center" VertAlign="Center" Font="Arial, 10pt, style=Bold"/>
+      <TextObject Name="Text1" Left="623.05" Width="84.5" Height="18.9" Text="Remaining" HorzAlign="Center" VertAlign="Center" Font="Arial, 10pt, style=Bold"/>
+    </PageHeaderBand>
+    <DataBand Name="Data1" Top="199" Width="718.2" Height="37.8" Border.Lines="Bottom" DataSource="RoomAllocation">
+      <TableObject Name="Table1" Left="47.25" Width="529.2" Height="22.9" Border.Lines="All" Fill.Color="LightGray">
+        <TableRow Name="Row1" Height="1"/>
+        <TableRow Name="Row2" Height="1"/>
+        <TableRow Name="Row3" Height="1"/>
+        <TableRow Name="Row4" Height="1"/>
+        <TableRow Name="Row5" Height="1"/>
+        <TableRow Name="Row5" Height="1"/>
+        <TableRow Name="Row5" Height="1"/>
+      </TableObject>
+      <TextObject Name="Text27" Left="9.45" Top="9.45" Width="80.5" Height="18.9" Text="[RoomAllocation.Name]" HorzAlign="Center" Font="Arial, 10pt"/>
+      <TextObject Name="Text31" Left="92.85" Top="9.45" Width="98.5" Height="18.9" Text="[RoomAllocation.BuildingName]" HorzAlign="Center" Font="Arial, 10pt"/>
+      <TextObject Name="Text32" Left="200.25" Top="9.45" Width="160.5" Height="18.9" Text="[RoomAllocation.BlockName]" HorzAlign="Center" Font="Arial, 10pt"/>
+      <TextObject Name="Text33" Left="360.2" Top="9.45" Width="94.5" Height="18.9" Text="[RoomAllocation.FloorName]" HorzAlign="Center" Font="Arial, 10pt"/>
+      <TextObject Name="Text34" Left="459.05" Top="9.45" Width="54.5" Height="18.9" Text="[RoomAllocation.Capacity]" HorzAlign="Right" Font="Arial, 10pt"/>
+      <TextObject Name="Text35" Left="523.05" Top="9.45" Width="60.5" Height="18.9" Text="[RoomAllocation.Occupied]" HorzAlign="Right" Font="Arial, 10pt"/>
+      <TextObject Name="Text36" Left="623.05" Top="9.45" Width="84.5" Height="18.9" Text="[RoomAllocation.RemainingCount]" HorzAlign="Right" Font="Arial, 10pt"/>
+    </DataBand>
+    <PageFooterBand Name="PageFooter1" Top="240.8" Width="718.2" Height="40.6" Border.Lines="Top, Bottom" Border.TopLine.Style="Double" Border.BottomLine.Style="Double" Guides="0,18.89999" Fill.Color="LightGray">
+      <TextObject Name="Text35" Left="245.7" Width="94.5" Height="45.9" Text="Total" Font="Arial, 9.75pt, style=Bold" VertAlign="Center"/>
+      <TextObject Name="Text34" Left="459.05" Width="54.5" Height="45.9" Text="[CapacityTotal]"  HorzAlign="Right" Font="Arial, 10pt style=Bold" VertAlign="Center"/>
+      <TextObject Name="Text34" Left="523.05" Width="60.5" Height="45.9" Text="[AllocatedTotal]"  HorzAlign="Right" Font="Arial, 10pt style=Bold" VertAlign="Center"/>
+      <TextObject Name="Text34" Left="623.05" Width="82.5" Height="45.9" Text="[RemainingTotal]"  HorzAlign="Right" Font="Arial, 10pt style=Bold" VertAlign="Center"/>
+      <TextObject Name="Text36" Left="601.5" Top="45.9" Width="94.5" Height="28.9" Text="[PageN]" HorzAlign="Right" Font="Arial, 10pt style=Bold" VertAlign="Center"/>
+    </PageFooterBand>
+  </ReportPage>
+</Report>

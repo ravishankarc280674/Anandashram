@@ -16,7 +16,7 @@ namespace Anandashram.Controllers
         private readonly IRoom _roomRepo;
         private readonly IFileManagement _fileManagement;
         private readonly IReservation _reservationRepo;
-        public DevoteeController(IDevotee devoteeRepo, IDevoteeCategory devoteeCategoryRepo,IRoom roomRepo, IFileManagement fileManagement, IReservation reservationRepo)
+        public DevoteeController(IDevotee devoteeRepo, IDevoteeCategory devoteeCategoryRepo, IRoom roomRepo, IFileManagement fileManagement, IReservation reservationRepo)
         {
             // _context = context;
             _devoteeRepo = devoteeRepo;
@@ -27,7 +27,7 @@ namespace Anandashram.Controllers
         }
 
         // GET: Devotee
-        public async Task<IActionResult> Index(string sortExpression = "", string SearchText = "", int pg = 1, int PageSize = 100, bool Closed=false)
+        public async Task<IActionResult> Index(string sortExpression = "", string SearchText = "", int pg = 1, int PageSize = 100, bool Closed = false)
         {
             if (pg < 1) pg = 1;
 
@@ -49,7 +49,7 @@ namespace Anandashram.Controllers
             TempData["CurrentPage"] = pg;
             var DevoteeList = await _devoteeRepo.GetItems(sortModel.SortedProperty, sortModel.SortedOrder, SearchText, pg, PageSize, Closed);
 
-            var pager = new PageModel(DevoteeList.TotalRecords, pg, PageSize) { Action = "Index", Controller = "Devotee",SearchText = SearchText ,Closed = Closed};
+            var pager = new PageModel(DevoteeList.TotalRecords, pg, PageSize) { Action = "Index", Controller = "Devotee", SearchText = SearchText, Closed = Closed };
             pager.SortExpression = sortExpression;
             this.ViewBag.Pager = pager;
             this.ViewBag.PageSizes = GetPageSizes(PageSize);
@@ -67,11 +67,11 @@ namespace Anandashram.Controllers
             return devoteeCategories;
 
         }
-        private List<SelectListItem> GetPageSizes(int selectedPageSize =100)
+        private List<SelectListItem> GetPageSizes(int selectedPageSize = 100)
         {
             var pagesSizes = new List<SelectListItem>();
 
-            if (selectedPageSize ==100)
+            if (selectedPageSize == 100)
                 pagesSizes.Add(new SelectListItem("100", "100", true));
             else
                 pagesSizes.Add(new SelectListItem("100", "100"));
@@ -104,20 +104,20 @@ namespace Anandashram.Controllers
         // GET: Devotee/Edit/5
         public async Task<IActionResult> AddOrEdit(int Id = 0)
         {
-                Devotee devotee = new Devotee();
-                ViewBag.DevoteeCategoryId = GetDevoteeCategories();
+            Devotee devotee = new Devotee();
+            ViewBag.DevoteeCategoryId = GetDevoteeCategories();
             if (Id == 0)
             {
                 devotee.CreatedBy = this.User.FindFirstValue(ClaimTypes.NameIdentifier);
                 devotee.CreatedDate = DateTime.Now;
-                
+
                 return View(devotee);
             }
             else
             {
                 AddFile file = new AddFile();
                 devotee = await _devoteeRepo.GetDevotee(Id);
-                devotee.ReservationCharts =await _reservationRepo.ReservationList(Id);
+                devotee.ReservationCharts = await _reservationRepo.ReservationList(Id);
                 ViewBag.RoomsList = GetFilteredRooms();
                 TempData.Keep();
                 if (devotee == null)
@@ -135,11 +135,11 @@ namespace Anandashram.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> AddOrEdit(int Id,Devotee devotee, string actionButton)
+        public async Task<IActionResult> AddOrEdit(int Id, Devotee devotee, string actionButton)
         {
             if (ModelState.IsValid)
             {
-           int IdToRedirect = 0;
+                int IdToRedirect = 0;
                 string OldDevoteeCode = string.Empty;
                 string NewDevoteeCode = string.Empty;
                 if (Id == 0)
@@ -159,9 +159,10 @@ namespace Anandashram.Controllers
                         }
                         if (actionButton == "Reopen")
                         {
-                            Devotee newDevotee = new Devotee() {
+                            Devotee newDevotee = new Devotee()
+                            {
                                 DevoteeCategoryId = devotee.DevoteeCategoryId,
-                               // Description = devotee.Description,
+                                // Description = devotee.Description,
                                 CreatedBy = this.User.FindFirstValue(ClaimTypes.NameIdentifier),
                                 CreatedDate = DateTime.Now,
                                 Country = devotee.Country,
@@ -204,13 +205,13 @@ namespace Anandashram.Controllers
                         }
                     }
                 }
-            return RedirectToAction("AddOrEdit", new { Id = IdToRedirect });
+                return RedirectToAction("AddOrEdit", new { Id = IdToRedirect });
             }
             else
             {
                 View(devotee);
             }
-             return RedirectToAction("AddOrEdit", new { Id = 0 });
+            return RedirectToAction("AddOrEdit", new { Id = 0 });
         }
 
         // GET: Devotee/Delete/5
@@ -247,7 +248,7 @@ namespace Anandashram.Controllers
         //image captured from webcam
 
         [HttpPost]
-        public async Task<IActionResult> SaveImage(int Id,string Code,string Data)
+        public async Task<IActionResult> SaveImage(int Id, string Code, string Data)
         {
             AddFile addFile = new AddFile();
             addFile.DevoteeId = Id;
@@ -264,16 +265,16 @@ namespace Anandashram.Controllers
         {
             //if (!ModelState.IsValid)
             //{
-                string fileExtention = Path.GetExtension(addFile.ImageFile.FileName);
-                addFile.FileName = addFile.FileName + fileExtention;
-                await _fileManagement.UploadDocument(addFile);
+            string fileExtention = Path.GetExtension(addFile.ImageFile.FileName);
+            addFile.FileName = addFile.FileName + fileExtention;
+            await _fileManagement.UploadDocument(addFile);
             //}
             return RedirectToAction("AddOrEdit", new { Id = addFile.DevoteeId });
         }
 
         public async Task<IActionResult> GetImage(string fileName)
         {
-            var fileBytes =await _fileManagement.GetProfilePic(fileName);
+            var fileBytes = await _fileManagement.GetProfilePic(fileName);
             return File(fileBytes, "image/jpeg");
         }
 
@@ -303,7 +304,7 @@ namespace Anandashram.Controllers
         {
             var lstRooms = new List<SelectListItem>();
 
-            PaginatedList<Room> rooms =new PaginatedList<Room>(_roomRepo.GetFilteredRooms(),1,1000);
+            PaginatedList<Room> rooms = new PaginatedList<Room>(_roomRepo.GetFilteredRooms(), 1, 1000);
 
             lstRooms = rooms.Select(ut => new SelectListItem()
             {
@@ -329,19 +330,27 @@ namespace Anandashram.Controllers
         }
 
         [HttpPost]
-        public  async Task<IActionResult> AddReservation([FromBody] List<Reservation> data)
+        public async Task<IActionResult> AddReservation([FromBody] List<Reservation> data)
         {
             int DevoteeId = data[0].DevoteeId;
-            foreach (Reservation r in data) { r.CreatedDate = DateTime.Now; r.CreatedBy = this.User.FindFirstValue(ClaimTypes.NameIdentifier); };
-           await _reservationRepo.AddReservation(data);
+            foreach (Reservation r in data) { r.CreatedDate = DateTime.Now; r.CreatedBy = 
+                    this.User.FindFirstValue(ClaimTypes.NameIdentifier); };
+            await _reservationRepo.AddReservation(data);
             return Json(new { isValid = true, html = Helper.RenderRazorViewToString(this, "AddOrEdit", DevoteeId) });
 
         }
 
         [HttpPost]
-        public async Task<IActionResult> CloseReservation(int Id,int DevoteeId)
+        public async Task<IActionResult> CloseReservation(int Id, int DevoteeId)
         {
-            await _reservationRepo.CloseReservation(Id, DevoteeId); 
+            await _reservationRepo.CloseReservation(Id, DevoteeId, DateTime.Now, this.User.FindFirstValue(ClaimTypes.NameIdentifier));
+            return Json(new { isValid = true, html = Helper.RenderRazorViewToString(this, "AddOrEdit", DevoteeId) });
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> CloseReservations(int DevoteeId)
+        {
+            await _reservationRepo.CloseReservations(DevoteeId, DateTime.Now, this.User.FindFirstValue(ClaimTypes.NameIdentifier));
             return Json(new { isValid = true, html = Helper.RenderRazorViewToString(this, "AddOrEdit", DevoteeId) });
         }
     }

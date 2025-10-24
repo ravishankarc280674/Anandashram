@@ -1,11 +1,13 @@
-﻿@{
+﻿@model FastReport.Web.WebReport
+
+@{
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
 <h4>Reports</h4>
 <hr />
 
 <div class="col-md-12 d-flex">
-    <form asp-action="ShowReport" method="post">
+    <form asp-action="ReportViewer" method="post">
         <div class="col-md-5">
               <fieldset>
                   <dl>
@@ -41,4 +43,11 @@
             </div>
     </form>
    
+</div>
+
+<div>
+    @if (Model != null)
+    {
+        @await Model.Render()
+    }
 </div>

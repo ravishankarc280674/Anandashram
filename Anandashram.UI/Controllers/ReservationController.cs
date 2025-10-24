@@ -22,13 +22,13 @@ namespace Anandashram.Controllers
         }
 
         // GET: Room
-        public async Task<IActionResult> ReservationSummary(string sortExpression = "", string SearchText = "", int pg = 1, int PageSize = 5000, string view = "Grid")
+        public async Task<IActionResult> ReservationSummary(string sortExpression = "", string SearchText = "", int pg = 1, int PageSize = 5000)
         {
            
             return View();
         }
 
-        public async Task<IActionResult> ReservationList(string sortExpression = "", string SearchText = "", int pg = 1, int PageSize = 5000)
+        public async Task<IActionResult> Index(string sortExpression = "", string SearchText = "", int pg = 1, int PageSize = 5000)
         {
             SortModel sortModel = new SortModel();
             sortModel.AddColumn("name");

@@ -1,0 +1,35 @@
+﻿@model FastReport.Web.WebReport
+
+@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<h4>Reports</h4>
+<hr />
+
+<div class="col-md-12 d-flex">
+    <form asp-action="DevoteeReportViewer" method="post">
+              
+        <div class="col-md-12 d-flex">
+        <fieldset>
+            <dl><dt>Choose Report Type:</dt>
+                <dd>
+                        <input type="radio" id="typeofreport" name="typeofreport" value="screen" checked="checked" />
+                    <label>Screen</label>&nbsp;
+
+                        <input type="radio" id="typeofreport" name="typeofreport" value="pdf" />
+                    <label>Pdf</label>
+                </dd>
+            </dl>
+        </fieldset>
+    </div>
+        <div class="col-md-2">
+            <input type="submit" value="Submit" class="btn btn-primary" />
+            </div>
+    </form>
+    </div>
+        <div>
+    @if (Model != null)
+    {
+        @await Model.Render()
+    }
+</div>

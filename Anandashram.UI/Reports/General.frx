@@ -22,11 +22,12 @@
   <Parameter Name="Address 2" DataType="System.String" AsString=""/>
   <Parameter Name="Mobile" DataType="System.String" AsString=""/>
   <Parameter Name="Website" DataType="System.String" AsString=""/>
+    <Parameter Name="Address" DataType="System.String" AsString=""/>
   </Dictionary>
   <ReportPage Name="General" Watermark.Font="Arial, 60pt">
     <ReportTitleBand Name="ReportTitle1" Width="718.2" Height="189">
       <TextObject Name="Text10" Width="718.2" Height="18.9" Text="[Company.Name]" AutoWidth="true" HorzAlign="Center" VertAlign="Center" Font="Arial, 14.25pt, style=Bold"/>
-      <TextObject Name="Text17" Top="18.9" Width="718.2" Height="18.9" Text="Est: [Company.Established]" HorzAlign="Center" Font="Arial, 11.25pt"/>
+      <TextObject Name="Text17" Top="18.9" Width="718.2" Height="18.9" Text="Estd: [Company.Established]" HorzAlign="Center" Font="Arial, 11.25pt"/>
       <TextObject Name="Text18" Top="122.85" Width="718.2" Height="37.8" Border.Lines="Top, Bottom" Border.TopLine.Style="Double" Border.BottomLine.Style="Double" Text="[Title]" HorzAlign="Center" VertAlign="Center" Font="Arial, 12pt, style=Bold"/>
       <TextObject Name="Text19" Top="37.8" Width="718.2" Height="20.79" Text="[Company.AddressLine1] [Company.AddressLine2]" HorzAlign="Center" Font="Arial, 11.25pt"/>
       <TextObject Name="Text20" Top="56.7" Width="718.2" Height="28.35" Text="[Company.State], [Company.Country] - [Company.PinCode]" HorzAlign="Center" Font="Arial, 11.25pt"/>
@@ -48,6 +49,6 @@
       <TextObject Name="Text8" Left="75.6" Top="9.45" Width="255.15" Height="28.35" Text="[DevoteeCategories.Name]" Font="Arial, 10pt"/>
       <TextObject Name="Text9" Left="340.2" Top="9.45" Width="378" Height="28.35" CanGrow="true" Text="[DevoteeCategories.Description]" Font="Arial, 10pt"/>
     </DataBand>
-    <PageFooterBand Name="PageFooter1" Top="257.7" Width="718.2" Height="264.6"/>
+    <PageFooterBand Name="PageFooter1" Top="257.7" Width="718.2" Height="40.6"/>
   </ReportPage>
 </Report>
