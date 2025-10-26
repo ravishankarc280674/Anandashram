@@ -19,7 +19,7 @@ function FlashError() {
 	this.stack = temp.stack;
 	this.message = temp.message;
 }
-
+d
 function WebcamError() {
 	var temp = Error.apply(this, arguments);
 	temp.name = this.name = "WebcamError";
