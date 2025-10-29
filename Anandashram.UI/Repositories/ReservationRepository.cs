@@ -39,11 +39,10 @@ namespace Anandashram.Repositories
                     }).ToListAsync();
             return reservations;
         }
-        public async Task AddReservation([FromBody] List<Reservation> reservationList)
+        public Task<int> AddReservation([FromBody] List<Reservation> reservationList)
         {
             _context.Reservations.AddRange(reservationList);
-            await _context.SaveChangesAsync();
-            //return reservationList;
+            return _context.SaveChangesAsync();
         }
 
         public async Task CloseReservation(int id, int devoteeId, DateTime ToDate, string ModifiedBy)

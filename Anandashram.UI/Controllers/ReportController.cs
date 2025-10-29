@@ -117,38 +117,53 @@ namespace Anandashram.Controllers
                 return View();
             else
             {
-                WebReport wr = new WebReport();
-                if (report == "List")
-                    wr.Report.Load(Path.Combine(_env.ContentRootPath, "Reports", "RoomAllocation.frx"));
-                else
+                try
+                {
+                    WebReport wr = new WebReport();
+                    if (report == "List")
+                        wr.Report.Load(Path.Combine(_env.ContentRootPath, "Reports", "RoomAllocation.frx"));
+                    else
                     wr.Report.Load(Path.Combine(_env.ContentRootPath, "Reports", "RoomAllocation-detail.frx"));
 
-                List<Company> companies = new List<Company>();
-                companies.Add(_companyrepo.CompanyDetails());
-                wr.Report.RegisterData(companies, "CompanyRef");
-                wr.Report.RegisterData(await _devoteerepo.GetAllDevotees(false), "DevoteesRef");
-                if (typeofreport == "screen")
-                {
-                    return View(wr);
-                }
-                else
-                {
-                    if (wr.Report.Prepare())
+                    List<Company> companies = new List<Company>();
+                    List<Room> roomList = await _roomRepo.GetAllRoomReservations();
+                    companies.Add(_companyrepo.CompanyDetails());
+                    wr.Report.RegisterData(companies, "CompanyRef");
+                    wr.Report.RegisterData(roomList, "RoomAllocationRef");
+                    if (report == "Detail")
                     {
-                        FastReport.Export.PdfSimple.PDFSimpleExport pDFSimpleExport = new FastReport.Export.PdfSimple.PDFSimpleExport();
-                        pDFSimpleExport.ShowProgress = false;
-                        pDFSimpleExport.Subject = "Room Availability - List";
-                        MemoryStream ms = new MemoryStream();
-                        wr.Report.Export(pDFSimpleExport, ms);
-                        wr.Report.Dispose();
-                        pDFSimpleExport.Dispose();
-                        ms.Position = 0;
-                        return File(ms, "application/pdf", report + "List.pdf");
+                        wr.Report.GetDataSource("RoomAllocationRef").Enabled = true;
+                        // This line enables nested collections (Details)
+                        wr.Report.Dictionary.RegisterBusinessObject(roomList, "RoomAllocationRef", 10, true);
+                    }
+                    if (typeofreport == "screen")
+                    {
+                        return View(wr);
                     }
                     else
                     {
-                        return null;
+                        if (wr.Report.Prepare())
+                        {
+                           
+                            FastReport.Export.PdfSimple.PDFSimpleExport pDFSimpleExport = new FastReport.Export.PdfSimple.PDFSimpleExport();
+                            pDFSimpleExport.ShowProgress = false;
+                            pDFSimpleExport.Subject = "Room Availability - List";
+                            MemoryStream ms = new MemoryStream();
+                            wr.Report.Export(pDFSimpleExport, ms);
+                            wr.Report.Dispose();
+                            pDFSimpleExport.Dispose();
+                            ms.Position = 0;
+                            return File(ms, "application/pdf", "Room Availability - List.pdf");
+                        }
+                        else
+                        {
+                            return null;
+                        }
                     }
+                }
+                catch(Exception ex)
+                {
+                    return null;
                 }
             }
         }

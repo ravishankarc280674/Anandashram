@@ -21,7 +21,8 @@ namespace Anandashram.Controllers
 
         // POST: CompanyController/Edit/5
         [HttpPost]
-        [ValidateAntiForgeryToken]
+        
+        
         public ActionResult SaveCompany(Company company)
         {
             company = _companyRepo.SaveCompany(company);

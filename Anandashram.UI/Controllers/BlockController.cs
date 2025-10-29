@@ -95,7 +95,8 @@ namespace Anandashram.Controllers
 
 
         [HttpPost]
-        [ValidateAntiForgeryToken]
+        
+        
         //  [NoDirectAccess]
         public async Task<IActionResult> AddOrEdit(Block block, int id, int pg = 0, int pageSize = 5, string sortExpression = "", string searchText = "")
         {
@@ -132,6 +133,7 @@ namespace Anandashram.Controllers
         }
 
         [HttpPost]
+        
         //[NoDirectAccess]
         public async Task<IActionResult> Delete(Block block, int pg = 0, int pageSize = 5, string sortExpression = "", string searchText = "")
         {

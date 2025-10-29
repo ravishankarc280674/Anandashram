@@ -105,6 +105,7 @@ namespace Anandashram.Controllers
         public async Task<IActionResult> AddOrEdit(int Id = 0)
         {
             Devotee devotee = new Devotee();
+
             ViewBag.DevoteeCategoryId = GetDevoteeCategories();
             if (Id == 0)
             {
@@ -134,7 +135,8 @@ namespace Anandashram.Controllers
         }
 
         [HttpPost]
-        [ValidateAntiForgeryToken]
+        
+        
         public async Task<IActionResult> AddOrEdit(int Id, Devotee devotee, string actionButton)
         {
             if (ModelState.IsValid)
@@ -223,6 +225,7 @@ namespace Anandashram.Controllers
         }
 
         [HttpPost]
+        
         public async Task<IActionResult> Delete(Devotee devotee)
         {
             try
@@ -248,6 +251,7 @@ namespace Anandashram.Controllers
         //image captured from webcam
 
         [HttpPost]
+        
         public async Task<IActionResult> SaveImage(int Id, string Code, string Data)
         {
             AddFile addFile = new AddFile();
@@ -323,6 +327,7 @@ namespace Anandashram.Controllers
             return lstRooms;
         }
 
+        [HttpPost]
         public JsonResult GetSelectedRoom(int Id)
         {
             var room = _roomRepo.GetSelectedRoom(Id);
@@ -330,17 +335,21 @@ namespace Anandashram.Controllers
         }
 
         [HttpPost]
+
         public async Task<IActionResult> AddReservation([FromBody] List<Reservation> data)
         {
-            int DevoteeId = data[0].DevoteeId;
-            foreach (Reservation r in data) { r.CreatedDate = DateTime.Now; r.CreatedBy = 
-                    this.User.FindFirstValue(ClaimTypes.NameIdentifier); };
-            await _reservationRepo.AddReservation(data);
-            return Json(new { isValid = true, html = Helper.RenderRazorViewToString(this, "AddOrEdit", DevoteeId) });
+            if (data == null || !data.Any())
+                return BadRequest("No reservation data provided.");
 
+            int devoteeId = data.First().DevoteeId;
+
+            foreach (Reservation r in data){r.CreatedDate = DateTime.Now; r.CreatedBy =this.User.FindFirstValue(ClaimTypes.NameIdentifier);};
+            await _reservationRepo.AddReservation(data);
+            return Json(new { isValid = true, html = Helper.RenderRazorViewToString(this, "AddOrEdit", devoteeId) });
         }
 
-        [HttpPost]
+		[HttpPost]
+        
         public async Task<IActionResult> CloseReservation(int Id, int DevoteeId)
         {
             await _reservationRepo.CloseReservation(Id, DevoteeId, DateTime.Now, this.User.FindFirstValue(ClaimTypes.NameIdentifier));
@@ -348,6 +357,7 @@ namespace Anandashram.Controllers
         }
 
         [HttpPost]
+        
         public async Task<IActionResult> CloseReservations(int DevoteeId)
         {
             await _reservationRepo.CloseReservations(DevoteeId, DateTime.Now, this.User.FindFirstValue(ClaimTypes.NameIdentifier));

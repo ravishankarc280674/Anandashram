@@ -11,12 +11,13 @@ global using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 global using Microsoft.AspNetCore.Mvc;
 global using Microsoft.AspNetCore.Mvc.Rendering;
 global using Microsoft.EntityFrameworkCore;
-global using System.ComponentModel.DataAnnotations;
-global using System.Security.Claims;
 global using Newtonsoft.Json;
 global using System.ComponentModel;
+global using System.ComponentModel.DataAnnotations;
 global using System.ComponentModel.DataAnnotations.Schema;
+global using System.Security.Claims;
 using Anandashram;
+using Microsoft.AspNetCore.DataProtection;
 using Microsoft.Extensions.FileProviders;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -40,7 +41,11 @@ builder.Services.AddDefaultIdentity<IdentityUser>(options =>
 
 builder.Services.AddFastReport();
 builder.Services.AddResponseCompression();
-builder.Services.AddControllersWithViews();
+builder.Services.AddControllersWithViews(options =>
+{
+    // This might be adding antiforgery globally
+    options.Filters.Add(new IgnoreAntiforgeryTokenAttribute());
+});
 //Dependency Injection
 builder.Services.AddScoped<IDevotee, DevoteeRepository>();
 builder.Services.AddScoped<IBlock, BlockRepository>();
@@ -51,12 +56,12 @@ builder.Services.AddScoped<IFileManagement, FileManagement>();
 builder.Services.AddScoped<IReservation, ReservationRepository>();
 builder.Services.AddScoped<ICompany, CompanyRepository>();
 
-
+builder.Services.AddDataProtection().ProtectKeysWithDpapi();
 builder.Services.AddScoped<IDevoteeCategory, DevoteeCategoryRepository>();
 var app = builder.Build();
 
 app.UseFastReport();
-
+app.UseDeveloperExceptionPage();
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {

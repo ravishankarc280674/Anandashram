@@ -24,8 +24,8 @@ namespace Anandashram.Controllers
         }
 
         // POST: HomeController1/Create
-        [HttpPost]
-        [ValidateAntiForgeryToken]
+        [HttpPost][IgnoreAntiforgeryToken]
+        
         public ActionResult Create(IFormCollection collection)
         {
             try
@@ -45,8 +45,8 @@ namespace Anandashram.Controllers
         }
 
         // POST: HomeController1/Edit/5
-        [HttpPost]
-        [ValidateAntiForgeryToken]
+        [HttpPost][IgnoreAntiforgeryToken]
+        
         public ActionResult Edit(int id, IFormCollection collection)
         {
             try
@@ -66,8 +66,8 @@ namespace Anandashram.Controllers
         }
 
         // POST: HomeController1/Delete/5
-        [HttpPost]
-        [ValidateAntiForgeryToken]
+        [HttpPost][IgnoreAntiforgeryToken]
+        
         public ActionResult Delete(int id, IFormCollection collection)
         {
             try

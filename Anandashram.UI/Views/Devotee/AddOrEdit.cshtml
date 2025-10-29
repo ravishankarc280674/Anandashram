@@ -274,8 +274,7 @@ else
            
             <div class="collapse mt-12 border-2" id="manageReservationDiv">
                 <div class="card card-body">
-                <form id="AddOrEditReservationForm" onsubmit="return saveNewDetails();"  asp-route-id="@Model.Id" asp-route-pg="@pg" asp-route-SearchText="@ViewBag.SearchText" asp-route-PageSize="@ViewBag.PageSize">
-
+               
                     <div class="col-12 ml-5">
                         <div class="row col-11 ml-2">
                             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
@@ -437,47 +436,7 @@ else
                                             </td>
                                         </tr>
                                     }
-                                    <tr class="rowClass">
-                                    <td>
-                                            <select class="form-control dropdown" asp-items="ViewBag.RoomsList"></select>
-                                        </td>
-                                         <td>
-                                            <label class="building-label" />
-                                        </td>
-                                        <td>
-                                            <label class="block-label" />
-                                        </td>
-                                        <td>
-                                            <label class="floor-label"/>
-                                        </td>
-                                        
-                                        <td>
-                                            <label class="fromDate-label" />
-                                        </td>
-                                        <td>
-                                            <label class="toDate-label" />
-                                        </td>
-                                        <td>
-                                            <label class="maxCapacity-label" />
-                                        </td>
-                                        <td>
-                                            <label class="remaining-label" />
-                                        </td>
-                                        
-                                        <td>
-                                            <label class="alreadyAllocate-label">0</label>
-                                        </td>
-                                      
-                                      
-                                        <td style="width:100px">
-                                            <input type="number" value="0" step="1" min="0" max="100" class="form-control class-allot" />
-                                        </td>
-                                        <td style="width:60px;">
-                                            <button id='btnremove' type="button" class="btn btn-sm btn-danger visible" onclick="DeleteItem(this)">
-                                                Delete
-                                            </button>
-                                        </td>
-                                    </tr>
+                                   
                            </tbody>
                                 <tfoot id="tableFooter">
                                <tr>
@@ -499,9 +458,8 @@ else
                         <div class="form-group btn-group"> *@
                      
                     <div class="form-group btn-group col-12">
-                            <input type="submit" value="Update" class="btn btn-primary btn-block" />
+                    <button type="button" value="Update" class="btn btn-primary btn-block" onclick="return saveNewDetails()">Update</button>
                     </div>
-        </form>
             </div>
         </div>
     </div>
@@ -555,12 +513,14 @@ else
            $(document).on('change', '.dropdown',function () {
             //     var rooms =
                     var id = $(this).val(); // Get selected value
+                    debugger;
                     var currentRow = $(this).closest('tr');
                               $.ajax({
                                     type: 'POST',
                                     url: '/Devotee/GetSelectedRoom',
                                     data: { Id: id }, // Parameters sent to the controller
                             success: function (Data) {
+                                debugger;
                                 var room = Data.data;
                                 currentRow.find('.building-label').text(room.buildingName);
                                 currentRow.find('.block-label').text(room.blockName);
@@ -572,7 +532,6 @@ else
                                 currentRow.find('.ToDate-label').text(room.toDate);
                             },
                             error: function (error) {
-                                alert(error);
                                 console.log(error);
                             }
                          });
@@ -685,7 +644,7 @@ else
                     sumNewAllot += Number(allot);
                     if(roomSelected>0 && allot>0)
                         {
-                            if(allot > remaining)
+                              if(Number(allot) > Number(remaining))
                                {
                                     $.notify("Room: \""  + roomSelectedText + "\"  -  New Allotment: " + allot +" cannot be greater than Remaining: " + remaining, { globalPosition: "top centre", className:"error" });
                                     return false;
@@ -726,8 +685,8 @@ else
                     data:JSON.stringify(reservationList),
                     success: function (response) {
                       $.notify("Submitted Successfully", { globalPosition: "top centre", className:"Success" });
-                      window.location.reload();
-                      return true;
+                              window.location.reload();
+                              return true;
                     },
                     error: function () {
                         alert('Error saving.');

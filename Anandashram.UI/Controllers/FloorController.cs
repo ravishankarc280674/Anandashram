@@ -97,7 +97,8 @@ namespace Anandashram.Controllers
 
 
         [HttpPost]
-        [ValidateAntiForgeryToken]
+        
+        
         //  [NoDirectAccess]
         public async Task<IActionResult> AddOrEdit(int id, Floor floor, int pg = 0, int pageSize = 5, string sortExpression = "", string searchText = "")
         {

@@ -121,8 +121,8 @@ namespace Anandashram.Controllers
         }
 
         // POST: Room/Create
-        [HttpPost]
-        [ValidateAntiForgeryToken]
+        [HttpPost][IgnoreAntiforgeryToken]
+        
         public async Task<IActionResult> Create(Room room)
         {
             string errMessage = string.Empty;
@@ -155,8 +155,8 @@ namespace Anandashram.Controllers
             return View(room);
         }
 
-        [HttpPost]
-        [ValidateAntiForgeryToken]
+        [HttpPost][IgnoreAntiforgeryToken]
+        
         public async Task<IActionResult> Edit(int id, Room room)
         {
             bool bolret = false;
@@ -211,7 +211,7 @@ namespace Anandashram.Controllers
             return View(room);
         }
 
-        [HttpPost]
+        [HttpPost][IgnoreAntiforgeryToken]
         public async Task<IActionResult> Delete(Room room)
         {
             try
