@@ -16,5 +16,7 @@ namespace Anandashram.Interfaces
         bool IsDevoteeNameExists(string name);
         bool IsDevoteeNameExists(string name, int Id);
         Task<List<Devotee>> GetAllDevotees(bool Checked);
+
+        Task<Devotee> GetDevoteeWithReservations(int devoteeId);
     }
 }

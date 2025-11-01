@@ -35,6 +35,19 @@
 
 	<div class="container mt-1">
 		<ul class="pagination justify-content-end">
+			<li>
+			<form asp-controller="Report" asp-action="ShowReport" method="get" target="_blank">
+				<button type="submit" class="btn btn-primary">Show Report</button>
+			</form>
+
+			<form asp-controller="Report" asp-action="DownloadPdf" method="get">
+				<button type="submit" class="btn btn-danger">Download PDF</button>
+			</form>
+
+			<form asp-controller="Report" asp-action="DownloadCsv" method="get">
+				<button type="submit" class="btn btn-success">Download Excel (CSV)</button>
+			</form>
+			</li>
 			@if (Model.ViewType != "Tile")
 			{
 				<li class="page-item">

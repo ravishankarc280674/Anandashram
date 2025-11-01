@@ -1,0 +1,33 @@
+﻿@using FastReport.Web
+@{
+    ViewData["Title"] = "FastReport Viewer";
+    var webReport = ViewBag.WebReport as WebReport;
+}
+
+<div class="container mt-4">
+    <h4 class="mb-3">Filtered Devotee Report</h4>
+
+    @if (webReport != null)
+    {
+        <!-- The FastReport viewer -->
+        @await webReport.Render()
+    }
+    else
+    {
+        <div class="alert alert-warning">
+            No report data available.
+        </div>
+    }
+
+    <hr />
+
+    <div class="mt-3">
+        <a asp-controller="Report" asp-action="DownloadPdf" class="btn btn-danger me-2">
+            <i class="bi bi-file-earmark-pdf"></i> Download PDF
+        </a>
+
+        <a asp-controller="Report" asp-action="DownloadCsv" class="btn btn-success">
+            <i class="bi bi-file-earmark-excel"></i> Download Excel (CSV)
+        </a>
+    </div>
+</div>

@@ -1,4 +1,4 @@
-global using Anandashram.Data;
+﻿global using Anandashram.Data;
 global using Anandashram.Interfaces;
 global using Anandashram.Models;
 global using Anandashram.Repositories;
@@ -19,7 +19,7 @@ global using System.Security.Claims;
 using Anandashram;
 using Microsoft.AspNetCore.DataProtection;
 using Microsoft.Extensions.FileProviders;
-
+using System.Text.Json.Serialization;
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
@@ -39,14 +39,27 @@ builder.Services.AddDefaultIdentity<IdentityUser>(options =>
 })
     .AddEntityFrameworkStores<ApplicationDbContext>();
 
-builder.Services.AddFastReport();
 builder.Services.AddResponseCompression();
 builder.Services.AddControllersWithViews(options =>
 {
     // This might be adding antiforgery globally
     options.Filters.Add(new IgnoreAntiforgeryTokenAttribute());
-});
-//Dependency Injection
+})
+    .AddJsonOptions(options =>
+    {
+        options.JsonSerializerOptions.ReferenceHandler = ReferenceHandler.IgnoreCycles;
+        options.JsonSerializerOptions.PropertyNamingPolicy = null;
+    });
+builder.Services.AddScoped<ICompany, CompanyRepository>();
+builder.Services.AddDataProtection().ProtectKeysWithDpapi();
+builder.Services.AddSession(options =>
+{
+    options.IdleTimeout = TimeSpan.FromMinutes(30); // Session timeout
+    options.Cookie.HttpOnly = true;                 // Protect from JavaScript access
+    options.Cookie.IsEssential = true;              // Required for GDPR compliance
+    options.Cookie.SecurePolicy = CookieSecurePolicy.Always; // HTTPS only
+    options.Cookie.SameSite = SameSiteMode.Lax;
+});//Dependency Injection
 builder.Services.AddScoped<IDevotee, DevoteeRepository>();
 builder.Services.AddScoped<IBlock, BlockRepository>();
 builder.Services.AddScoped<IFloor, FloorRepository>();
@@ -54,9 +67,8 @@ builder.Services.AddScoped<IBuilding, BuildingRepository>();
 builder.Services.AddScoped<IRoom, RoomRepository>();
 builder.Services.AddScoped<IFileManagement, FileManagement>();
 builder.Services.AddScoped<IReservation, ReservationRepository>();
-builder.Services.AddScoped<ICompany, CompanyRepository>();
+builder.Services.AddFastReport();
 
-builder.Services.AddDataProtection().ProtectKeysWithDpapi();
 builder.Services.AddScoped<IDevoteeCategory, DevoteeCategoryRepository>();
 var app = builder.Build();
 
@@ -83,7 +95,7 @@ app.UseStaticFiles(new StaticFileOptions
 app.UseHttpsRedirection();
 
 app.UseRouting();
-
+app.UseSession();
 app.UseAuthorization();
 
 app.MapControllerRoute(

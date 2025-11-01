@@ -1,4 +1,5 @@
-﻿using DocumentFormat.OpenXml.Office2010.Excel;
+﻿using DocumentFormat.OpenXml.Bibliography;
+using DocumentFormat.OpenXml.Office2010.Excel;
 using FastReport;
 using FastReport.Data;
 
@@ -123,18 +124,22 @@ namespace Anandashram.Controllers
                     if (report == "List")
                         wr.Report.Load(Path.Combine(_env.ContentRootPath, "Reports", "RoomAllocation.frx"));
                     else
-                    wr.Report.Load(Path.Combine(_env.ContentRootPath, "Reports", "RoomAllocation-detail.frx"));
+                        wr.Report.Load(Path.Combine(_env.ContentRootPath, "Reports", "RoomAllocation-detail.frx"));
 
                     List<Company> companies = new List<Company>();
                     List<Room> roomList = await _roomRepo.GetAllRoomReservations();
                     companies.Add(_companyrepo.CompanyDetails());
                     wr.Report.RegisterData(companies, "CompanyRef");
-                    wr.Report.RegisterData(roomList, "RoomAllocationRef");
+
                     if (report == "Detail")
                     {
-                        wr.Report.GetDataSource("RoomAllocationRef").Enabled = true;
-                        // This line enables nested collections (Details)
-                        wr.Report.Dictionary.RegisterBusinessObject(roomList, "RoomAllocationRef", 10, true);
+                        wr.Report.RegisterData(roomList, "Room");
+                        wr.Report.GetDataSource("Room").Enabled = true;
+                        wr.Report.GetDataSource("Room.Reservations").Enabled = true;
+                    }
+                    else
+                    {
+                        wr.Report.RegisterData(roomList, "Rooms");
                     }
                     if (typeofreport == "screen")
                     {
@@ -144,7 +149,7 @@ namespace Anandashram.Controllers
                     {
                         if (wr.Report.Prepare())
                         {
-                           
+
                             FastReport.Export.PdfSimple.PDFSimpleExport pDFSimpleExport = new FastReport.Export.PdfSimple.PDFSimpleExport();
                             pDFSimpleExport.ShowProgress = false;
                             pDFSimpleExport.Subject = "Room Availability - List";
@@ -161,7 +166,7 @@ namespace Anandashram.Controllers
                         }
                     }
                 }
-                catch(Exception ex)
+                catch (Exception ex)
                 {
                     return null;
                 }
@@ -173,35 +178,109 @@ namespace Anandashram.Controllers
             return View();
         }
 
-        [HttpPost]
-        public async Task<IActionResult> DevoteeReportViewer(string typeofreport = "")
+        public IActionResult ShowReport()
         {
+            var jsonData = HttpContext.Session.GetString("DevoteesFilterData");
+            if (string.IsNullOrEmpty(jsonData))
+                return Content("No filtered data available for report.");
+
+            // 🧩 Step 2: Deserialize back to list
+            var devotees = System.Text.Json.JsonSerializer.Deserialize<List<Devotee>>(jsonData);
             WebReport wr = new WebReport();
             wr.Report.Load(Path.Combine(_env.ContentRootPath, "Reports", "DevoteeList.frx"));
             List<Company> companies = new List<Company>();
             companies.Add(_companyrepo.CompanyDetails());
             wr.Report.RegisterData(companies, "CompanyRef");
-            wr.Report.RegisterData(await _devoteerepo.GetAllDevotees(false), "DevoteesRef");
-           
+            wr.Report.RegisterData(devotees, "Devotees");
+            wr.Report.Prepare();
+            return View(wr);
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> DevoteeReportViewer(string typeofreport = "")
+        {
+            //    WebReport wr = new WebReport();
+            //    wr.Report.Load(Path.Combine(_env.ContentRootPath, "Reports", "DevoteeList.frx"));
+            //    List<Company> companies = new List<Company>();
+            //    companies.Add(_companyrepo.CompanyDetails());
+            //    wr.Report.RegisterData(companies, "CompanyRef");
+            //    List<Devotee> devotees = new List<Devotee>();
+            //    devotees.Add(await _devoteerepo.GetDevoteeWithReservations(1));
+            //    wr.Report.RegisterData(devotees, "Devotees");
+
+            //    if (typeofreport == "screen")
+            //    {
+            //        return View(wr);
+            //    }
+            //    else
+            //    {
+            //        if (wr.Report.Prepare())
+            //        {
+            //            FastReport.Export.PdfSimple.PDFSimpleExport pDFSimpleExport = new FastReport.Export.PdfSimple.PDFSimpleExport();
+            //            pDFSimpleExport.ShowProgress = false;
+            //            pDFSimpleExport.Subject = "Room Availability - List";
+            //            MemoryStream ms = new MemoryStream();
+            //            wr.Report.Export(pDFSimpleExport, ms);
+            //            wr.Report.Dispose();
+            //            pDFSimpleExport.Dispose();
+            //            ms.Position = 0;
+            //            return File(ms, "application/pdf", "DevoteeList.pdf");
+            //        }
+            //        else
+            //        {
+            //            return null;
+            //        }
+            //    }
+            WebReport wr = new WebReport();
+                wr.Report.Load(Path.Combine(_env.ContentRootPath, "Reports", "DevoteeDetail.frx"));
+            List<Company> companies = new List<Company>();
+            companies.Add(_companyrepo.CompanyDetails());
+            wr.Report.RegisterData(companies, "CompanyRef");
+            List<Devotee> devotees = new List<Devotee>();
+                devotees.Add(await _devoteerepo.GetDevoteeWithReservations(1));
+            foreach (var d in devotees)
+            {
+                d.Reservations ??= new List<Reservation>();
+            }
+                wr.Report.RegisterData(devotees, "Devotees");
+            wr.Report.GetDataSource("Devotees").Enabled = true;
+            wr.Report.GetDataSource("Devotees.Reservations").Enabled = true;
+
+            // 🔗 define the relation manually
+            //var relation = new Relation
+            //{
+            //    ParentDataSource = wr.Report.GetDataSource("Devotees"),
+            //    ChildDataSource = wr.Report.GetDataSource("Devotees.Reservations"),
+            //    ParentColumns = new string[] { "Id" },
+            //    ChildColumns = new string[] { "DevoteeId" }
+            //};
+            //wr.Report.Dictionary.Relations.Add(relation);
             if (typeofreport == "screen")
             {
                 return View(wr);
             }
             else
             {
-                if (wr.Report.Prepare())
+                try
                 {
-                    FastReport.Export.PdfSimple.PDFSimpleExport pDFSimpleExport = new FastReport.Export.PdfSimple.PDFSimpleExport();
-                    pDFSimpleExport.ShowProgress = false;
-                    pDFSimpleExport.Subject = "Room Availability - List";
-                    MemoryStream ms = new MemoryStream();
-                    wr.Report.Export(pDFSimpleExport, ms);
-                    wr.Report.Dispose();
-                    pDFSimpleExport.Dispose();
-                    ms.Position = 0;
-                    return File(ms, "application/pdf", "DevoteeList.pdf");
+                    if (wr.Report.Prepare())
+                    {
+                        FastReport.Export.PdfSimple.PDFSimpleExport pDFSimpleExport = new FastReport.Export.PdfSimple.PDFSimpleExport();
+                        pDFSimpleExport.ShowProgress = false;
+                        pDFSimpleExport.Subject = "Devotee Details";
+                        MemoryStream ms = new MemoryStream();
+                        wr.Report.Export(pDFSimpleExport, ms);
+                        wr.Report.Dispose();
+                        pDFSimpleExport.Dispose();
+                        ms.Position = 0;
+                        return File(ms, "application/pdf", "DevoteeDetail.pdf");
+                    }
+                    else
+                    {
+                        return null;
+                    }
                 }
-                else
+                catch (Exception ex)
                 {
                     return null;
                 }

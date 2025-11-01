@@ -1,0 +1,90 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Report ScriptLanguage="CSharp" ReportInfo.Created="10/31/2025 16:47:55" ReportInfo.Modified="10/31/2025 16:55:53" ReportInfo.CreatorVersion="2026.1.0.0">
+  <Dictionary>
+    <BusinessObjectDataSource Name="CompanyRef" ReferenceName="CompanyRef" DataType="System.Int32" Enabled="true">
+      <Column Name="Name" DataType="System.String"/>
+      <Column Name="Established" DataType="System.Int32"/>
+      <Column Name="AddressLine1" DataType="System.String"/>
+      <Column Name="AddressLine2" DataType="System.String"/>
+      <Column Name="State" DataType="System.String"/>
+      <Column Name="Country" DataType="System.String"/>
+      <Column Name="PinCode" DataType="System.String"/>
+      <Column Name="Mobile" DataType="System.String"/>
+      <Column Name="Email" DataType="System.String"/>
+      <Column Name="Website" DataType="System.String"/>
+      <Column Name="LogoPath" DataType="System.String"/>
+    </BusinessObjectDataSource>
+    <BusinessObjectDataSource Name="Devotees" ReferenceName="Devotees" DataType="System.Int32" Enabled="true">
+      <Column Name="Id" DataType="System.Int32"/>
+      <Column Name="Code" DataType="System.String"/>
+      <Column Name="Name" DataType="System.String"/>
+      <Column Name="Mobile" DataType="System.String"/>
+      <Column Name="Email" DataType="System.String"/>
+      <Column Name="Document" DataType="System.String"/>
+      <Column Name="AddressLine1" DataType="System.String"/>
+      <Column Name="AddressLine2" DataType="System.String"/>
+      <Column Name="State" DataType="System.String"/>
+      <Column Name="Country" DataType="System.String"/>
+      <Column Name="PinCode" DataType="System.String"/>
+      <Column Name="DevoteeCategoryName" DataType="System.String"/>
+      <Column Name="NoOfPeople" DataType="System.Int32"/>
+      <BusinessObjectDataSource Name="Reservations" DataType="System.Int32" Enabled="true">
+        <Column Name="Id" DataType="System.Int32"/>
+        <Column Name="DevoteeId" DataType="System.Int32"/>
+        <Column Name="RoomName" DataType="System.String"/>
+        <Column Name="BuildingName" DataType="System.String"/>
+        <Column Name="BlockName" DataType="System.String"/>
+        <Column Name="FloorName" DataType="System.String"/>
+        <Column Name="FromDate" DataType="System.DateTime"/>
+        <Column Name="ToDate" DataType="System.DateTime"/>
+        <Column Name="Allocated" DataType="System.Int32"/>
+        <Column Name="Closed" DataType="System.Boolean"/>
+      </BusinessObjectDataSource>
+    </BusinessObjectDataSource>
+    <Relation Name="Devotee_Reservations" ParentDataSource="Devotees" ChildDataSource="Reservations" ParentColumns="Id" ChildColumns="DevoteeId" Enabled="true"/>
+  </Dictionary>
+  <ReportPage Name="Page1" Width="718.2" Guides="0,718.2,80,580,708.75,689.85,-18.9,699.3,95,175,9.45,89.45,180,260,265,345,435,515,520,600,610,670,350,430,620,638.9,614.25" >
+    <ReportTitleBand Name="ReportTitle1" Width="718.2" Height="30" Guides="0,28.35">
+      <TextObject Name="Title" Width="718.2" Height="28.35" Text="DEVOTEE REPORT" HorzAlign="Center" VertAlign="Center" Font="Tahoma, 14pt, style=Bold"/>
+    </ReportTitleBand>
+    <PageHeaderBand Name="CompanyHeader" Top="34" Width="718.2" Height="80" Guides="5,25,28,46,45,63,62,80">
+      <TextObject Name="Name" Left="80" Top="5" Width="500" Height="20" Text="[CompanyRef.Name]" Font="Tahoma, 14pt, style=Bold"/>
+      <TextObject Name="Address" Left="80" Top="28" Width="500" Height="18" Text="[CompanyRef.AddressLine1], [CompanyRef.AddressLine2]" Font="Tahoma, 9pt"/>
+      <TextObject Name="State" Left="80" Top="45" Width="500" Height="18" Text="[CompanyRef.State], [CompanyRef.Country] - [CompanyRef.PinCode]" Font="Tahoma, 9pt"/>
+      <TextObject Name="Contact" Left="80" Top="62" Width="500" Height="18" Text="Ph: [CompanyRef.Mobile]  |  Email: [CompanyRef.Email]  |  [CompanyRef.Website]" Font="Tahoma, 8pt"/>
+    </PageHeaderBand>
+    <DataBand Name="DevoteeBand" Top="118" Width="718.2" Height="240" Border.Lines="Bottom" CanGrow="true" Guides="5,33.35001,45,63.89999,65,83.89999,85,103.9,105,123.9,125,143.9,145,163.9,165,183.9,190,212.9,1.849998,217.35,236.25" DataSource="Devotees">
+      <TextObject Name="TextHeader" Top="5" Width="708.75" Height="28.35" Border.Lines="Bottom" Fill.Color="104, 140, 196" Text="[Devotees.Name] ([Devotees.Code])" Padding="5, 0, 0, 0" Font="Tahoma, 14pt, style=Bold" TextFill.Color="White"/>
+      <TextObject Name="TextCategory" Top="45" Width="708.75" Height="18.9" Text="Category: [Devotees.DevoteeCategoryName]" Font="Tahoma, 10pt"/>
+      <TextObject Name="TextMobile" Top="65" Width="708.75" Height="18.9" Text="Mobile: [Devotees.Mobile]" Font="Tahoma, 10pt"/>
+      <TextObject Name="TextEmail" Top="85" Width="708.75" Height="18.9" Text="Email: [Devotees.Email]" Font="Tahoma, 10pt"/>
+      <TextObject Name="TextAddress" Top="105" Width="708.75" Height="18.9" Text="Address: [Devotees.AddressLine1], [Devotees.AddressLine2]" Font="Tahoma, 10pt"/>
+      <TextObject Name="TextState" Top="125" Width="708.75" Height="18.9" Text="State: [Devotees.State], [Devotees.Country]" Font="Tahoma, 10pt"/>
+      <TextObject Name="TextPin" Top="145" Width="708.75" Height="18.9" Text="Pin Code: [Devotees.PinCode]" Font="Tahoma, 10pt"/>
+      <TextObject Name="TextPeople" Top="165" Width="708.75" Height="18.9" Text="No. of People: [Devotees.NoOfPeople]" Font="Tahoma, 10pt"/>
+      <TextObject Name="Text41" Top="190" Width="689.85" Height="22.9" Text="Room Reservations" HorzAlign="Center" Font="Arial, 12pt, style=Bold"/>
+      <LineObject Name="HeaderLine" Left="-18.9" Top="1.85" Width="718.2" Border.Color="Gray"/>
+      <TextObject Name="HdrBuilding" Left="95" Top="217.35" Width="80" Height="18.9" Text="Building" Font="Arial, 9pt, style=Bold"/>
+      <TextObject Name="HdrRoom" Left="9.45" Top="217.35" Width="80" Height="18.9" Text="Room" Font="Arial, 9pt, style=Bold"/>
+      <TextObject Name="HdrBlock" Left="180" Top="217.35" Width="80" Height="18.9" Text="Block" Font="Arial, 9pt, style=Bold"/>
+      <TextObject Name="HdrFloor" Left="265" Top="217.35" Width="80" Height="18.9" Text="Floor" Font="Arial, 9pt, style=Bold"/>
+      <TextObject Name="HdrTo" Left="435" Top="217.35" Width="80" Height="18.9" Text="To Date" Font="Arial, 9pt, style=Bold"/>
+      <TextObject Name="HdrAlloc" Left="520" Top="217.35" Width="80" Height="18.9" Text="Allocated" Font="Arial, 9pt, style=Bold"/>
+      <TextObject Name="HdrClosed" Left="610" Top="217.35" Width="60" Height="18.9" Text="Closed" Font="Arial, 9pt, style=Bold"/>
+      <TextObject Name="HdrFrom" Left="350" Top="217.35" Width="80" Height="18.9" Text="From Date" Font="Arial, 9pt, style=Bold"/>
+      <DataBand Name="ReservationBand" Top="362" Width="718.2" Height="20" Border.Lines="Bottom" CanGrow="true" Guides="0,18.89999" DataSource="Reservations">
+        <TextObject Name="TextRoom" Left="9.45" Width="80" Height="18.9" Text="[Devotees.Reservations.RoomName]" Font="Arial, 8.25pt"/>
+        <TextObject Name="TextBuilding" Left="95" Width="80" Height="18.9" Text="[Devotees.Reservations.BuildingName]" Font="Arial, 8.25pt"/>
+        <TextObject Name="TextBlock" Left="180" Width="80" Height="18.9" Text="[Devotees.Reservations.BlockName]" Font="Arial, 8.25pt"/>
+        <TextObject Name="TextFloor" Left="265" Width="80" Height="18.9" Text="[Devotees.Reservations.FloorName]" Font="Arial, 8.25pt"/>
+        <TextObject Name="TextFrom" Left="350" Width="80" Height="18.9" Text="[Devotees.Reservations.FromDate]" Format="Date" Format.Format="dd/MM/yyyy" Font="Arial, 8pt"/>
+        <TextObject Name="TextTo" Left="435" Width="80" Height="18.9" Text="[Devotees.Reservations.ToDate]" Format="Date" Format.Format="dd/MM/yyyy" Font="Arial, 8pt"/>
+        <TextObject Name="TextAlloc" Left="520" Width="80" Height="18.9" Text="[Devotees.Reservations.Allocated]" Font="Arial, 8pt"/>
+        <CheckBoxObject Name="ChkClosed" Left="620" Width="18.9" Height="18.9" DataColumn="Devotees.Reservations.Closed"/>
+      </DataBand>
+    </DataBand>
+    <PageFooterBand Name="PageFooter1" Top="386" Width="718.2" Height="28.35" Fill.Color="WhiteSmoke" Guides="0,28.35001">
+      <TextObject Name="Text7" Left="614.25" Width="94.5" Height="28.35" Text="[PageN]" HorzAlign="Right" VertAlign="Center" Font="Tahoma, 10pt"/>
+    </PageFooterBand>
+  </ReportPage>
+</Report>

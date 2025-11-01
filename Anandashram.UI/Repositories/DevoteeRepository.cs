@@ -1,5 +1,6 @@
 ﻿
 using Anandashram.UI.Tools.Models;
+using DocumentFormat.OpenXml.Office2010.Excel;
 using Microsoft.EntityFrameworkCore.Query.SqlExpressions;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion.Internal;
 using SQLitePCL;
@@ -165,6 +166,17 @@ namespace Anandashram.Repositories
         public IEnumerable<Devotee> GetDevotees()
         {
             return _context.Devotees.ToList();
+        }
+
+        public async Task<Devotee> GetDevoteeWithReservations(int devoteeId)
+        {
+          Devotee devotee = await _context.Devotees.Where(t1 => t1.Id == devoteeId).Include(t1 =>t1.DevoteeCategory)
+                        .Include(t1 => t1.Reservations).ThenInclude(t2 => t2.Room).ThenInclude(t3 => t3.Building)
+                        .Include(t1 => t1.Reservations).ThenInclude(t2 => t2.Room).ThenInclude(t3 => t3.Block)
+                        .Include(t1 => t1.Reservations).ThenInclude(t2 => t2.Room).ThenInclude(t3 => t3.Floor)
+                        .FirstOrDefaultAsync();
+            return devotee;
+
         }
     }
 }

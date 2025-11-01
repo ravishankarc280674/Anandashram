@@ -16,41 +16,58 @@
       <Column Name="Email" DataType="System.String"/>
       <Column Name="Website" DataType="System.String"/>
     </BusinessObjectDataSource>
-    <BusinessObjectDataSource Name="RoomAllocationRef" ReferenceName="RoomAllocationRef" DataType="null" Enabled="True">
+    
+    <BusinessObjectDataSource Name="Room" ReferenceName="Room" DataType="System.Collections.Generic.List`1[[Anandashram.Models.Room, Anandashram]]" Enabled="True">
       <Column Name="Name" DataType="System.String"/>
       <Column Name="BuildingName" DataType="System.String"/>
       <Column Name="BlockName" DataType="System.String"/>
       <Column Name="FloorName" DataType="System.String"/>
       <Column Name="Capacity" DataType="System.Int32"/>
+      <BusinessObjectDataSource Name="Reservations" DataType="System.Collections.Generic.List`1[[Anandashram.Models.Reservation, Anandashram]]">
+        <Column Name="DevoteeCode" DataType="System.String"/>
+        <Column Name="DevoteeName" DataType="System.String"/>
+        <Column Name="FromDate" DataType="System.String"/>
+        <Column Name="Allocated" DataType="System.Int32"/>
+        <Column Name="Closed" DataType="System.Boolean"/>
+      </BusinessObjectDataSource>
     </BusinessObjectDataSource>
     <Parameter Name="Title" DataType="System.String" AsString=""/>
   </Dictionary>
-  <ReportPage Name="Page1" Guides="-1,717.2,0,718.2,9.45,94.5,103.95,217.35,340.2,434.7,529.2,557.55,623.7,621.7,716.2,141.75,236.25,245.7,368.55,463.05" Watermark.Font="Arial, 60pt">
-    <ReportTitleBand Name="ReportTitle1" Width="718.2"/>
-    <PageHeaderBand Name="PageHeader1" Top="4" Width="718.2" Height="151.2" Guides="19.9,38.8,0,18.9,37.8,58.59,58.7,87.05,78.05,96.95,95.5,114.4,122.85,141.75">
-      <TextObject Name="Text17" Left="-1" Top="19.9" Width="718.2" Height="18.9" Text="Est: [Company.Established]" HorzAlign="Center" Font="Arial, 11.25pt"/>
+     <ReportPage Name="Page1" Guides="0,718.2,9.45,103.95,160.65,255.15,349.65,444.15,557.55,661.5,28.35,529.2,359.1,18.9,103.4,93.4,227.9,297.9,392.4,402.4,496.9,572.5,20,114.5,113.95,293.5,295.65,390.15,397.35,491.85" Watermark.Font="Arial, 60pt">
+    <PageHeaderBand Name="PageHeader1" Width="718.2" Height="151.2" Guides="19.9,38.8,0,18.9,37.8,58.59,58.7,87.05,78.05,96.95,95.5,114.4,122.85,141.75">
+      <TextObject Name="Text17" Top="19.9" Width="718.2" Height="18.9" Text="Est: [Company.Established]" HorzAlign="Center" Font="Arial, 11.25pt"/>
       <TextObject Name="Text10" Width="718.2" Height="18.9" Text="[Company.Name]" AutoWidth="true" HorzAlign="Center" VertAlign="Center" Font="Arial, 14.25pt, style=Bold"/>
       <TextObject Name="Text19" Top="37.8" Width="718.2" Height="20.79" Text="[Company.AddressLine1] [Company.AddressLine2]" HorzAlign="Center" Font="Arial, 11.25pt"/>
-      <TextObject Name="Text20" Left="-1" Top="58.7" Width="718.2" Height="28.35" Text="[Company.State], [Company.Country] - [Company.PinCode]" HorzAlign="Center" Font="Arial, 11.25pt"/>
+      <TextObject Name="Text20" Top="58.7" Width="718.2" Height="28.35" Text="[Company.State], [Company.Country] - [Company.PinCode]" HorzAlign="Center" Font="Arial, 11.25pt"/>
       <TextObject Name="Text24" Top="78.05" Width="718.2" Height="18.9" Text="Mobile: [Company.Mobile], Email: [Company.Email]" HorzAlign="Center" Font="Arial, 11.25pt"/>
       <TextObject Name="Text25" Top="95.5" Width="718.2" Height="18.9" Text="Website: [Company.Website]" HorzAlign="Center" Font="Arial, 11.25pt"/>
       <TextObject Name="Text26" Top="122.85" Width="718.2" Height="18.9" Text="Room avalablity as on: [Date]" HorzAlign="Center" VertAlign="Center" Font="Arial, 11.25pt, style=Bold"/>
     </PageHeaderBand>
-    <DataBand Name="Data1" Top="159.2" Width="718.2" Height="47.25" Fill.Color="LightGray" Style="EvenRow" Guides="2,20.89999,3,21.89999,18.89999,47.25" DataSource="RoomAllocationRef">
-      <TextObject Name="Text27" Left="9.45" Top="2" Width="85.05" Height="18.9" EvenStyle="EvenRow" EvenStylePriority="UseAll" Text="[RoomAllocationRef.Name]" HorzAlign="Justify" Font="Arial, 10pt"/>
-      <TextObject Name="Text28" Left="103.95" Top="2" Width="113.4" Height="18.9" EvenStyle="EvenRow" EvenStylePriority="UseAll" Text="[RoomAllocationRef.BuildingName]" HorzAlign="Justify" Font="Arial, 10pt"/>
-      <TextObject Name="Text29" Left="217.35" Top="2" Width="122.85" Height="18.9" EvenStyle="EvenRow" EvenStylePriority="UseAll" Text="[RoomAllocationRef.BlockName]" Font="Arial, 10pt"/>
-      <TextObject Name="Text30" Left="340.2" Top="2" Width="94.5" Height="18.9" EvenStyle="EvenRow" EvenStylePriority="UseAll" Text="[RoomAllocationRef.FloorName]" HorzAlign="Justify" Font="Arial, 10pt"/>
+    <ColumnHeaderBand Name="ColumnHeader1" Top="155.2" Width="718.2" Height="18.9" Border.Lines="Top, Bottom" Border.TopLine.Style="Double" Border.BottomLine.Style="Double" Fill.Color="DarkGray" Guides="0,18.89999">
+      <TextObject Name="Text38" Left="9.45" Width="94.5" Height="18.9" Text="Room" HorzAlign="Center" VertAlign="Center" Font="Arial, 10pt, style=Bold"/>
+      <TextObject Name="Text43" Left="160.65" Width="94.5" Height="18.9" Text="Building" HorzAlign="Center" VertAlign="Center" Font="Arial, 9.75pt, style=Bold"/>
+      <TextObject Name="Text44" Left="349.65" Width="94.5" Height="18.9" Text="Block" HorzAlign="Center" VertAlign="Center" Font="Arial, 9.75pt, style=Bold"/>
+      <TextObject Name="Text45" Left="557.55" Width="103.95" Height="18.9" Text="Floor" HorzAlign="Center" VertAlign="Center" Font="Arial, 9.75pt, style=Bold"/>
+    </ColumnHeaderBand>
+    <DataBand Name="Data1" Top="178.1" Width="718.2" Height="23.9" Border.Lines="All" Guides="4.449997,23.34999,5,23.89999" DataSource="Room">
+      <TextObject Name="Text40" Left="28.35" Top="4.45" Width="132.3" Height="18.9" Text="[Room.BuildingName]" VertAlign="Center" Font="Arial, 10pt, style=Bold"/>
+      <TextObject Name="Text41" Left="349.65" Top="5" Width="179.55" Height="18.9" Text="[Room.BlockName]" VertAlign="Center" Font="Arial, 10pt, style=Bold"/>
+      <TextObject Name="Text42" Left="557.55" Top="5" Width="160.65" Height="18.9" Text="[Room.FloorName]" VertAlign="Center" Font="Arial, 10pt, style=Bold"/>
+      <TextObject Name="Text39" Left="160.65" Top="5" Width="198.45" Height="18.9" Text="[Room.Name]" VertAlign="Center" Font="Arial, 10pt, style=Bold"/>
+    <GroupHeaderBand Name="DataHeader1" Top="206" Width="718.2" Height="22.9" Border.Lines="All" Fill.Color="RosyBrown" Guides="0,18.89999">
+      <TextObject Name="Text2" Left="18.9" Width="84.5" Height="18.9" Text="Code" HorzAlign="Center" VertAlign="Center" Font="Arial, 10pt, style=Bold"/>
+      <TextObject Name="Text1" Left="93.4" Width="134.5" Height="18.9" Text="Name" HorzAlign="Center" VertAlign="Center" Font="Arial, 10pt, style=Bold"/>
+      <TextObject Name="Text3" Left="297.9" Width="94.5" Height="18.9" Text="From Date" HorzAlign="Center" VertAlign="Center" Font="Arial, 10pt, style=Bold"/>
+      <TextObject Name="Text4" Left="402.4" Width="94.5" Height="18.9" Text="Allocated" HorzAlign="Center" VertAlign="Center" Font="Arial, 10pt, style=Bold"/>
+      <TextObject Name="Text5" Left="496.9" Width="75.6" Height="18.9" Text="Closed" HorzAlign="Center" VertAlign="Center" Font="Arial, 10pt, style=Bold"/>
+    </GroupHeaderBand>
+    <DataBand Name="Data2" Top="232.9" Width="718.2" Height="20.9" Border.Lines="All" Guides="0,18.89999" DataSource="Room.Reservations">
+      <TextObject Name="Text35" Left="20" Width="94.5" Height="18.9" Text="[Room.Reservations.DevoteeCode]" VertAlign="Center" Font="Arial, 10pt"/>
+      <TextObject Name="Text34" Left="113.95" Width="179.55" Height="18.9" Text="[Room.Reservations.DevoteeName]" VertAlign="Center" Font="Arial, 10pt"/>
+      <TextObject Name="Text36" Left="295.65" Width="94.5" Height="18.9" Text="[Room.Reservations.FromDate]" Format="Date" Format.Format="d" VertAlign="Center" Font="Arial, 10pt"/>
+      <TextObject Name="Text37" Left="397.35" Width="94.5" Height="18.9" Text="[Room.Reservations.Allocated]" VertAlign="Center" Font="Arial, 10pt"/>
     </DataBand>
-      <DataBand Name="Data3" Top="210.45" Width="718.2" Height="37.8" EvenStyle="EvenRow" Guides="9.449997,28.34999,18.89999,37.79999" DataSource="RoomAllocationRef.Reservations" KeepDetail="true">
-        <TextObject Name="Text34" Left="141.75" Top="9.45" Width="94.5" Height="18.9" Text="[Reservations.Devotee.Code]" Font="Arial, 10pt"/>
-        <TextObject Name="Text37" Left="141.75" Top="9.45" Width="94.5" Height="18.9" Text="[RoomAllocationRef.Reservations.Devotee.Name]" Font="Arial, 10pt"/>
-        <TextObject Name="Text35" Left="245.7" Top="9.45" Width="94.5" Height="18.9" Text="[RoomAllocationRef.Reservations.StartDate]" Font="Arial, 10pt"/>
-        <TextObject Name="Text36" Left="368.55" Top="18.9" Width="94.5" Height="18.9" Text="[RoomAllocationRef.Reservations.Allocated]" Font="Arial, 10pt"/>
-      </DataBand>
-    <PageFooterBand Name="PageFooter1" Top="252.25" Width="718.2" Height="18.9"/>
-  </ReportPage>
-  <ReportPage Name="Page2" Watermark.Font="Arial, 60pt">
-    <DataBand Name="Data2" Width="718.2" Height="75.6"/>
+    </DataBand>
+    <PageFooterBand Name="PageFooter1" Top="257.8" Width="718.2" Height="18.9"/>
   </ReportPage>
 </Report>

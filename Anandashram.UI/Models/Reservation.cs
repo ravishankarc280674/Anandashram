@@ -38,5 +38,36 @@ namespace Anandashram.Models
 
         [DisplayFormat(DataFormatString = "{0:dd/MM/yyyy}")]
         public DateTime? ModifiedDate { get; set; }
+        [NotMapped]
+        public string DevoteeName
+        {
+            get { if (Devotee != null) return this.Devotee.Name; else return string.Empty; }
+        }
+        [NotMapped]
+        public string DevoteeCode
+        {
+            get { if (Devotee != null) return this.Devotee.Code; else return string.Empty; }
+        }
+        [NotMapped]
+        public string RoomName
+        {
+            get { if (Room != null) return this.Room.Name; else return string.Empty; }
+        }
+        [NotMapped]
+        public string BuildingName
+        {
+            get { if (Room != null) return this.Room.BuildingName; else return string.Empty; }
+        }
+        [NotMapped]
+        public string BlockName
+        {
+            get { if (Room != null) return this.Room.BlockName; else return string.Empty; }
+        }
+        [NotMapped]
+        public string FloorName
+        {
+            get { if (Room != null) return this.Room.FloorName; else return string.Empty; }
+        }
+
     }
 }

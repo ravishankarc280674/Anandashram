@@ -5,7 +5,7 @@ public partial class Devotee
 {
     public Devotee()
     {
-        ReservationCharts = new List<Reservation>();
+        Reservations = new List<Reservation>();
     }
     [Key]
     public int Id { get; set; }
@@ -80,7 +80,5 @@ public partial class Devotee
 
     public string? ReopenedCode { get; set; }
 
-    [NotMapped]
-
-    public List<Reservation> ReservationCharts { get; set; }
+    public List<Reservation> Reservations { get; set; }
 }
