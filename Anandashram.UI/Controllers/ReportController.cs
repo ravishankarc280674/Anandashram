@@ -1,12 +1,14 @@
 ﻿using DocumentFormat.OpenXml.Bibliography;
 using DocumentFormat.OpenXml.Office2010.Excel;
+using DocumentFormat.OpenXml.Wordprocessing;
 using FastReport;
 using FastReport.Data;
-
+using FastReport.Export.PdfSimple;
 using FastReport.Web;
 using Microsoft.AspNetCore.Components.Forms;
 using Microsoft.AspNetCore.Diagnostics;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.CodeAnalysis.VisualBasic.Syntax;
 using System.Composition;
 using System.IO;
 
@@ -178,24 +180,102 @@ namespace Anandashram.Controllers
             return View();
         }
 
-        public IActionResult ShowReport()
+        [HttpPost]
+        public async Task<IActionResult> ShowReport(string reportType, string actionButton, int Id=0)
         {
-            var jsonData = HttpContext.Session.GetString("DevoteesFilterData");
-            if (string.IsNullOrEmpty(jsonData))
-                return Content("No filtered data available for report.");
-
-            // 🧩 Step 2: Deserialize back to list
-            var devotees = System.Text.Json.JsonSerializer.Deserialize<List<Devotee>>(jsonData);
             WebReport wr = new WebReport();
-            wr.Report.Load(Path.Combine(_env.ContentRootPath, "Reports", "DevoteeList.frx"));
             List<Company> companies = new List<Company>();
             companies.Add(_companyrepo.CompanyDetails());
-            wr.Report.RegisterData(companies, "CompanyRef");
-            wr.Report.RegisterData(devotees, "Devotees");
-            wr.Report.Prepare();
-            return View(wr);
-        }
+            switch (reportType)
+            {
+                case "DevoteeList":
+                    var jsonData = HttpContext.Session.GetString("DevoteesFilterData");
+                    if (string.IsNullOrEmpty(jsonData))
+                        return Content("No filtered data available for report.");
 
+                    // 🧩 Step 2: Deserialize back to list
+                    var devotees = System.Text.Json.JsonSerializer.Deserialize<List<DevoteeDTO>>(jsonData);
+                    wr.Report.Load(Path.Combine(_env.ContentRootPath, "Reports", "DevoteeList.frx"));
+                    
+                    wr.Report.RegisterData(companies, "CompanyRef");
+                    wr.Report.RegisterData(devotees, "Devotees");
+                    wr.Report.Prepare();
+                    switch (actionButton)
+                    {
+                        case "Screen":
+                            {
+                                return View(wr);
+                            }
+                        case "Pdf":
+                            {
+                                using var stream = new MemoryStream();
+                                var pdfExport = new PDFSimpleExport();
+                                wr.Report.Export(pdfExport, stream);
+                                stream.Position = 0;
+                                return File(stream.ToArray(), "application/pdf", "Devotee List.pdf");
+                            }
+                        //case "Csv":
+                        //    {
+                        //        using (var csvStream = new MemoryStream())
+                        //        {
+                        //            wr.Report.Export(new CSVExport(), csvStream);
+                        //            csvStream.Position = 0;
+                        //            return File(csvStream.ToArray(), "text/csv", $"{reportType}.csv");
+                        //        }
+                        //    }
+                            
+                        default:
+                            return View(wr);
+
+                    }
+                case "DevoteeDetail":
+                    {
+                        wr.Report.Load(Path.Combine(_env.ContentRootPath, "Reports", "DevoteeDetail.frx"));
+                        wr.Report.RegisterData(companies, "CompanyRef");
+                        List<Devotee> devoteeList = new List<Devotee>();
+                        devoteeList.Add(await _devoteerepo.GetDevoteeWithReservations(Id));
+                        foreach (var d in devoteeList)
+                        {
+                            d.Reservations ??= new List<Reservation>();
+                        }
+                        wr.Report.RegisterData(devoteeList, "Devotees");
+                        wr.Report.GetDataSource("Devotees").Enabled = true;
+                        wr.Report.GetDataSource("Devotees.Reservations").Enabled = true;
+                        wr.Report.Prepare();
+                        switch (actionButton)
+                        {
+                            case "Screen":
+                                {
+                                    return View(wr);
+                                }
+                            case "Pdf":
+                                {
+                                    using var stream = new MemoryStream();
+                                    var pdfExport = new PDFSimpleExport();
+                                    wr.Report.Export(pdfExport, stream);
+                                    stream.Position = 0;
+                                    return File(stream.ToArray(), "application/pdf", "Devotee Detail.pdf");
+                                }
+                            //case "Csv":
+                            //    {
+                            //        using (var csvStream = new MemoryStream())
+                            //        {
+                            //            wr.Report.Export(new CSVExport(), csvStream);
+                            //            csvStream.Position = 0;
+                            //            return File(csvStream.ToArray(), "text/csv", $"{reportType}.csv");
+                            //        }
+                            //    }
+
+                            default:
+                                return View(wr);
+
+                        }
+                    }
+
+                default:
+                    return View(wr);
+            }
+        }
         [HttpPost]
         public async Task<IActionResult> DevoteeReportViewer(string typeofreport = "")
         {

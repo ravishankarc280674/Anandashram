@@ -16,6 +16,8 @@ global using System.ComponentModel;
 global using System.ComponentModel.DataAnnotations;
 global using System.ComponentModel.DataAnnotations.Schema;
 global using System.Security.Claims;
+
+global using Anandashram.DTO;
 using Anandashram;
 using Microsoft.AspNetCore.DataProtection;
 using Microsoft.Extensions.FileProviders;

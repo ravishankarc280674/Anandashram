@@ -32,21 +32,19 @@
 			<input type="checkbox" onchange="this.form.submit()" name="Closed" value="true" checked="@ViewBag.Closed" title="Include Closed" />
 		</form>
 	</div>
+	<div class="container mt-4">
+		<ul class="pagination justify-content-end">
+			
+	</div>
 
 	<div class="container mt-1">
 		<ul class="pagination justify-content-end">
 			<li>
-			<form asp-controller="Report" asp-action="ShowReport" method="get" target="_blank">
-				<button type="submit" class="btn btn-primary">Show Report</button>
-			</form>
-
-			<form asp-controller="Report" asp-action="DownloadPdf" method="get">
-				<button type="submit" class="btn btn-danger">Download PDF</button>
-			</form>
-
-			<form asp-controller="Report" asp-action="DownloadCsv" method="get">
-				<button type="submit" class="btn btn-success">Download Excel (CSV)</button>
-			</form>
+				<form asp-controller="Report" asp-route-reportType="DevoteeList" asp-action="ShowReport" method="post" target="_blank">
+					<button type="submit" class="btn btn-sm btn-outline-secondary" name="actionButton" value="Screen"><i class="fa fa-print" aria-hidden="true" title="Screen" style="color:#28a745;"></i></button>
+					<button type="submit" class="btn btn-sm btn-outline-secondary" name="actionButton" value="Pdf"><i class="fa-solid fa-file-pdf" title="pdf" style="color:#dc3545;"></i></button>
+					@* <button type="submit" class="btn btn-sm btn-outline-secondary" name="actionButton" value="Csv"><i class="fa-solid fa-file-excel" title="csv" style="color:#fd7e14;"></i></button> *@
+				</form>
 			</li>
 			@if (Model.ViewType != "Tile")
 			{

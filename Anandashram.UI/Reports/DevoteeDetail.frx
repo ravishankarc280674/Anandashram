@@ -53,7 +53,7 @@
       <TextObject Name="State" Left="80" Top="45" Width="500" Height="18" Text="[CompanyRef.State], [CompanyRef.Country] - [CompanyRef.PinCode]" Font="Tahoma, 9pt"/>
       <TextObject Name="Contact" Left="80" Top="62" Width="500" Height="18" Text="Ph: [CompanyRef.Mobile]  |  Email: [CompanyRef.Email]  |  [CompanyRef.Website]" Font="Tahoma, 8pt"/>
     </PageHeaderBand>
-    <DataBand Name="DevoteeBand" Top="118" Width="718.2" Height="240" Border.Lines="Bottom" CanGrow="true" Guides="5,33.35001,45,63.89999,65,83.89999,85,103.9,105,123.9,125,143.9,145,163.9,165,183.9,190,212.9,1.849998,217.35,236.25" DataSource="Devotees">
+    <DataBand Name="DevoteeBand" Top="118" Width="718.2" Height="240" Border.Lines="Bottom" CanGrow="true" Guides="5,33.35001,45,63.89999,65,83.89999,85,103.9,105,123.9,125,143.9,145,163.9,165,183.9,190,212.9,1.849998,217.35,236.25" DataSource="Devotees"  PrintIfDetailEmpty="true">
       <TextObject Name="TextHeader" Top="5" Width="708.75" Height="28.35" Border.Lines="Bottom" Fill.Color="104, 140, 196" Text="[Devotees.Name] ([Devotees.Code])" Padding="5, 0, 0, 0" Font="Tahoma, 14pt, style=Bold" TextFill.Color="White"/>
       <TextObject Name="TextCategory" Top="45" Width="708.75" Height="18.9" Text="Category: [Devotees.DevoteeCategoryName]" Font="Tahoma, 10pt"/>
       <TextObject Name="TextMobile" Top="65" Width="708.75" Height="18.9" Text="Mobile: [Devotees.Mobile]" Font="Tahoma, 10pt"/>
@@ -72,7 +72,7 @@
       <TextObject Name="HdrAlloc" Left="520" Top="217.35" Width="80" Height="18.9" Text="Allocated" Font="Arial, 9pt, style=Bold"/>
       <TextObject Name="HdrClosed" Left="610" Top="217.35" Width="60" Height="18.9" Text="Closed" Font="Arial, 9pt, style=Bold"/>
       <TextObject Name="HdrFrom" Left="350" Top="217.35" Width="80" Height="18.9" Text="From Date" Font="Arial, 9pt, style=Bold"/>
-      <DataBand Name="ReservationBand" Top="362" Width="718.2" Height="20" Border.Lines="Bottom" CanGrow="true" Guides="0,18.89999" DataSource="Reservations">
+      <DataBand Name="ReservationBand" Top="362" Width="718.2" Height="20" Border.Lines="Bottom" CanGrow="true" Guides="0,18.89999" DataSource="Reservations" PrintIfDetailEmpty = "true">
         <TextObject Name="TextRoom" Left="9.45" Width="80" Height="18.9" Text="[Devotees.Reservations.RoomName]" Font="Arial, 8.25pt"/>
         <TextObject Name="TextBuilding" Left="95" Width="80" Height="18.9" Text="[Devotees.Reservations.BuildingName]" Font="Arial, 8.25pt"/>
         <TextObject Name="TextBlock" Left="180" Width="80" Height="18.9" Text="[Devotees.Reservations.BlockName]" Font="Arial, 8.25pt"/>
