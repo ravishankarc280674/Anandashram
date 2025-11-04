@@ -33,10 +33,17 @@
 	</div>
     
 	<div class="container mt-1">
+
 		@if (Model.TotalPages > 0)
 		{
 			<ul class="pagination justify-content-end">
-
+				<li>
+					<form asp-controller="Report" asp-route-reportType="@ViewBag.ReportType" asp-action="ShowReport" method="post" target="_blank">
+						<button type="submit" class="btn btn-sm btn-outline-secondary" name="actionButton" value="Screen"><i class="fa fa-print" aria-hidden="true" title="Screen" style="color:#28a745;"></i></button>
+						<button type="submit" class="btn btn-sm btn-outline-secondary" name="actionButton" value="Pdf"><i class="fa-solid fa-file-pdf" title="pdf" style="color:#dc3545;"></i></button>
+						@* <button type="submit" class="btn btn-sm btn-outline-secondary" name="actionButton" value="Csv"><i class="fa-solid fa-file-excel" title="csv" style="color:#fd7e14;"></i></button> *@
+					</form>
+				</li><li>&nbsp;</li>
 				@if (Model.CurrentPage > 1)
 				{
 					<li class="page-item">

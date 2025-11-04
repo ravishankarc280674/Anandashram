@@ -21,7 +21,6 @@ namespace Anandashram.Controllers
         private readonly IBlock _blockrepo;
         private readonly IBuilding _buildingrepo;
         private readonly IFloor _floorrepo;
-        private readonly IReservation _reservationrepo;
         private readonly IDevotee _devoteerepo;
         private readonly IDevoteeCategory _devotecategoryrepo;
         private readonly ICompany _companyrepo;
@@ -34,16 +33,15 @@ namespace Anandashram.Controllers
             _blockrepo = blockrepo;
             _buildingrepo = buildingrepo;
             _floorrepo = floorrepo;
-            _reservationrepo = reservationrepo;
             _devoteerepo = devoteerepo;
             _devotecategoryrepo = devotecatcategoryrepo;
             _companyrepo = companyrepo;
         }
 
-        public IActionResult ReportViewer()
-        {
-            return ReportViewer("", "");
-        }
+        //public IActionResult ReportViewer()
+        //{
+        //    return ReportViewer("", "");
+        //}
 
         [HttpPost]
         public IActionResult ReportViewer(string report = "", string typeofreport = "")
@@ -58,30 +56,9 @@ namespace Anandashram.Controllers
                 List<Company> companies = new List<Company>();
                 companies.Add(_companyrepo.CompanyDetails());
                 wr.Report.RegisterData(companies, "CompanyRef");
-                switch (report)
-                {
-                    case "dc":
-                        wr.Report.RegisterData(_devotecategoryrepo.GetDevoteeCategories(), "GeneralRef");
-                        wr.Report.SetParameterValue("Title", "Devotee Categories");
-                        ReportName = "Devotee Categories";
-                        break;
-                    case "building":
-                        wr.Report.RegisterData(_buildingrepo.GetBuildings(), "GeneralRef");
-                        wr.Report.SetParameterValue("Title", "Buildings");
-                        ReportName = "Buildings";
-                        break;
-                    case "block":
-                        wr.Report.RegisterData(_blockrepo.GetBlocks(), "GeneralRef");
-                        wr.Report.SetParameterValue("Title", "Blocks");
-                        ReportName = "Blocks";
-                        break;
-                    case "floor":
-                        wr.Report.RegisterData(_floorrepo.GetFloors(), "GeneralRef");
-                        wr.Report.SetParameterValue("Title", "Floors");
-                        ReportName = "Floors";
-                        break;
-                }
-                ViewBag.WebReport = wr;
+                wr.Report.RegisterData(_devotecategoryrepo.GetDevoteeCategories(), "GeneralRef");
+                wr.Report.SetParameterValue("Title", "Devotee Categories");
+                ReportName = "Devotee Categories";
                 if (typeofreport == "screen")
                 {
                     return View(wr);
@@ -107,7 +84,10 @@ namespace Anandashram.Controllers
                 }
             }
         }
-
+        public IActionResult ReportViewer()
+        {
+           return ReportViewer("DevoteeCategory", "screen");
+        }
         public IActionResult RoomDetailsViewer()
         {
             return View();
@@ -181,11 +161,12 @@ namespace Anandashram.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> ShowReport(string reportType, string actionButton, int Id=0)
+        public async Task<IActionResult> ShowReport(string reportType, string actionButton, int Id = 0)
         {
             WebReport wr = new WebReport();
             List<Company> companies = new List<Company>();
             companies.Add(_companyrepo.CompanyDetails());
+            string ReportName;
             switch (reportType)
             {
                 case "DevoteeList":
@@ -196,38 +177,11 @@ namespace Anandashram.Controllers
                     // 🧩 Step 2: Deserialize back to list
                     var devotees = System.Text.Json.JsonSerializer.Deserialize<List<DevoteeDTO>>(jsonData);
                     wr.Report.Load(Path.Combine(_env.ContentRootPath, "Reports", "DevoteeList.frx"));
-                    
+
                     wr.Report.RegisterData(companies, "CompanyRef");
                     wr.Report.RegisterData(devotees, "Devotees");
-                    wr.Report.Prepare();
-                    switch (actionButton)
-                    {
-                        case "Screen":
-                            {
-                                return View(wr);
-                            }
-                        case "Pdf":
-                            {
-                                using var stream = new MemoryStream();
-                                var pdfExport = new PDFSimpleExport();
-                                wr.Report.Export(pdfExport, stream);
-                                stream.Position = 0;
-                                return File(stream.ToArray(), "application/pdf", "Devotee List.pdf");
-                            }
-                        //case "Csv":
-                        //    {
-                        //        using (var csvStream = new MemoryStream())
-                        //        {
-                        //            wr.Report.Export(new CSVExport(), csvStream);
-                        //            csvStream.Position = 0;
-                        //            return File(csvStream.ToArray(), "text/csv", $"{reportType}.csv");
-                        //        }
-                        //    }
-                            
-                        default:
-                            return View(wr);
-
-                    }
+                    ReportName = "Devotee List";
+                    return PrintScreenOrPdf(actionButton, wr, ReportName);
                 case "DevoteeDetail":
                     {
                         wr.Report.Load(Path.Combine(_env.ContentRootPath, "Reports", "DevoteeDetail.frx"));
@@ -241,41 +195,84 @@ namespace Anandashram.Controllers
                         wr.Report.RegisterData(devoteeList, "Devotees");
                         wr.Report.GetDataSource("Devotees").Enabled = true;
                         wr.Report.GetDataSource("Devotees.Reservations").Enabled = true;
-                        wr.Report.Prepare();
-                        switch (actionButton)
-                        {
-                            case "Screen":
-                                {
-                                    return View(wr);
-                                }
-                            case "Pdf":
-                                {
-                                    using var stream = new MemoryStream();
-                                    var pdfExport = new PDFSimpleExport();
-                                    wr.Report.Export(pdfExport, stream);
-                                    stream.Position = 0;
-                                    return File(stream.ToArray(), "application/pdf", "Devotee Detail.pdf");
-                                }
-                            //case "Csv":
-                            //    {
-                            //        using (var csvStream = new MemoryStream())
-                            //        {
-                            //            wr.Report.Export(new CSVExport(), csvStream);
-                            //            csvStream.Position = 0;
-                            //            return File(csvStream.ToArray(), "text/csv", $"{reportType}.csv");
-                            //        }
-                            //    }
-
-                            default:
-                                return View(wr);
-
-                        }
+                        ReportName = "Devotee Detail";
+                        return PrintScreenOrPdf(actionButton, wr, ReportName);
+                    }
+                case "DevoteeCategory":
+                    {
+                        wr.Report.Load(Path.Combine(_env.ContentRootPath, "Reports", "General.frx"));
+                        wr.Report.RegisterData(companies, "CompanyRef");
+                        wr.Report.RegisterData(_devotecategoryrepo.GetDevoteeCategories(), "GeneralRef");
+                        wr.Report.SetParameterValue("Title", "Devotee Categories");
+                        ReportName = "Devotee Categories";
+                        return PrintScreenOrPdf(actionButton, wr, ReportName);
+                    }
+                case "Building":
+                    {
+                        wr.Report.Load(Path.Combine(_env.ContentRootPath, "Reports", "General.frx"));
+                        wr.Report.RegisterData(companies, "CompanyRef");
+                        wr.Report.RegisterData(_buildingrepo.GetBuildings(), "GeneralRef");
+                        wr.Report.SetParameterValue("Title", "Buildings");
+                        ReportName = "Buildings";
+                        return PrintScreenOrPdf(actionButton, wr, ReportName);
+                    }
+                case "Block":
+                    {
+                        wr.Report.Load(Path.Combine(_env.ContentRootPath, "Reports", "General.frx"));
+                        wr.Report.RegisterData(companies, "CompanyRef");
+                        wr.Report.RegisterData(_blockrepo.GetBlocks(), "GeneralRef");
+                        wr.Report.SetParameterValue("Title", "Blocks");
+                        ReportName = "Blocks";
+                        return PrintScreenOrPdf(actionButton, wr, ReportName);
+                    }
+                case "Floor":
+                    {
+                        wr.Report.Load(Path.Combine(_env.ContentRootPath, "Reports", "General.frx"));
+                        wr.Report.RegisterData(companies, "CompanyRef");
+                        wr.Report.RegisterData(_floorrepo.GetFloors(), "GeneralRef");
+                        wr.Report.SetParameterValue("Title", "Floors");
+                        ReportName = "Floors";
+                        return PrintScreenOrPdf(actionButton, wr, ReportName);
                     }
 
                 default:
                     return View(wr);
             }
         }
+
+        private IActionResult PrintScreenOrPdf(string actionButton, WebReport wr,string ReportName)
+        {
+            wr.Report.Prepare();
+            try
+            {
+                switch (actionButton)
+                {
+                    case "Screen":
+                        {
+                            return View(wr);
+                        }
+                    case "Pdf":
+                        {
+                            using var stream = new MemoryStream();
+                            var pdfExport = new PDFSimpleExport();
+                            wr.Report.Export(pdfExport, stream);
+                            pdfExport.ShowProgress = false;
+                            pdfExport.Subject = ReportName;
+                            wr.Report.Dispose();
+                            pdfExport.Dispose();
+                            return File(stream.ToArray(), "application/pdf", ReportName + ".pdf");
+                        }
+                    default:
+                        return View(wr);
+
+                }
+            }
+            catch (Exception ex)
+            {
+                return View(wr);
+            }
+        }
+
         [HttpPost]
         public async Task<IActionResult> DevoteeReportViewer(string typeofreport = "")
         {

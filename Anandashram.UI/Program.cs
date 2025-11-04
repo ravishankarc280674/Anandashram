@@ -46,15 +46,10 @@ builder.Services.AddControllersWithViews(options =>
 {
     // This might be adding antiforgery globally
     options.Filters.Add(new IgnoreAntiforgeryTokenAttribute());
-})
-    .AddJsonOptions(options =>
-    {
-        options.JsonSerializerOptions.ReferenceHandler = ReferenceHandler.IgnoreCycles;
-        options.JsonSerializerOptions.PropertyNamingPolicy = null;
-    });
+});
+    
 builder.Services.AddScoped<ICompany, CompanyRepository>();
-builder.Services.AddDataProtection().ProtectKeysWithDpapi();
-builder.Services.AddSession(options =>
+builder.Services.AddDataProtection().ProtectKeysWithDpapi(); builder.Services.AddSession(options =>
 {
     options.IdleTimeout = TimeSpan.FromMinutes(30); // Session timeout
     options.Cookie.HttpOnly = true;                 // Protect from JavaScript access
@@ -68,10 +63,9 @@ builder.Services.AddScoped<IFloor, FloorRepository>();
 builder.Services.AddScoped<IBuilding, BuildingRepository>();
 builder.Services.AddScoped<IRoom, RoomRepository>();
 builder.Services.AddScoped<IFileManagement, FileManagement>();
+builder.Services.AddScoped<IDevoteeCategory, DevoteeCategoryRepository>();
 builder.Services.AddScoped<IReservation, ReservationRepository>();
 builder.Services.AddFastReport();
-
-builder.Services.AddScoped<IDevoteeCategory, DevoteeCategoryRepository>();
 var app = builder.Build();
 
 app.UseFastReport();

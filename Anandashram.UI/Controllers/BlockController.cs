@@ -34,6 +34,8 @@ namespace Anandashram.Controllers
             pager.SortExpression = sortExpression;
             this.ViewBag.Pager = pager;
             this.ViewBag.PageSizes = GetPageSizes(PageSize);
+            ViewBag.ReportType = "Block";
+
             return View(BlockList);
         }
 

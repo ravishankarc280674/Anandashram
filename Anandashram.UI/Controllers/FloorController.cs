@@ -36,6 +36,8 @@ namespace Anandashram.Controllers
             pager.SortExpression = sortExpression;
             this.ViewBag.Pager = pager;
             this.ViewBag.PageSizes = GetPageSizes(PageSize);
+            ViewBag.ReportType = "Floor";
+
             return View(FloorList);
         }
 
