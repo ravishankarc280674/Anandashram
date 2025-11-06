@@ -47,7 +47,8 @@ builder.Services.AddControllersWithViews(options =>
     // This might be adding antiforgery globally
     options.Filters.Add(new IgnoreAntiforgeryTokenAttribute());
 });
-    
+builder.Services.Configure<ValidationSettings>(
+builder.Configuration.GetSection("ValidationSettings"));
 builder.Services.AddScoped<ICompany, CompanyRepository>();
 builder.Services.AddDataProtection().ProtectKeysWithDpapi(); builder.Services.AddSession(options =>
 {

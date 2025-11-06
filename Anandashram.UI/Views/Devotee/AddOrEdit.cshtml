@@ -513,14 +513,12 @@ else
            $(document).on('change', '.dropdown',function () {
             //     var rooms =
                     var id = $(this).val(); // Get selected value
-                    debugger;
                     var currentRow = $(this).closest('tr');
                               $.ajax({
                                     type: 'POST',
                                     url: '/Devotee/GetSelectedRoom',
                                     data: { Id: id }, // Parameters sent to the controller
                             success: function (Data) {
-                                debugger;
                                 var room = Data.data;
                                 currentRow.find('.building-label').text(room.buildingName);
                                 currentRow.find('.block-label').text(room.blockName);
@@ -644,11 +642,15 @@ else
                     sumNewAllot += Number(allot);
                     if(roomSelected>0 && allot>0)
                         {
-                              if(Number(allot) > Number(remaining))
-                               {
-                                    $.notify("Room: \""  + roomSelectedText + "\"  -  New Allotment: " + allot +" cannot be greater than Remaining: " + remaining, { globalPosition: "top centre", className:"error" });
-                                    return false;
-                               }
+                               const validateRoomCapacity =@(ViewBag.ValidateRoomCapacity.ToString().ToLower());
+                                if(validateRoomCapacity)
+                                {
+                                  if(Number(allot) > Number(remaining))
+                                   {
+                                        $.notify("Room: \""  + roomSelectedText + "\"  -  New Allotment: " + allot +" cannot be greater than Remaining: " + remaining, { globalPosition: "top centre", className:"error" });
+                                        return false;
+                                   }
+                                }
                               if(reservationList.some(reservation => reservation.RoomId === roomSelected)) // true
                                {
                                     $.notify("Room: \""  + roomSelectedText + " has been selected more than once", { globalPosition: "top centre", className:"error" });
@@ -676,7 +678,6 @@ else
                                 $.notify("Allocated and new Allocation cannot be greater than No of Devotees: "  + noOfDevotees, { globalPosition: "top centre", className:"error" });
                                 return false;
                             }
-                       
                     $.ajax({
                     type: "POST",
                     url: '/Devotee/AddReservation',

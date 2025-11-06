@@ -1,5 +1,6 @@
 ﻿
 using FastReport.Web;
+using Microsoft.Extensions.Options;
 using System.Text.Json;
 namespace Anandashram.Controllers
 {
@@ -13,9 +14,10 @@ namespace Anandashram.Controllers
         private readonly IReservation _reservationRepo;
         private readonly ICompany _companyrepo;
         private readonly IWebHostEnvironment _env;
-
-        public DevoteeController(IWebHostEnvironment env, ICompany companyRepo, IDevotee devoteeRepo, IDevoteeCategory devoteeCategoryRepo, IRoom roomRepo, IFileManagement fileManagement, IReservation reservationRepo)
+        private readonly ValidationSettings _validationSettings;
+        public DevoteeController(IOptions<ValidationSettings> validationOptions,IWebHostEnvironment env, ICompany companyRepo, IDevotee devoteeRepo, IDevoteeCategory devoteeCategoryRepo, IRoom roomRepo, IFileManagement fileManagement, IReservation reservationRepo)
         {
+            _validationSettings = validationOptions.Value;
             // _context = context;
             _env = env;
             _devoteeRepo = devoteeRepo;
@@ -165,7 +167,7 @@ namespace Anandashram.Controllers
         public async Task<IActionResult> AddOrEdit(int Id = 0)
         {
             Devotee devotee = new Devotee();
-
+            ViewBag.ValidateRoomCapacity = _validationSettings.ValidateRoomCapacity;
             ViewBag.DevoteeCategoryId = GetDevoteeCategories();
             if (Id == 0)
             {
@@ -181,6 +183,7 @@ namespace Anandashram.Controllers
                 devotee.Reservations = await _reservationRepo.ReservationList(Id);
                 ViewBag.RoomsList = GetFilteredRooms();
                 TempData.Keep();
+                
                 if (devotee == null)
                 {
                     return NotFound();
