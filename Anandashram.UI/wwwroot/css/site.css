@@ -142,13 +142,12 @@ table {
     border-collapse: separate;
 }
 
-    table th {
-        background: #d4d454;
-        text-align: center;
-        border: 1px solid #ccc;
-        position:sticky;
-        top:0px;
-    }
+thead th {
+    position: sticky;
+    top: 0;
+    z-index: 3;
+    background: #d4d454;
+}
 
     table td {
         text-align: center;

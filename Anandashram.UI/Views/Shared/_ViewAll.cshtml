@@ -28,20 +28,20 @@
 
 <table class="table">
     <thead>
-        <tr style="background:#d4d454">
-            <th>
+        <tr >
+            <th style="background:#d4d454" class="text-center" >
                 
                 <i class="@sortModel.GetColumn("name").SortIcon" aria-hidden="true"></i>
                 <a asp-action="Index" asp-route-sortExpression="@sortModel.GetColumn("name").SortExpression"
                    asp-route-SearchText="@ViewBag.SearchText" asp-route-PageSize="@ViewBag.PageSize">Name</a>
-            </th>
-            <th>
+            </th >
+            <th style="background:#d4d454" class="text-center">
 
                 <i class="@sortModel.GetColumn("description").SortIcon" aria-hidden="true"></i>
                 <a asp-action="Index" asp-route-sortExpression="@sortModel.GetColumn("description").SortExpression"
                    asp-route-SearchText="@ViewBag.SearchText" asp-route-PageSize="@ViewBag.PageSize">Description</a>
             </th>
-            <th>
+            <th style="background:#d4d454" class="text-center">
                 &nbsp;
             </th>
         </tr>

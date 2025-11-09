@@ -44,33 +44,55 @@
             {
         @foreach (var item in Model)
         {
-            <div class="col-md-4">
-                <div class="card mb-4">
-                    <h5 class="card-title text-center">@item.Name</h5>
-                    <div class="card-body">
-                        <h5 class="card-title">Building : </h5><p class="card-text">@item.BuildingName</p> 
-                        <h5 class="card-title">Block : </h5><p class="card-text">@item.BlockName</p> 
-                        <h5 class="card-title">Floor : </h5><p class="card-text">@item.FloorName</p> 
-                        <h5 class="card-title">Capacity : </h5><p class="card-text">@item.Capacity</p> 
-                        <div class="btn-group fa-align-right">
-                                    <a asp-action="Edit" asp-route-id="@item.Id">
-                                        <span class="btn btn-sm btn-outline-primary">
-                                            <i class="fa fa-edit" aria-hidden="true" title="Edit"></i>
-                                        </span>
-                                    </a>
+            <div class="col-md-3">
+                <div class="card mb-3">
+                    <h5 class="card-title text-center text-white fw-bold"style="background-color:chocolate">@item.Name</h5>
+                    <div class="card-body" style="border:solid; border-color:chocolate">
+                                <dl class="row">
+                                    <dt class="col-sm-6">
+                                        <label class="control-label">Building :</label>
+                                    </dt>
+                                    <dd class="col-sm-6">
+                                        <label>@item.BuildingName</label>
+                                    </dd>
+                                    <dt class="col-sm-6">
+                                        <label class="control-label">Block :</label>
+                                    </dt>
+                                    <dd class="col-sm-6">
+                                        <label>@item.BlockName</label>
+                                    </dd>
+                                    <dt class="col-sm-6">
+                                        <label class="control-label">Floor :</label>
+                                    </dt>
+                                    <dd class="col-sm-6">
+                                        <label>@item.FloorName</label>
+                                    </dd>
+                                    <dt class="col-sm-6">
+                                        <label class="control-label">Capacity :</label>
+                                    </dt>
+                                    <dd class="col-sm-6">
+                                        <label>@item.Capacity</label>
+                                    </dd>
+                                    <dt class="col-sm-12 fa-align-right" ">
+                                            <a asp-action="Edit" asp-route-id="@item.Id">
+                                                <span class="btn btn-sm btn-outline-primary">
+                                                    <i class="fa fa-edit" aria-hidden="true" title="Edit"></i>
+                                                </span>
+                                            </a>
 
-                                    <a asp-action="Details" asp-route-id="@item.Id">
-                                        <span class="btn btn-sm btn-outline-dark">
-                                            <i class="fa fa-eye" aria-hidden="true" title="Details"></i>
-                                        </span>
-                                    </a>
+                                            <a asp-action="Details" asp-route-id="@item.Id">
+                                                <span class="btn btn-sm btn-outline-dark">
+                                                    <i class="fa fa-eye" aria-hidden="true" title="Details"></i>
+                                                </span>
+                                            </a>
 
-                                    <a asp-action="Delete" asp-route-id="@item.Id">
-                                        <span class="btn btn-sm btn-outline-danger">
-                                            <i class="fa fa-trash" aria-hidden="true" title="Delete"></i>
-                                        </span>
-                                    </a>
-                                </div>
+                                            <a asp-action="Delete" asp-route-id="@item.Id">
+                                                <span class="btn btn-sm btn-outline-danger">
+                                                    <i class="fa fa-trash" aria-hidden="true" title="Delete"></i>
+                                                </span>
+                                            </a>
+                                    </dt>
+                                    </dl>
                     </div>
                 </div>
             </div>
@@ -83,18 +105,18 @@
 {
 <table id="tblRoomList" class="table">
         <thead>
-            <tr class="fa-border-all" style="background:#d4d454">
-            <th >
+            <tr class="fa-border-all">
+                <th style="background:#d4d454">
                     Building
                 </th>
-            <th>
+                <th style="background:#d4d454">
                     Block
                 </th>
-                <th>
+                <th style="background:#d4d454">
                    Floor
-                </th> 
-                <th>
-                   Name
+                </th>
+                <th style="background:#d4d454">
+                   Room
                 </th>
                 <th style="background:#d4d454">
                    Description

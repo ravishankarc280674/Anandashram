@@ -20,7 +20,39 @@
         pageNo = pager.CurrentPage;
     }
 }
+<style>
+    thead th{
+        position:sticky;
+        top:0;
+        z-index:3;
+        background: #d4d454;
+    }
+    .first-col {
+        position:sticky;
+        left:0;
+        z-index:2;
+        background: #aaa392;
+    }
+    .second-col {
+        position:sticky;
+        left:40px;
+        z-index:2;
+        background: #aaa392;
+    }
+    .last-col {
+        position:sticky;
+        right:0;
+        z-index:2;
+        background: #aaa392;
+    }
 
+    thead .first-col,
+    thead .second-col,
+    thead .last-col {
+        z-index:4;
+        background: #aaa392;
+    }
+</style>
 <div class="container-fluid btn-group">
     <div class="col-10">
         <h3>@currentModel - List</h3>
@@ -41,10 +73,11 @@
     <div class="row tbl-fixed">
 
         <table id="tblDevoteeList" class="table-striped table-condensed" style="overflow-x: auto;" enable-horizontal-scroll="true">
+           
     <thead>
         <tr>
-                    <th class="fixed-column"></th>
-                    <th class="fixed-column">
+                    <th class="sticky-col first-col"></th>
+                    <th class="sticky-col second-col">
                 <i class="@sortModel.GetColumn("code").SortIcon" aria-hidden="true"></i>
                 <a asp-action="Index" asp-route-sortExpression="@sortModel.GetColumn("code").SortExpression"
                    asp-route-SearchText="@ViewBag.SearchText" asp-route-PageSize="@ViewBag.PageSize" asp-route-Closed="@ViewBag.Closed">Code</a>
@@ -84,7 +117,7 @@
                        Document
                     </th>
                     <th>No. of Devotees</th>
-            <th class ="fixed-column-right">
+                    <th class="sticky-col last-col">
                 &nbsp;
             </th>
         </tr>
@@ -106,8 +139,8 @@
                     rowClass = "bg-warning";
                 }
                 <tr>
-                    <td class="fixed-column"><img src="@Url.Action("GetImage", "Devotee", new { fileName = item.Code })" width="40" height="30" class="rounded-circle" /></td>
-                    <td class="fixed-column">
+                    <td class="sticky-col first-col"><img src="@Url.Action("GetImage", "Devotee", new { fileName = item.Code })" width="40" height="30" class="rounded-circle" /></td>
+                            <td class="sticky-col second-col">
                     @if (item.Closed == false)
                     {
                     <a asp-action="AddOrEdit" asp-route-id="@item.Id">
@@ -145,8 +178,8 @@
                             <td class="@rowClass">
                                 <span>@item.NoOfPeople</span>
                             </td>
-                                   
-                            <td class="fixed-column-right">
+
+                            <td class="sticky-col last-col">
                         <div class="btn-group">
                             @if (item.Closed == false)
                             {
