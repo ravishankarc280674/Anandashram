@@ -8,6 +8,7 @@ using System.Threading.Tasks;
 
 namespace Anandashram.Controllers
 {
+    [Authorize]
     public class DevoteeCategoryController : Controller
     {
         //  private readonly ApplicationDbContext _context;

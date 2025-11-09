@@ -16,6 +16,7 @@ using Microsoft.AspNetCore.WebUtilities;
 
 namespace Anandashram.Areas.Identity.Pages.Account
 {
+    [AllowAnonymous]
     public class ForgotPasswordModel : Microsoft.AspNetCore.Mvc.RazorPages.PageModel
     {
         private readonly UserManager<IdentityUser> _userManager;

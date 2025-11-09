@@ -1,4 +1,5 @@
 ﻿global using Anandashram.Data;
+global using Anandashram.DTO;
 global using Anandashram.Interfaces;
 global using Anandashram.Models;
 global using Anandashram.Repositories;
@@ -16,20 +17,24 @@ global using System.ComponentModel;
 global using System.ComponentModel.DataAnnotations;
 global using System.ComponentModel.DataAnnotations.Schema;
 global using System.Security.Claims;
-
-global using Anandashram.DTO;
+global using Microsoft.AspNetCore.Authorization;
 using Anandashram;
 using Microsoft.AspNetCore.DataProtection;
+using Microsoft.AspNetCore.Mvc.Authorization;
 using Microsoft.Extensions.FileProviders;
-using System.Text.Json.Serialization;
+
 var builder = WebApplication.CreateBuilder(args);
 
-// Add services to the container.
-var connectionString = builder.Configuration.GetConnectionString("AnandashramDBConnection") ?? throw new InvalidOperationException("Connection string 'AnandashramDBConnection' not found.");
+// 🔹 Database connection
+var connectionString = builder.Configuration.GetConnectionString("AnandashramDBConnection")
+    ?? throw new InvalidOperationException("Connection string 'AnandashramDBConnection' not found.");
 
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
     options.UseSqlServer(connectionString));
+
 builder.Services.AddDatabaseDeveloperPageExceptionFilter();
+
+// 🔹 Identity configuration
 builder.Services.AddDefaultIdentity<IdentityUser>(options =>
 {
     options.SignIn.RequireConfirmedAccount = false;
@@ -39,25 +44,47 @@ builder.Services.AddDefaultIdentity<IdentityUser>(options =>
     options.Password.RequireUppercase = false;
     options.Password.RequireLowercase = false;
 })
-    .AddEntityFrameworkStores<ApplicationDbContext>();
+.AddEntityFrameworkStores<ApplicationDbContext>();
 
-builder.Services.AddResponseCompression();
+// 🔹 Configure Identity cookie settings
+builder.Services.ConfigureApplicationCookie(options =>
+{
+    options.LoginPath = "/Identity/Account/Login"; // Redirect here when not logged in
+    options.AccessDeniedPath = "/Identity/Account/AccessDenied";
+    options.ExpireTimeSpan = TimeSpan.FromMinutes(30); // Match session timeout
+    options.SlidingExpiration = true; // Extend cookie if user is active
+});
+
+// 🔹 MVC and global authorization policy
 builder.Services.AddControllersWithViews(options =>
 {
-    // This might be adding antiforgery globally
+    // Require login by default for all controllers
+    var policy = new AuthorizationPolicyBuilder()
+        .RequireAuthenticatedUser()
+        .Build();
+    options.Filters.Add(new AuthorizeFilter(policy));
+
+    // Disable antiforgery globally (if required for your UI)
     options.Filters.Add(new IgnoreAntiforgeryTokenAttribute());
 });
-builder.Services.Configure<ValidationSettings>(
-builder.Configuration.GetSection("ValidationSettings"));
-builder.Services.AddScoped<ICompany, CompanyRepository>();
-builder.Services.AddDataProtection().ProtectKeysWithDpapi(); builder.Services.AddSession(options =>
+
+builder.Services.Configure<ValidationSettings>(builder.Configuration.GetSection("ValidationSettings"));
+builder.Services.AddAuthorization();
+builder.Services.AddResponseCompression();
+builder.Services.AddDataProtection().ProtectKeysWithDpapi();
+
+// 🔹 Session configuration
+builder.Services.AddSession(options =>
 {
-    options.IdleTimeout = TimeSpan.FromMinutes(30); // Session timeout
-    options.Cookie.HttpOnly = true;                 // Protect from JavaScript access
-    options.Cookie.IsEssential = true;              // Required for GDPR compliance
-    options.Cookie.SecurePolicy = CookieSecurePolicy.Always; // HTTPS only
+    options.IdleTimeout = TimeSpan.FromMinutes(30);
+    options.Cookie.HttpOnly = true;
+    options.Cookie.IsEssential = true;
+    options.Cookie.SecurePolicy = CookieSecurePolicy.Always;
     options.Cookie.SameSite = SameSiteMode.Lax;
-});//Dependency Injection
+});
+
+// 🔹 Dependency Injection
+builder.Services.AddScoped<ICompany, CompanyRepository>();
 builder.Services.AddScoped<IDevotee, DevoteeRepository>();
 builder.Services.AddScoped<IBlock, BlockRepository>();
 builder.Services.AddScoped<IFloor, FloorRepository>();
@@ -67,11 +94,11 @@ builder.Services.AddScoped<IFileManagement, FileManagement>();
 builder.Services.AddScoped<IDevoteeCategory, DevoteeCategoryRepository>();
 builder.Services.AddScoped<IReservation, ReservationRepository>();
 builder.Services.AddFastReport();
+
 var app = builder.Build();
 
 app.UseFastReport();
-app.UseDeveloperExceptionPage();
-// Configure the HTTP request pipeline.
+
 if (app.Environment.IsDevelopment())
 {
     app.UseMigrationsEndPoint();
@@ -79,28 +106,49 @@ if (app.Environment.IsDevelopment())
 else
 {
     app.UseExceptionHandler("/Home/Error");
-    // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
     app.UseHsts();
 }
 
+app.UseHttpsRedirection();
 app.UseStaticFiles();
+
+// 🔹 Serve document storage folder
 app.UseStaticFiles(new StaticFileOptions
 {
-    FileProvider = new PhysicalFileProvider(builder.Configuration.GetSection("DocumentStoragePath").Value),
+    FileProvider = new PhysicalFileProvider(
+        builder.Configuration.GetSection("DocumentStoragePath").Value),
     RequestPath = "/Documents"
 });
-app.UseHttpsRedirection();
 
 app.UseRouting();
+
 app.UseSession();
+
+// 🔹 Middleware to check for expired session and force login
+app.Use(async (context, next) =>
+{
+    // If user is authenticated but session expired, redirect to login
+    if (context.User.Identity?.IsAuthenticated == true)
+    {
+        if (context.Session.GetString("UserId") == null)
+        {
+            var signInManager = context.RequestServices.GetRequiredService<SignInManager<IdentityUser>>();
+            await signInManager.SignOutAsync();
+            context.Response.Redirect("/Identity/Account/Login");
+            return;
+        }
+    }
+    await next();
+});
+
+app.UseAuthentication();
 app.UseAuthorization();
 
+// 🔹 Default route
 app.MapControllerRoute(
     name: "default",
     pattern: "{controller=Home}/{action=Index}/{id?}");
-//app.MapControllerRoute(
-//    name: "default",
-//    pattern: "{controller=Reservation}/{action=ReservationList}/{id?}");
+
 app.MapRazorPages();
 
 app.Run();

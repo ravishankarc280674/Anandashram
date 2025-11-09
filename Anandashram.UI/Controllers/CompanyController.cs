@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace Anandashram.Controllers
 {
+    [Authorize]
     public class CompanyController : Controller
     {
         private readonly ICompany _companyRepo;

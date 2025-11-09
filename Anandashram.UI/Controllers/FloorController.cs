@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 
 namespace Anandashram.Controllers
 {
+    [Authorize]
     public class FloorController : Controller
     {
         //  private readonly ApplicationDbContext _context;

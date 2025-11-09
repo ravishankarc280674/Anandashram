@@ -12,6 +12,7 @@ using Microsoft.Extensions.Logging;
 
 namespace Anandashram.Areas.Identity.Pages.Account
 {
+    [AllowAnonymous]
     public class LogoutModel : Microsoft.AspNetCore.Mvc.RazorPages.PageModel
     {
         private readonly SignInManager<IdentityUser> _signInManager;

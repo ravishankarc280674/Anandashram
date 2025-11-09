@@ -11,6 +11,7 @@ using System.Threading.Tasks;
 
 namespace Anandashram.Controllers
 {
+    [Authorize]
     public class BuildingController : Controller
     {
         private readonly IBuilding _buildingRepo;

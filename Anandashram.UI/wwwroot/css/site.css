@@ -130,6 +130,11 @@ a.btn:hover
 
 .tbl-fixed {
     overflow-x: scroll;
+    overflow-y: scroll;
+    height:fit-content;
+    max-height:60vh;
+    margin-top:0px;
+
 }
 
 table {
@@ -141,17 +146,21 @@ table {
         background: #d4d454;
         text-align: center;
         border: 1px solid #ccc;
+        position:sticky;
+        top:0px;
     }
 
     table td {
         text-align: center;
         border: 1px solid #ccc;
     }
+   
 .fixed-column {
     position: sticky;
     background-color: #f2f2f2; /* Optional: differentiate fixed column */
-    left:0;
+    left: 0;
     z-index: 1; /* Ensures fixed column stays on top of scrolling content */
+    top: 0px;
 }
 
 .fixed-column-right {
@@ -159,9 +168,9 @@ table {
     background-color: #f2f2f2;
     right: 0;
     z-index: 0;
+    top:0px;
 }
 /* Also apply to fixed column cells in tbody */
-
 
 .CodesTable table {
     width: 100%

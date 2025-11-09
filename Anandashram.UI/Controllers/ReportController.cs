@@ -106,7 +106,7 @@ namespace Anandashram.Controllers
                     if (report == "List")
                         wr.Report.Load(Path.Combine(_env.ContentRootPath, "Reports", "RoomAllocation.frx"));
                     else
-                        wr.Report.Load(Path.Combine(_env.ContentRootPath, "Reports", "RoomAllocation-detail.frx"));
+                        wr.Report.Load(Path.Combine(_env.ContentRootPath, "Reports", "RoomAllocationdetail.frx"));
 
                     List<Company> companies = new List<Company>();
                     List<Room> roomList = await _roomRepo.GetAllRoomReservations();

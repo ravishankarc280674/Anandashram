@@ -4,6 +4,7 @@ using Microsoft.Extensions.Options;
 using System.Text.Json;
 namespace Anandashram.Controllers
 {
+    [Authorize]
     public class DevoteeController : Controller
     {
         //  private readonly ApplicationDbContext _context;

@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace Anandashram.Controllers
 {
+    [Authorize]
     public class ReservationController : Controller
     {
         // GET: ReservationController
