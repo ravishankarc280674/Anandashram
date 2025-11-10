@@ -171,20 +171,33 @@ namespace Anandashram.Repositories
 
             return roomList;
         }
-        public async Task<List<Room>> GetRoomsWithReservationsUpToDateAsync()
+        public async Task<List<RoomDTO>> GetRoomsWithReservationsUpToDateAsync()
         {
-            var endOfDay = DateTime.Now.Date.AddDays(1); 
+            var endOfDay = DateTime.Now.Date.AddDays(1);
 
-            var roomList = await _context.Rooms
+            var rooms = await _context.Rooms
                 .Include(r => r.Building)
                 .Include(r => r.Block)
                 .Include(r => r.Floor)
-                .Include(r => r.Reservations
-                    .Where(res => !res.Closed && res.FromDate < endOfDay)) 
-                    .ThenInclude(res => res.Devotee)
+                .GroupJoin(
+                    _context.Reservations
+                        .Where(res => !res.Closed && res.FromDate < endOfDay),
+                    room => room.Id,
+                    res => res.RoomId,
+                    (room, reservations) => new { room, reservations }
+                )
+                .Select(x => new RoomDTO
+                {
+                    Name = x.room.Name,
+                    BuildingName = x.room.Building != null ? x.room.Building.Name : string.Empty,
+                    BlockName = x.room.Block != null ? x.room.Block.Name : string.Empty,
+                    FloorName = x.room.Floor != null ? x.room.Floor.Name : string.Empty,
+                    Capacity = x.room.Capacity,
+                    Occupied = x.reservations.Sum(r => (int?)r.Allocated) ?? 0,
+                    RemainingCount = x.room.Capacity - (x.reservations.Sum(r => (int?)r.Allocated) ?? 0)
+                })
                 .ToListAsync();
-
-            return roomList;
+            return rooms;
         }
     }
 }

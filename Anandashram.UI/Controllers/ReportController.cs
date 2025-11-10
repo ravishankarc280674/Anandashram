@@ -110,7 +110,7 @@ namespace Anandashram.Controllers
                         wr.Report.Load(Path.Combine(_env.ContentRootPath, "Reports", "RoomAllocationdetail.frx"));
 
                     List<Company> companies = new List<Company>();
-                    List<Room> roomList = await _roomRepo.GetRoomsWithReservationsUpToDateAsync();
+                    List<RoomDTO> roomList = await _roomRepo.GetRoomsWithReservationsUpToDateAsync();
                     companies.Add(_companyrepo.CompanyDetails());
                     wr.Report.RegisterData(companies, "CompanyRef");
 

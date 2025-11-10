@@ -38,7 +38,7 @@
       <TextObject Name="Text9" Left="200.25" Width="160.5" Height="18.9" Text="Block" HorzAlign="Center" VertAlign="Center" Font="Arial, 10pt, style=Bold"/>
       <TextObject Name="Text0" Left="360.2" Width="94.5" Height="18.9" Text="Floor" HorzAlign="Center" VertAlign="Center" Font="Arial, 10pt, style=Bold"/>
       <TextObject Name="Text1" Left="459.05" Width="74.5" Height="18.9" Text="Capacity" HorzAlign="Center" VertAlign="Center" Font="Arial, 10pt, style=Bold"/>
-      <TextObject Name="Text1" Left="523.05" Width="80.5" Height="18.9" Text="Occupied" HorzAlign="Center" VertAlign="Center" Font="Arial, 10pt, style=Bold"/>
+      <TextObject Name="Text1" Left="543.05" Width="80.5" Height="18.9" Text="Occupied" HorzAlign="Center" VertAlign="Center" Font="Arial, 10pt, style=Bold"/>
       <TextObject Name="Text1" Left="623.05" Width="84.5" Height="18.9" Text="Remaining" HorzAlign="Center" VertAlign="Center" Font="Arial, 10pt, style=Bold"/>
     </PageHeaderBand>
     <DataBand Name="Data1" Top="199" Width="718.2" Height="37.8" Border.Lines="Bottom" Guides="0,22.89999,9.449997,28.34999" DataSource="Rooms">
