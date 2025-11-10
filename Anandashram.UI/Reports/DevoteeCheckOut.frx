@@ -1,0 +1,61 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Report ScriptLanguage="CSharp" ReportInfo.Created="10/23/2025 15:20:13" ReportInfo.Modified="11/10/2025 19:12:17" ReportInfo.CreatorVersion="2026.1.0.0">
+  <Dictionary>
+    <BusinessObjectDataSource Name="Devotees" ReferenceName="Devotees" DataType="System.Int32" Enabled="true">
+      <Column Name="Code" DataType="System.String"/>
+      <Column Name="Name" DataType="System.String"/>
+      <Column Name="DevoteeCategoryName" DataType="System.String"/>
+      <Column Name="TotalAllocated" DataType="System.Int32"/>
+    </BusinessObjectDataSource>
+    <BusinessObjectDataSource Name="Company" ReferenceName="CompanyRef" DataType="System.Int32" Enabled="true">
+      <Column Name="Name" DataType="System.String"/>
+      <Column Name="Established" DataType="System.Int32"/>
+      <Column Name="AddressLine1" DataType="System.String"/>
+      <Column Name="AddressLine2" DataType="System.String"/>
+      <Column Name="State" DataType="System.String"/>
+      <Column Name="Country" DataType="System.String"/>
+      <Column Name="PinCode" DataType="System.String"/>
+      <Column Name="Mobile" DataType="System.String"/>
+      <Column Name="Email" DataType="System.String"/>
+      <Column Name="Website" DataType="System.String"/>
+    </BusinessObjectDataSource>
+    <Parameter Name="Title" DataType="System.String" AsString=""/>
+    <Parameter Name="Address 1" DataType="System.String" AsString=""/>
+    <Parameter Name="Address 2" DataType="System.String" AsString=""/>
+    <Parameter Name="Mobile" DataType="System.String" AsString=""/>
+    <Parameter Name="Website" DataType="System.String" AsString=""/>
+    <Parameter Name="Address" DataType="System.String" AsString=""/>
+    <Parameter Name="ToDate" DataType="System.String" AsString=""/>
+    <Total Name="NumberOfPeopleTotal" Expression="[Devotees.TotalAllocated]" Evaluator="Data1" PrintOn="PageFooter1"/>
+  </Dictionary>
+  <ReportPage Name="Page1" RawPaperSize="9" Guides="0,718.2,727.65,-18.9,85.05,73.6,300.4,555.15,668.55,373,548.1,9.45,103.95,396.9,581.95,667,585.9,670.95,491.4,765.45" Watermark.Font="Arial, 60pt">
+    <ReportTitleBand Name="ReportTitle1" Width="718.2" Height="170.1" CanGrow="true" CanBreak="true" Guides="0,18.9,37.8,113.4,151.2,58.59,56.7,85.05,75.6,94.5">
+      <TextObject Name="Text10" Width="718.2" Height="18.9" Text="[Company.Name]" AutoWidth="true" HorzAlign="Center" VertAlign="Center" Font="Arial, 14.25pt, style=Bold"/>
+      <TextObject Name="Text17" Top="18.9" Width="718.2" Height="18.9" Text="Est: [Company.Established]" AutoWidth="true" HorzAlign="Center" Font="Arial, 11.25pt"/>
+      <TextObject Name="Text18" Top="113.4" Width="727.65" Height="37.8" Border.Lines="Top, Bottom" Border.TopLine.Style="Double" Border.BottomLine.Style="Double" Text="Devotee Checkout Details on : [ToDate]" HorzAlign="Center" VertAlign="Center" Font="Arial, 12pt, style=Bold"/>
+      <TextObject Name="Text19" Top="37.8" Width="718.2" Height="20.79" Text="[Company.AddressLine1] [Company.AddressLine2]" AutoWidth="true" HorzAlign="Center" Font="Arial, 11.25pt"/>
+      <TextObject Name="Text20" Top="56.7" Width="718.2" Height="28.35" Text="[Company.State], [Company.Country] - [Company.PinCode]" AutoWidth="true" HorzAlign="Center" Font="Arial, 11.25pt"/>
+      <TextObject Name="Text24" Top="75.6" Width="718.2" Height="18.9" Text="Mobile: [Company.Mobile], Email: [Company.Email]" AutoWidth="true" HorzAlign="Center" Font="Arial, 11.25pt"/>
+      <TextObject Name="Text25" Top="94.5" Width="718.2" Height="18.9" Text="Website: [Company.Website]" AutoWidth="true" HorzAlign="Center" Font="Arial, 11.25pt"/>
+    </ReportTitleBand>
+    <PageHeaderBand Name="PageHeader1" Top="174.1" Width="718.2" Height="46.25" Border.Lines="Top, Bottom" Guides="8.449997,27.34999">
+      <TextObject Name="Text1" Left="-18.9" Top="8.45" Width="103.95" Height="18.9" Text="Code" HorzAlign="Center" Font="Arial, 9.75pt, style=Bold"/>
+      <TextObject Name="Text2" Left="73.6" Top="8.45" Width="226.8" Height="18.9" Text="Name" HorzAlign="Center" Font="Arial, 9.75pt, style=Bold"/>
+      <TextObject Name="Text7" Left="555.15" Top="8.45" Width="113.4" Height="18.9" CanGrow="true" Text="No. of Devotees" HorzAlign="Center" Font="Arial, 9.75pt, style=Bold"/>
+      <TextObject Name="Text35" Left="373" Top="8.45" Width="175.1" Height="18.9" CanGrow="true" Text="Devotee Category" HorzAlign="Center" Font="Arial, 9.75pt, style=Bold"/>
+    </PageHeaderBand>
+    <DataBand Name="Data1" Top="224.35" Width="718.2" Height="28.35" Border.Lines="Bottom" CanGrow="true" Guides="5,23.89999" DataSource="Devotees">
+      <TextObject Name="Text26" Left="9.45" Top="5" Width="94.5" Height="18.9" Text="[Devotees.Code]" Font="Arial, 10pt, style=Bold"/>
+      <TextObject Name="Text27" Left="103.95" Top="5" Width="292.95" Height="18.9" Text="[Devotees.Name]" Font="Arial, 10pt"/>
+      <TextObject Name="Text33" Left="581.95" Top="5" Width="85.05" Height="18.9" Text="[Devotees.TotalAllocated]" HorzAlign="Right" VertAlign="Center" Font="Arial, 10pt"/>
+      <TextObject Name="Text34" Left="396.9" Top="5" Width="189" Height="18.9" CanGrow="true" Text="[Devotees.DevoteeCategoryName]" Font="Arial, 10pt"/>
+    </DataBand>
+    <ColumnFooterBand Name="ColumnFooter1" Top="256.7" Width="718.2" Height="37.8" Border.Lines="Top" Guides="9.450012,28.35001">
+      <TextObject Name="Text36" Left="585.9" Top="9.45" Width="85.05" Height="18.9" Text="[NumberOfPeopleTotal]" HorzAlign="Right" Font="Arial, 9.75pt, style=Bold"/>
+      <TextObject Name="Text37" Left="491.4" Top="9.45" Width="94.5" Height="18.9" Text="Total : " HorzAlign="Center" Font="Arial, 9.75pt, style=Bold"/>
+    </ColumnFooterBand>
+    <PageFooterBand Name="PageFooter1" Top="298.5" Width="718.2" Height="37.8" Guides="0,18.89999">
+      <TextObject Name="Text31" Left="670.95" Width="94.5" Height="18.9" Text="[PageN]" Font="Arial, 10pt, style=Bold"/>
+    </PageFooterBand>
+  </ReportPage>
+</Report>

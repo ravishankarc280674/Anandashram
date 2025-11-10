@@ -1,4 +1,5 @@
 ﻿
+using Anandashram.Models;
 using Anandashram.UI.Tools.Models;
 using DocumentFormat.OpenXml.Office2010.Excel;
 using Microsoft.EntityFrameworkCore.Query.SqlExpressions;
@@ -103,7 +104,7 @@ namespace Anandashram.Repositories
                 else
                     devotees = devotees.OrderByDescending(d => d.Description).ToList();
             }
-            
+
             return devotees;
         }
 
@@ -144,8 +145,8 @@ namespace Anandashram.Repositories
             Devotee devotee = await _context.Devotees.Where(u => u.Id == id).FirstOrDefaultAsync();
             return devotee == null ? new Devotee() : devotee;
         }
-       
-    public bool IsDevoteeNameExists(string name)
+
+        public bool IsDevoteeNameExists(string name)
         {
             int ct = _context.Devotees.Where(n => n.Name.ToLower() == name.ToLower()).Count();
             if (ct > 0)
@@ -170,13 +171,40 @@ namespace Anandashram.Repositories
 
         public async Task<Devotee> GetDevoteeWithReservations(int devoteeId)
         {
-          Devotee devotee = await _context.Devotees.Where(t1 => t1.Id == devoteeId).Include(t1 =>t1.DevoteeCategory)
-                        .Include(t1 => t1.Reservations).ThenInclude(t2 => t2.Room).ThenInclude(t3 => t3.Building)
-                        .Include(t1 => t1.Reservations).ThenInclude(t2 => t2.Room).ThenInclude(t3 => t3.Block)
-                        .Include(t1 => t1.Reservations).ThenInclude(t2 => t2.Room).ThenInclude(t3 => t3.Floor)
-                        .FirstOrDefaultAsync();
+            Devotee devotee = await _context.Devotees.Where(t1 => t1.Id == devoteeId).Include(t1 => t1.DevoteeCategory)
+                          .Include(t1 => t1.Reservations).ThenInclude(t2 => t2.Room).ThenInclude(t3 => t3.Building)
+                          .Include(t1 => t1.Reservations).ThenInclude(t2 => t2.Room).ThenInclude(t3 => t3.Block)
+                          .Include(t1 => t1.Reservations).ThenInclude(t2 => t2.Room).ThenInclude(t3 => t3.Floor)
+                          .FirstOrDefaultAsync();
             return devotee;
 
         }
+        public async Task<List<DevoteeDTO>> GetDevoteeSummaryByDateAsync(DateTime dateValue)
+        {
+            DateTime nextDate = dateValue.Date.AddDays(1);
+
+            var result = await _context.Reservations
+                .Where(r => !r.Closed
+                            && r.ToDate >= dateValue.Date
+                            && r.ToDate < nextDate) // ✅ filter by date only
+                .GroupBy(r => new
+                {
+                    r.DevoteeId,
+                    r.Devotee.Name,
+                    r.Devotee.Code,
+                    CategoryName = r.Devotee.DevoteeCategory.Name
+                })
+                .Select(g => new DevoteeDTO
+                {
+                    Name = g.Key.Name,
+                    Code = g.Key.Code,
+                    DevoteeCategoryName = g.Key.CategoryName,
+                    TotalAllocated = g.Sum(x => x.Allocated)
+                })
+                .ToListAsync();
+
+            return result;
+        }
+
     }
 }

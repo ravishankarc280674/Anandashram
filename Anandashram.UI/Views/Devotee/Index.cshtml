@@ -69,6 +69,8 @@
         <partial name="_PagerDevoteeOnly" model="@pager" />
     </div>
 </div>
+@if( pager.ViewType == "Grid")
+{
 <div class="col-12 container tbl-container">
     <div class="row tbl-fixed">
 
@@ -80,38 +82,38 @@
                     <th class="sticky-col second-col">
                 <i class="@sortModel.GetColumn("code").SortIcon" aria-hidden="true"></i>
                 <a asp-action="Index" asp-route-sortExpression="@sortModel.GetColumn("code").SortExpression"
-                   asp-route-SearchText="@ViewBag.SearchText" asp-route-PageSize="@ViewBag.PageSize" asp-route-Closed="@ViewBag.Closed">Code</a>
+                               asp-route-SearchText="@ViewBag.SearchText" asp-route-PageSize="@ViewBag.PageSize" asp-route-Closed="@ViewBag.Closed" asp-route-view="@ViewBag.view">Code</a>
             </th>
             <th>
                 <i class="@sortModel.GetColumn("name").SortIcon" aria-hidden="true"></i>
                 <a asp-action="Index" asp-route-sortExpression="@sortModel.GetColumn("name").SortExpression"
-                   asp-route-SearchText="@ViewBag.SearchText" asp-route-PageSize="@ViewBag.PageSize" asp-route-Closed="@ViewBag.Closed">Name</a>
+                               asp-route-SearchText="@ViewBag.SearchText" asp-route-PageSize="@ViewBag.PageSize" asp-route-Closed="@ViewBag.Closed" asp-route-view="@ViewBag.view">Name</a>
             </th>
            
             <th>
                 <i class="@sortModel.GetColumn("devoteecategoryname").SortIcon" aria-hidden="true"></i>
                 <a asp-action="Index" asp-route-sortExpression="@sortModel.GetColumn("devoteecategoryname").SortExpression"
-                   asp-route-SearchText="@ViewBag.SearchText" asp-route-PageSize="@ViewBag.PageSize" asp-route-Closed="@ViewBag.Closed">Devotee Category</a>
+                               asp-route-SearchText="@ViewBag.SearchText" asp-route-PageSize="@ViewBag.PageSize" asp-route-Closed="@ViewBag.Closed" asp-route-view="@ViewBag.view">Devotee Category</a>
             </th>
             <th>
                 <i class="@sortModel.GetColumn("startdate").SortIcon" aria-hidden="true"></i>
                 <a asp-action="Index" asp-route-sortExpression="@sortModel.GetColumn("startdate").SortExpression"
-                   asp-route-SearchText="@ViewBag.SearchText" asp-route-PageSize="@ViewBag.PageSize" asp-route-Closed="@ViewBag.Closed">Start Date</a>
+                               asp-route-SearchText="@ViewBag.SearchText" asp-route-PageSize="@ViewBag.PageSize" asp-route-Closed="@ViewBag.Closed" asp-route-view="@ViewBag.view">Start Date</a>
             </th>
              <th>
                 <i class="@sortModel.GetColumn("enddate").SortIcon" aria-hidden="true"></i>
                 <a asp-action="Index" asp-route-sortExpression="@sortModel.GetColumn("enddate").SortExpression"
-                   asp-route-SearchText="@ViewBag.SearchText" asp-route-PageSize="@ViewBag.PageSize" asp-route-Closed="@ViewBag.Closed">End Date</a>
+                               asp-route-SearchText="@ViewBag.SearchText" asp-route-PageSize="@ViewBag.PageSize" asp-route-Closed="@ViewBag.Closed" asp-route-view="@ViewBag.view">End Date</a>
             </th>
             <th>
                 <i class="@sortModel.GetColumn("mobile").SortIcon" aria-hidden="true"></i>
                 <a asp-action="Index" asp-route-sortExpression="@sortModel.GetColumn("mobile").SortExpression"
-                   asp-route-SearchText="@ViewBag.SearchText" asp-route-PageSize="@ViewBag.PageSize" asp-route-Closed="@ViewBag.Closed">Mobile</a>
+                               asp-route-SearchText="@ViewBag.SearchText" asp-route-PageSize="@ViewBag.PageSize" asp-route-Closed="@ViewBag.Closed" asp-route-view="@ViewBag.view">Mobile</a>
             </th>
             <th>
                 <i class="@sortModel.GetColumn("email").SortIcon" aria-hidden="true"></i>
                 <a asp-action="Index" asp-route-sortExpression="@sortModel.GetColumn("email").SortExpression"
-                   asp-route-SearchText="@ViewBag.SearchText" asp-route-PageSize="@ViewBag.PageSize" asp-route-Closed="@ViewBag.Closed">Email</a>
+                               asp-route-SearchText="@ViewBag.SearchText" asp-route-PageSize="@ViewBag.PageSize" asp-route-Closed="@ViewBag.Closed" asp-route-view="@ViewBag.view">Email</a>
             </th>
                     <th>
                        Document
@@ -217,11 +219,94 @@
 </table>
 </div>
 </div>
+}
+else
+{
+    <div class="container mt-4">
+        <div class="row">
+            @if (Model != null)
+            {
+                @foreach (var item in Model)
+                {
+                    <div class="col-md-3">
+                        <div class="card mb-3">
+                            <h5 class="card-title text-center text-white fw-bold" style="background-color:firebrick">@item.Name</h5>
+                            <div class="card-body" style="border:solid; border-color:purple">
+                                <dl class="row">
+                                    <dt class="col-sm-4">
+                                        <label class="control-label">Code:</label>
+                                    </dt>
+                                    <dd class="col-sm-8">
+                                        <label>
+                                            @if (item.Closed == false)
+                                            {
+                                                <a asp-action="AddOrEdit" asp-route-id="@item.Id" class="fw-bolder">
+                                                    <span style="color: darkred" asp-action="AddOrEdit" asp-route-id="@item.Id">@item.Code</span>
+                                                </a>
+                                            }
+                                            else
+                                            {
+                                                <a asp-action="Details" asp-route-id="@item.Id" class="fw-bolder">
+                                                    <span style="color: darkred" asp-action="AddOrEdit" asp-route-id="@item.Id">@item.Code</span>
+                                                </a>
+                                            }
+                                        </label>
+                                    </dd>
+                                    <dt class="col-sm-12 d-flex text-center"><img src="@Url.Action("GetImage", "Devotee", new { fileName = item.Code })" width="250" height="150" class="rounded-end" /></dt>
+                                    <dt class="col-sm-4">
+                                        <label class="control-label">Category:</label>
+                                    </dt>
+                                    <dd class="col-sm-8">
+                                        <label>@item.DevoteeCategoryName</label>
+                                    </dd>
+                                     <dt class="col-sm-4">
+                                        <label class="control-label">Mobile:</label>
+                                    </dt>
+                                    <dd class="col-sm-8">
+                                        <label>@item.Mobile</label>
+                                    </dd>
+                                    <dt class="col-sm-4">
+                                        <label class="control-label">Document:</label>
+                                    </dt>
+                                    <dd class="col-sm-8  text-center" data-bs-toggle="tooltip" data-bs-placement="bottom" title="@item.Document">
+                                            ...
+                                    </dd>
+                                    <dt class="col-sm-12 d-flex text-center">
+                                            @if (item.Closed == false)
+                                            {
+                                                <a asp-action="AddOrEdit" asp-route-id="@item.Id">
+                                                    <span class="btn btn-sm btn-outline-primary">
+                                                        <i class="fa fa-edit" aria-hidden="true" title="Edit"></i>
+                                                    </span>
+                                                </a>
+                                            }
+                                            else
+                                            {
+                                                <a asp-action="Details" asp-route-id="@item.Id">
+                                                    <span class="btn btn-sm btn-outline-dark">
+                                                        <i class="fa fa-eye" aria-hidden="true" title="Details"></i>
+                                                    </span>
+                                                </a>
+                                            }
+                                            <form asp-controller="Report" asp-route-reportType="DevoteeDetail" asp-route-id="@item.Id" asp-action="ShowReport" method="post" target="_blank">
+                                                <button type="submit" class="btn btn-sm btn-outline-secondary" name="actionButton" value="Screen"><i class="fa fa-print" aria-hidden="true" title="Screen" style="color:#28a745;"></i></button>
+                                                <button type="submit" class="btn btn-sm btn-outline-secondary" name="actionButton" value="Pdf"><i class="fa-solid fa-file-pdf" title="pdf" style="color:#dc3545;"></i></button>
+                                            </form>
+                                    </dt>
+                                </dl>
+                            </div>
+                        </div>
+                    </div>
+                }
+            }
+        </div>
+    </div>
+}
 <div class="row">
     <div class="col-12">
         <partial name="_BottomBar" model="@pager" />
     </div>
-</div>
+    </div>
 
 <script>
     document.addEventListener('DOMContentLoaded', function () {

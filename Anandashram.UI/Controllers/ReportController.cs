@@ -1,5 +1,6 @@
 ﻿using DocumentFormat.OpenXml.Bibliography;
 using DocumentFormat.OpenXml.Office2010.Excel;
+using DocumentFormat.OpenXml.Spreadsheet;
 using DocumentFormat.OpenXml.Wordprocessing;
 using FastReport;
 using FastReport.Data;
@@ -9,8 +10,10 @@ using Microsoft.AspNetCore.Components.Forms;
 using Microsoft.AspNetCore.Diagnostics;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.CodeAnalysis.VisualBasic.Syntax;
+using System.Collections.Generic;
 using System.Composition;
 using System.IO;
+using System.Threading.Tasks;
 
 namespace Anandashram.Controllers
 {
@@ -38,27 +41,25 @@ namespace Anandashram.Controllers
             _companyrepo = companyrepo;
         }
 
-        //public IActionResult ReportViewer()
-        //{
-        //    return ReportViewer("", "");
-        //}
 
         [HttpPost]
-        public IActionResult ReportViewer(string report = "", string typeofreport = "")
+        public async Task<IActionResult> ReportViewer(DateTime dateValue, string typeofreport = "")
         {
-            if (report == "" || typeofreport == "")
+            if (typeofreport == "" || dateValue ==DateTime.MinValue)
                 return View();
             else
             {
                 string ReportName = string.Empty;
                 WebReport wr = new WebReport();
-                wr.Report.Load(Path.Combine(_env.ContentRootPath, "Reports", "General.frx"));
+                List<DevoteeDTO> devotees =await _devoteerepo.GetDevoteeSummaryByDateAsync(dateValue);
+                wr.Report.Load(Path.Combine(_env.ContentRootPath, "Reports", "DevoteeCheckOut.frx"));
                 List<Company> companies = new List<Company>();
                 companies.Add(_companyrepo.CompanyDetails());
                 wr.Report.RegisterData(companies, "CompanyRef");
-                wr.Report.RegisterData(_devotecategoryrepo.GetDevoteeCategories(), "GeneralRef");
-                wr.Report.SetParameterValue("Title", "Devotee Categories");
-                ReportName = "Devotee Categories";
+                wr.Report.RegisterData(devotees, "Devotees");
+                wr.Report.SetParameterValue("Title", "Devotee Checkout List");
+                wr.Report.SetParameterValue("ToDate", dateValue.Date.ToString("dd - MMM - yyyy"));
+                ReportName = "Devotee Checkout List";
                 if (typeofreport == "screen")
                 {
                     return View(wr);
@@ -84,9 +85,9 @@ namespace Anandashram.Controllers
                 }
             }
         }
-        public IActionResult ReportViewer()
+        public async Task<IActionResult> ReportViewer()
         {
-           return ReportViewer("DevoteeCategory", "screen");
+           return await ReportViewer(DateTime.MinValue, "screen");
         }
         public IActionResult RoomDetailsViewer()
         {
@@ -109,7 +110,7 @@ namespace Anandashram.Controllers
                         wr.Report.Load(Path.Combine(_env.ContentRootPath, "Reports", "RoomAllocationdetail.frx"));
 
                     List<Company> companies = new List<Company>();
-                    List<Room> roomList = await _roomRepo.GetAllRoomReservations();
+                    List<Room> roomList = await _roomRepo.GetRoomsWithReservationsUpToDateAsync();
                     companies.Add(_companyrepo.CompanyDetails());
                     wr.Report.RegisterData(companies, "CompanyRef");
 

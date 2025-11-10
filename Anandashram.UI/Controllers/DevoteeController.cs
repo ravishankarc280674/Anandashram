@@ -30,7 +30,7 @@ namespace Anandashram.Controllers
         }
 
         // GET: Devotee
-        public async Task<IActionResult> Index(string sortExpression = "", string SearchText = "", int pg = 1, int PageSize = 100, bool Closed = false)
+        public async Task<IActionResult> Index(string sortExpression = "", string SearchText = "", int pg = 1, int PageSize = 100, bool Closed = false, string view = "Grid")
         {
             if (pg < 1) pg = 1;
 
@@ -54,6 +54,8 @@ namespace Anandashram.Controllers
 
             var pager = new PageModel(DevoteeList.TotalRecords, pg, PageSize) { Action = "Index", Controller = "Devotee", SearchText = SearchText, Closed = Closed };
             pager.SortExpression = sortExpression;
+            this.ViewBag.view = view;
+            pager.ViewType = view;
             this.ViewBag.Pager = pager;
             this.ViewBag.PageSizes = GetPageSizes(PageSize);
             var DevoteeDTOList = DevoteeList.Select(d => new
@@ -139,7 +141,7 @@ namespace Anandashram.Controllers
             else
                 pagesSizes.Add(new SelectListItem("100", "100"));
 
-            for (int lp = 100; lp <= 1000; lp += 100)
+            for (int lp = 200; lp <= 1000; lp += 100)
             {
                 if (lp == selectedPageSize)
                 { pagesSizes.Add(new SelectListItem(lp.ToString(), lp.ToString(), true)); }

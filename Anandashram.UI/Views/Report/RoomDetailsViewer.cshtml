@@ -7,7 +7,7 @@
 <hr />
 
 <div class="col-md-12 d-flex">
-    <form asp-action="RoomDetailsViewer" method="post">
+    <form asp-action="RoomDetailsViewer" method="post" class="col-md-12 d-flex">
         <div>
             <fieldset>
                 <dl>
@@ -15,7 +15,7 @@
                     <dd>
                         <input type="radio" id="report" name="report" value="List" checked="checked" />
                         List &nbsp;
-                        <input type="radio" id="report" name="report" value="Detail" />
+                        <input type="radio" id="report" name="report" value="Detail" disabled="disabled"/>
                         Detail
                         
                     </dd>

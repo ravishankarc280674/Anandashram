@@ -30,11 +30,11 @@
         var controllerName = '@this.ViewContext.RouteData.Values["controller"].ToString()';
         if(controllerName.toLowerCase()=="devotee")
         {
-        window.location.href = "/" + controllerName + "/@Model.Action" + "?pageSize=" + obj.value + "&SearchText@Model.SearchText" + "&sortExpression=" + "@Model.SortExpression" + "&Closed=" + "@Model.Closed";
+        window.location.href = "/" + controllerName + "/@Model.Action" + "?pageSize=" + obj.value + "&SearchText@Model.SearchText" + "&sortExpression=" + "@Model.SortExpression" + "&Closed=" + "@Model.Closed" + "&view=" + "@Model.ViewType";
         }
         else
         {
-        window.location.href = "/" + controllerName + "/@Model.Action" + "?pageSize=" + obj.value + "&SearchText@Model.SearchText" + "&sortExpression=" + "@Model.SortExpression";
+        window.location.href = "/" + controllerName + "/@Model.Action" + "?pageSize=" + obj.value + "&SearchText@Model.SearchText" + "&sortExpression=" + "@Model.SortExpression" + "&view=" + "@Model.ViewType";
         }
     }
 

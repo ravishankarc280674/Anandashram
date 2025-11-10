@@ -23,7 +23,7 @@ namespace Anandashram.Repositories
         {
             _context.Rooms.Attach(room);
             _context.Entry(room).State = EntityState.Deleted;
-           await _context.SaveChangesAsync();
+            await _context.SaveChangesAsync();
             return room;
         }
 
@@ -37,7 +37,7 @@ namespace Anandashram.Repositories
 
 
         private List<Room> DoSort(List<Room> rooms, string SortProperty, SortOrder sortOrder)
-        {           
+        {
 
             if (SortProperty.ToLower() == "name")
             {
@@ -63,29 +63,29 @@ namespace Anandashram.Repositories
 
             if (!string.IsNullOrEmpty(SearchText))
             {
-                rooms =await _context.Rooms.Include(e =>e.Building)
+                rooms = await _context.Rooms.Include(e => e.Building)
                     .Include(e => e.Block)
                     .Include(e => e.Floor)
-                .Where(n => n.Name.Contains(SearchText) 
+                .Where(n => n.Name.Contains(SearchText)
                         || n.Building.Name.Contains(SearchText)
                         || n.Block.Name.Contains(SearchText)
                         || n.Floor.Name.Contains(SearchText))
                     .ToListAsync();
             }
             else
-                rooms =await _context.Rooms.Include(e => e.Building)
+                rooms = await _context.Rooms.Include(e => e.Building)
                     .Include(e => e.Block)
                     .Include(e => e.Floor).ToListAsync();
 
             rooms = DoSort(rooms, SortProperty, sortOrder);
 
-            PaginatedList<Room> retRooms = new PaginatedList<Room>(rooms,pg,pageSize);
+            PaginatedList<Room> retRooms = new PaginatedList<Room>(rooms, pg, pageSize);
             return retRooms;
         }
 
         public async Task<Room> GetRoom(int id)
         {
-            Room room =await _context.Rooms.Where(u => u.Id == id).FirstOrDefaultAsync();
+            Room room = await _context.Rooms.Where(u => u.Id == id).FirstOrDefaultAsync();
             return room == null ? new Room() : room;
         }
         public bool IsRoomNameExists(string name)
@@ -94,12 +94,12 @@ namespace Anandashram.Repositories
             if (ct > 0)
                 return true;
             else
-                return false;      
+                return false;
         }
 
-        public bool IsRoomNameExists(string name,int Id)
+        public bool IsRoomNameExists(string name, int Id)
         {
-            int ct = _context.Rooms.Where(n => n.Name.ToLower() == name.ToLower() && n.Id!=Id).Count();
+            int ct = _context.Rooms.Where(n => n.Name.ToLower() == name.ToLower() && n.Id != Id).Count();
             if (ct > 0)
                 return true;
             else
@@ -108,36 +108,36 @@ namespace Anandashram.Repositories
 
         public List<Room> GetFilteredRooms()
         {
-            
+
             return _context.Rooms.Include(e => e.Building)
                     .Include(e => e.Block)
                     .Include(e => e.Floor).ToList();
         }
         public Room GetSelectedRoom(int Id) // to be changed future
         {
-            Room room =_context.Rooms.Where(u => u.Id == Id).Include(e => e.Building)
+            Room room = _context.Rooms.Where(u => u.Id == Id).Include(e => e.Building)
                     .Include(e => e.Block)
                     .Include(e => e.Floor)
                     .GroupJoin(_context.Reservations, r => r.Id, rs => rs.RoomId, (r, rss) => new { r, rss })
                     .Select(result => new Room
                     {
-                       Building = result.r.Building,
-                       Floor= result.r.Floor,
-                       Block= result.r.Block,
-                       Id= result.r.Id,
-                       Name= result.r.Name,
-                       BuildingId= result.r.BuildingId,
-                       FloorId = result.r.FloorId,
-                       BlockId = result.r.BlockId,
-                       Capacity = result.r.Capacity,
-                       CreatedBy = result.r.CreatedBy,
-                       CreatedDate = result.r.CreatedDate,
-                       Description = result.r.Description,
-                       ModifiedBy = result.r.ModifiedBy,
-                       ModifiedDate = result.r.ModifiedDate,
+                        Building = result.r.Building,
+                        Floor = result.r.Floor,
+                        Block = result.r.Block,
+                        Id = result.r.Id,
+                        Name = result.r.Name,
+                        BuildingId = result.r.BuildingId,
+                        FloorId = result.r.FloorId,
+                        BlockId = result.r.BlockId,
+                        Capacity = result.r.Capacity,
+                        CreatedBy = result.r.CreatedBy,
+                        CreatedDate = result.r.CreatedDate,
+                        Description = result.r.Description,
+                        ModifiedBy = result.r.ModifiedBy,
+                        ModifiedDate = result.r.ModifiedDate,
                         Remaining = result.r.Capacity - (result.rss.Where(rs => rs.Closed == false).Sum(rs => rs.Allocated))
                     }).FirstOrDefault();
-            
+
             return room == null ? new Room() : room;
         }
         public async Task<List<Room>> GeRoomReservations(string SortProperty, SortOrder sortOrder, string SearchText = "")
@@ -168,6 +168,21 @@ namespace Anandashram.Repositories
                             .Include(e => e.Floor)
                             .Include(e => e.Reservations.Where(e => e.Closed == false)).ThenInclude(e => e.Devotee).ToListAsync();
             }
+
+            return roomList;
+        }
+        public async Task<List<Room>> GetRoomsWithReservationsUpToDateAsync()
+        {
+            var endOfDay = DateTime.Now.Date.AddDays(1); 
+
+            var roomList = await _context.Rooms
+                .Include(r => r.Building)
+                .Include(r => r.Block)
+                .Include(r => r.Floor)
+                .Include(r => r.Reservations
+                    .Where(res => !res.Closed && res.FromDate < endOfDay)) 
+                    .ThenInclude(res => res.Devotee)
+                .ToListAsync();
 
             return roomList;
         }

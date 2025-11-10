@@ -33,4 +33,5 @@ public partial class DevoteeDTO
     public bool Closed { get; set; }
 
     public string? ReopenedCode { get; set; }
+    public int TotalAllocated { get; set; }
 }

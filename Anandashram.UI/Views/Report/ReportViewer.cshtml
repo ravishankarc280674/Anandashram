@@ -7,20 +7,13 @@
 <hr />
 
 <div class="col-md-12 d-flex">
-    <form asp-action="ReportViewer" method="post">
+    <form asp-action="ReportViewer" method="post" class="col-md-12 d-flex">
         <div class="col-md-5">
               <fieldset>
                   <dl>
-                        <dt>Choose your Report:</dt>
+                        <dt>Choose Check out Date:</dt>
                   <dd>
-                        <input type="radio" id="report" name="report" value="dc" checked="checked" />
-                            Devotee Category &nbsp;
-                        <input type="radio" id="report" name="report" value="building" />
-                            Building &nbsp;
-                        <input type="radio" id="report" name="report" value="block" />
-                                Block &nbsp;
-                        <input type="radio" id="report" name="report" value="floor" />
-                            Floor 
+                        <input type="date" id="dateValue" name="dateValue" value="@DateTime.Today.ToString("yyyy/MM/dd")" />
                 </dd>
                 </dl>
                 </fieldset>

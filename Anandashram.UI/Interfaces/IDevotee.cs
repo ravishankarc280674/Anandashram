@@ -1,4 +1,5 @@
-﻿using System.Data;
+﻿using DocumentFormat.OpenXml;
+using System.Data;
 
 namespace Anandashram.Interfaces
 {
@@ -18,5 +19,8 @@ namespace Anandashram.Interfaces
         Task<List<Devotee>> GetAllDevotees(bool Checked);
 
         Task<Devotee> GetDevoteeWithReservations(int devoteeId);
+
+        Task<List<DevoteeDTO>> GetDevoteeSummaryByDateAsync(DateTime dateValue);
+
     }
 }
