@@ -171,7 +171,7 @@ namespace Anandashram.Repositories
 
             return roomList;
         }
-        public async Task<List<RoomDTO>> GetRoomsWithReservationsUpToDateAsync()
+        public async Task<List<RoomReportDTO>> GetRoomsWithReservationsUpToDateAsync()
         {
             var endOfDay = DateTime.Now.Date.AddDays(1);
 
@@ -186,7 +186,7 @@ namespace Anandashram.Repositories
                     res => res.RoomId,
                     (room, reservations) => new { room, reservations }
                 )
-                .Select(x => new RoomDTO
+                .Select(x => new RoomReportDTO
                 {
                     Name = x.room.Name,
                     BuildingName = x.room.Building != null ? x.room.Building.Name : string.Empty,
@@ -197,6 +197,43 @@ namespace Anandashram.Repositories
                     RemainingCount = x.room.Capacity - (x.reservations.Sum(r => (int?)r.Allocated) ?? 0)
                 })
                 .ToListAsync();
+            return rooms;
+        }
+        public async Task<List<RoomReportDTO>> GetRoomsWithReservationsReportAsync()
+        {
+            var rooms = await _context.Rooms
+                .Include(r => r.Building)
+                .Include(r => r.Block)
+                .Include(r => r.Floor)
+                .Include(r => r.Reservations)
+                    .ThenInclude(rv => rv.Devotee)
+                        .ThenInclude(d => d.DevoteeCategory)
+                .Select(r => new RoomReportDTO
+                {
+                    Id = r.Id,
+                    RoomName = r.Name,
+                    BuildingName = r.Building != null ? r.Building.Name : string.Empty,
+                    BlockName = r.Block != null ? r.Block.Name : string.Empty,
+                    FloorName = r.Floor != null ? r.Floor.Name : string.Empty,
+                    Capacity = r.Capacity,
+                    TotalAllocated = r.Reservations.Sum(rv => (int?)rv.Allocated) ?? 0,
+                    TotalRemaining = r.Capacity - (r.Reservations.Sum(rv => (int?)rv.Allocated) ?? 0),
+
+                    Reservations = r.Reservations.Select(rv => new ReservationReportDTO
+                    {
+                        RoomId = rv.RoomId,
+                        DevoteeCode = rv.Devotee.Code,
+                        DevoteeName = rv.Devotee.Name,
+                        DevoteeCategoryName = rv.Devotee.DevoteeCategory != null
+                            ? rv.Devotee.DevoteeCategory.Name
+                            : string.Empty,
+                        FromDate = rv.FromDate,
+                        Allocated = rv.Allocated,
+                        Closed = rv.Closed
+                    }).ToList()
+                })
+                .ToListAsync();
+
             return rooms;
         }
     }

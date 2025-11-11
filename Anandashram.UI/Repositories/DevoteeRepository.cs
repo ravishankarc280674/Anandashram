@@ -179,7 +179,7 @@ namespace Anandashram.Repositories
             return devotee;
 
         }
-        public async Task<List<DevoteeDTO>> GetDevoteeSummaryByDateAsync(DateTime dateValue)
+        public async Task<List<DevoteeReportDTO>> GetDevoteeSummaryByDateAsync(DateTime dateValue)
         {
             DateTime nextDate = dateValue.Date.AddDays(1);
 
@@ -194,7 +194,7 @@ namespace Anandashram.Repositories
                     r.Devotee.Code,
                     CategoryName = r.Devotee.DevoteeCategory.Name
                 })
-                .Select(g => new DevoteeDTO
+                .Select(g => new DevoteeReportDTO
                 {
                     Name = g.Key.Name,
                     Code = g.Key.Code,

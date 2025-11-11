@@ -20,7 +20,7 @@ namespace Anandashram.Interfaces
 
         Task<Devotee> GetDevoteeWithReservations(int devoteeId);
 
-        Task<List<DevoteeDTO>> GetDevoteeSummaryByDateAsync(DateTime dateValue);
+        Task<List<DevoteeReportDTO>> GetDevoteeSummaryByDateAsync(DateTime dateValue);
 
     }
 }

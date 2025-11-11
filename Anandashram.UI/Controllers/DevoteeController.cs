@@ -80,47 +80,7 @@ namespace Anandashram.Controllers
             HttpContext.Session.SetString("DevoteesFilterData", System.Text.Json.JsonSerializer.Serialize(DevoteeDTOList));
             return View(DevoteeList);
         }
-
-        
-
-        //public IActionResult DownloadPdf(string name, DateTime? fromDate, DateTime? toDate)
-        //{
-        //    var data = GetFilteredData(name, fromDate, toDate);
-
-        //    using var report = new Report();
-        //    report.Load(Path.Combine(_env.WebRootPath, "reports", "DevoteeReport.frx"));
-        //    report.RegisterData(data, "DevoteeList");
-        //    report.Prepare();
-
-        //    using var stream = new MemoryStream();
-        //    var pdfExport = new PDFSimpleExport();
-        //    report.Export(pdfExport, stream);
-        //    stream.Position = 0;
-
-        //    return File(stream.ToArray(), "application/pdf", "Report.pdf");
-        //}
-
-        // 🔹 3. Download as CSV (Excel opens it directly)
-        //public IActionResult DownloadCsv(string name, DateTime? fromDate, DateTime? toDate)
-        //{
-
-        //    using var report = new Report();
-        //    report.Load(Path.Combine(_env.WebRootPath, "reports", "DevoteeReport.frx"));
-        //    report.RegisterData(data, "DevoteeList");
-        //    report.Prepare();
-
-        //    using var stream = new MemoryStream();
-        //    var csvExport = new CSVExport
-        //    {
-        //        FieldDelimiter = ",",
-        //        Encoding = System.Text.Encoding.UTF8
-        //    };
-        //    report.Export(csvExport, stream);
-        //    stream.Position = 0;
-
-        //    return File(stream.ToArray(), "text/csv", "Report.csv");
-        //}
-
+         
         public List<SelectListItem> GetDevoteeCategories()
         {
             var devoteeCategories = _devoteeCategoryRepo.GetDevoteeCategories().Select(m => new SelectListItem()
@@ -257,6 +217,7 @@ namespace Anandashram.Controllers
                         devotee = await _devoteeRepo.Edit(devotee);
                         if (actionButton == "Closed")
                         {
+                            await CloseReservations(IdToRedirect);
                             return RedirectToAction("Details", new { Id = IdToRedirect });
                         }
 

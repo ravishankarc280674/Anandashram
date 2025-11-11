@@ -1,10 +1,7 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<Report ScriptLanguage="CSharp" ReportInfo.Created="10/22/2025 12:03:18" ReportInfo.Modified="11/06/2025 16:14:54" ReportInfo.CreatorVersion="2026.1.0.0">
-  <Styles>
-    <Style Name="EvenRow" Fill.Color="LightGray" Font="Arial, 10pt"/>
-  </Styles>
+<Report ScriptLanguage="CSharp" TextQuality="Regular" ReportInfo.Created="2025-11-10">
   <Dictionary>
-    <BusinessObjectDataSource Name="Company" ReferenceName="CompanyRef" DataType="System.Int32" Enabled="true">
+    <BusinessObjectDataSource Name="Company" ReferenceName="Company" DataType="null" Enabled="True">
       <Column Name="Name" DataType="System.String"/>
       <Column Name="Established" DataType="System.Int32"/>
       <Column Name="AddressLine1" DataType="System.String"/>
@@ -16,67 +13,87 @@
       <Column Name="Email" DataType="System.String"/>
       <Column Name="Website" DataType="System.String"/>
     </BusinessObjectDataSource>
-    <BusinessObjectDataSource Name="Rooms" ReferenceName="Rooms" DataType="System.Int32" Enabled="true">
+
+    <BusinessObjectDataSource Name="Rooms" ReferenceName="Rooms" DataType="System.Collections.Generic.List`1[[RoomReportDTO]]" Enabled="true">
       <Column Name="Id" DataType="System.Int32"/>
-      <Column Name="Name" DataType="System.String"/>
+      <Column Name="RoomName" DataType="System.String"/>
       <Column Name="BuildingName" DataType="System.String"/>
       <Column Name="BlockName" DataType="System.String"/>
       <Column Name="FloorName" DataType="System.String"/>
-      <BusinessObjectDataSource Name="Reservations" DataType="System.Int32" Enabled="true">
-        <Column Name="Id" DataType="System.Int32"/>
-        <Column Name="DevoteeId" DataType="System.Int32"/>
-        <Column Name="RoomId" DataType="System.Int32"/>
+      <Column Name="Capacity" DataType="System.Int32"/>
+      <Column Name="TotalAllocated" DataType="System.Int32"/>
+      <Column Name="TotalRemaining" DataType="System.Int32"/>
+
+      <BusinessObjectDataSource Name="Reservations" DataType="System.Collections.Generic.List`1[[ReservationReportDTO]]" Enabled="true">
         <Column Name="DevoteeCode" DataType="System.String"/>
         <Column Name="DevoteeName" DataType="System.String"/>
+        <Column Name="DevoteeCategoryName" DataType="System.String"/>
         <Column Name="FromDate" DataType="System.DateTime"/>
+        <Column Name="Allocated" DataType="System.Int32"/>
         <Column Name="Closed" DataType="System.Boolean"/>
       </BusinessObjectDataSource>
     </BusinessObjectDataSource>
-    <Parameter Name="Title" DataType="System.String" AsString=""/>
-    <Relation Name="Devotee_Reservations" ParentDataSource="Rooms" ChildDataSource="Reservations" ParentColumns="Id" ChildColumns="RoomId" Enabled="true"/>
+
+    <Parameter Name="Title" DataType="System.String"/>
   </Dictionary>
-  <ReportPage Name="Page1" Guides="-1,717.2,0,718.2,9.45,103.95,160.65,255.15,349.65,444.15,557.55,661.5,28.35,604.8,141.75,340.2,529.2" Watermark.Font="Arial, 60pt">
-    <ReportTitleBand Name="ReportTitle1" Width="718.2"/>
-    <PageHeaderBand Name="PageHeader1" Top="4" Width="718.2" Height="151.2" Guides="19.9,38.8,0,18.9,37.8,58.59,58.7,87.05,78.05,96.95,95.5,114.4,122.85,141.75">
-      <TextObject Name="Text17" Left="-1" Top="19.9" Width="718.2" Height="18.9" Text="Est: [Company.Established]" HorzAlign="Center" Font="Arial, 11.25pt"/>
+
+  <ReportPage Name="Page1" PaperWidth="210" PaperHeight="297" LeftMargin="10" RightMargin="10" TopMargin="10" BottomMargin="15">
+
+    <!-- Company Header -->
+    <ReportTitleBand Name="ReportTitle1" Width="718.2" Height="189">
       <TextObject Name="Text10" Width="718.2" Height="18.9" Text="[Company.Name]" AutoWidth="true" HorzAlign="Center" VertAlign="Center" Font="Arial, 14.25pt, style=Bold"/>
+      <TextObject Name="Text17" Top="18.9" Width="718.2" Height="18.9" Text="Estd: [Company.Established]" HorzAlign="Center" Font="Arial, 11.25pt"/>
+      <TextObject Name="Text18" Top="122.85" Width="718.2" Height="37.8" Border.Lines="Top, Bottom" Border.TopLine.Style="Double" Border.BottomLine.Style="Double" Text="[Title]" HorzAlign="Center" VertAlign="Center" Font="Arial, 12pt, style=Bold"/>
       <TextObject Name="Text19" Top="37.8" Width="718.2" Height="20.79" Text="[Company.AddressLine1] [Company.AddressLine2]" HorzAlign="Center" Font="Arial, 11.25pt"/>
-      <TextObject Name="Text20" Left="-1" Top="58.7" Width="718.2" Height="28.35" Text="[Company.State], [Company.Country] - [Company.PinCode]" HorzAlign="Center" Font="Arial, 11.25pt"/>
-      <TextObject Name="Text24" Top="78.05" Width="718.2" Height="18.9" Text="Mobile: [Company.Mobile], Email: [Company.Email]" HorzAlign="Center" Font="Arial, 11.25pt"/>
-      <TextObject Name="Text25" Top="95.5" Width="718.2" Height="18.9" Text="Website: [Company.Website]" HorzAlign="Center" Font="Arial, 11.25pt"/>
-      <TextObject Name="Text26" Top="122.85" Width="718.2" Height="18.9" Text="Room avalablity as on: [Date]" HorzAlign="Center" VertAlign="Center" Font="Arial, 11.25pt, style=Bold"/>
-    </PageHeaderBand>
-    <ColumnHeaderBand Name="ColumnHeader1" Top="159.2" Width="718.2" Height="18.9" Border.Lines="Top, Bottom" Border.TopLine.Style="Double" Border.BottomLine.Style="Double" Fill.Color="DarkGray" Guides="0,18.89999">
-      <TextObject Name="Text38" Left="9.45" Width="94.5" Height="18.9" Text="Room" HorzAlign="Center" VertAlign="Center" Font="Arial, 8.25pt, style=Bold"/>
-      <TextObject Name="Text43" Left="160.65" Width="94.5" Height="18.9" Text="Building" HorzAlign="Center" VertAlign="Center" Font="Arial, 8.25pt, style=Bold"/>
-      <TextObject Name="Text44" Left="349.65" Width="94.5" Height="18.9" Text="Block" HorzAlign="Center" VertAlign="Center" Font="Arial, 8.25pt, style=Bold"/>
-      <TextObject Name="Text45" Left="557.55" Width="103.95" Height="18.9" Text="Floor" HorzAlign="Center" VertAlign="Center" Font="Arial, 8.25pt, style=Bold"/>
-    </ColumnHeaderBand>
-    <DataBand Name="Data1" Top="182.1" Width="718.2" Height="66.15" Border.Lines="All" Guides="23.89999,61.7,5,4.449997,23.34999" DataSource="Rooms">
-      <SubreportObject Name="Subreport1" Left="28.35" Top="23.9" Width="576.45" Height="37.8" Fill.Color="LightGray" ReportPage="Page2"/>
-      <TextObject Name="Text39" Left="141.75" Top="5" Width="198.45" Height="18.9" Text="[Rooms.Name]" Font="Arial, 9.75pt, style=Bold"/>
-      <TextObject Name="Text40" Left="28.35" Top="4.45" Width="132.3" Height="18.9" Text="[Rooms.BuildingName]" Font="Arial, 9.75pt, style=Bold"/>
-      <TextObject Name="Text41" Left="349.65" Top="5" Width="179.55" Height="18.9" Text="[Rooms.BlockName]" Font="Arial, 9.75pt, style=Bold"/>
-      <TextObject Name="Text42" Left="557.55" Top="5" Width="160.65" Height="18.9" Text="[Rooms.FloorName]" Font="Arial, 9.75pt, style=Bold"/>
+      <TextObject Name="Text20" Top="56.7" Width="718.2" Height="28.35" Text="[Company.State], [Company.Country] - [Company.PinCode]" HorzAlign="Center" Font="Arial, 11.25pt"/>
+      <TextObject Name="Text24" Top="75.6" Width="718.2" Height="18.9" Text="Mobile: [Company.Mobile], Email: [Company.Email]" HorzAlign="Center" Font="Arial, 11.25pt"/>
+      <TextObject Name="Text25" Top="94.5" Width="718.2" Height="18.9" Text="Website: [Company.Website]" HorzAlign="Center" Font="Arial, 11.25pt"/>
+    </ReportTitleBand>
+
+    <!-- Group by Room -->
+    <GroupHeaderBand Name="RoomGroupHeader" Condition="[Rooms.Id]" Height="35">
+      <TextObject Name="RoomInfo" Width="1047" Height="18"
+                  Text="Room: [Rooms.RoomName]   Building: [Rooms.BuildingName]   Block: [Rooms.BlockName]   Floor: [Rooms.FloorName]"
+                  Font="Arial,10pt,style=Bold"
+                  Fill.Color="#E0E0E0"/>
+      <TextObject Name="RoomStats" Top="18" Width="1047" Height="17"
+                  Text="Capacity: [Rooms.Capacity]   Total Allocated: [Rooms.TotalAllocated]   Remaining: [Rooms.TotalRemaining]"
+                  Font="Arial,9pt,style=Bold"
+                  Fill.Color="#F2F2F2"/>
+    </GroupHeaderBand>
+
+    <!-- Reservation Details -->
+    <DataBand Name="ReservationData" DataSource="Rooms.Reservations" Height="18">
+      <TextObject Name="TextCode" Left="0" Width="80" Text="[Rooms.Reservations.DevoteeCode]" Font="Arial,9pt"/>
+      <TextObject Name="TextName" Left="90" Width="150" Text="[Rooms.Reservations.DevoteeName]" Font="Arial,9pt"/>
+      <TextObject Name="TextCat" Left="250" Width="120" Text="[Rooms.Reservations.DevoteeCategoryName]" Font="Arial,9pt"/>
+      <TextObject Name="TextFrom" Left="380" Width="90" Text="[FormatDateTime([Rooms.Reservations.FromDate],'dd-MM-yyyy')]" Font="Arial,9pt"/>
+      <TextObject Name="TextAlloc" Left="480" Width="60" Text="[Rooms.Reservations.Allocated]" HorzAlign="Right" Font="Arial,9pt"/>
     </DataBand>
-    <PageFooterBand Name="PageFooter1" Top="252.25" Width="718.2" Height="18.9"/>
-  </ReportPage>
-  <ReportPage Name="Page2" RightMargin="50" Guides="2.35,569.35,113.4,207.9,18.9,302.4,396.9,415.8,434.7,472.5" Watermark.Font="Arial, 60pt">
-      <TextObject Name="Text46" Left="2.35" Top="5" Width="567" Height="18.9" Fill.Color="Khaki" Text="Capacity: 50          Alloted: 50            Remaining: 00" AutoWidth="true" HorzAlign="Center" VertAlign="Center" Font="Arial, 12pt, style=Bold"/>
-      <DataBand Name="Data2" Top="55.25" Width="567" Height="18.9" Border.Lines="All" Guides="0,18.9" DataSource="Reservations">
-        <TextObject Name="Text34" Left="113.4" Width="94.5" Height="18.9" Text="[Reservations.DevoteeName]" Font="Arial, 10pt"/>
-        <TextObject Name="Text35" Left="18.9" Width="94.5" Height="18.9" Text="[Reservations.DevoteeCode]" Font="Arial, 10pt"/>
-        <TextObject Name="Text36" Left="207.9" Width="94.5" Height="18.9" Text="[Reservations.FromDate]" Format="Date" Format.Format="d" Font="Arial, 10pt"/>
-        <TextObject Name="Text37" Left="302.4" Width="94.5" Height="18.9" Text="[Reservations.Allocated]" Font="Arial, 10pt"/>
-        <CheckBoxObject Name="CheckBox1" Left="415.8" Width="18.9" Height="18.9" DataColumn="Reservations.Closed"/>
-        <DataHeaderBand Name="DataHeader1" Top="32.35" Width="567" Height="18.9" Border.Lines="All" Fill.Color="RosyBrown" Guides="0,18.9">
-          <TextObject Name="Text1" Left="113.4" Width="94.5" Height="18.9" Text="Name" Font="Arial, 10pt"/>
-          <TextObject Name="Text2" Left="18.9" Width="94.5" Height="18.9" Text="Code" Font="Arial, 10pt"/>
-          <TextObject Name="Text3" Left="207.9" Width="94.5" Height="18.9" Text="FromDate" Font="Arial, 10pt"/>
-          <TextObject Name="Text4" Left="302.4" Width="94.5" Height="18.9" Text="Allocated" Font="Arial, 10pt"/>
-          <TextObject Name="Text5" Left="396.9" Width="75.6" Height="18.9" Text="Closed" Font="Arial, 10pt"/>
-        </DataHeaderBand>
-      </DataBand>
-      <DataFooterBand Name="DataFooter1" Top="78.15" Width="567" Height="37.8"/>
+
+    <!-- Per-Room Summary -->
+    <GroupFooterBand Name="RoomFooter" Height="20">
+      <TextObject Name="TxtRoomTotal" Left="300" Width="400" Height="18"
+                  Text="Total devotees in this room: [Count(Rooms.Reservations.DevoteeCode)]"
+                  Font="Arial,9pt,style=Bold" HorzAlign="Right"/>
+    </GroupFooterBand>
+
+    <!-- Report Summary -->
+    <ReportSummaryBand Name="ReportSummary1" Height="25">
+      <TextObject Name="TxtGrandTotal" Left="250" Width="400" Height="18"
+                  Text="Grand Total Allocated: [Sum(Rooms.TotalAllocated)]"
+                  Font="Arial,10pt,style=Bold" HorzAlign="Right"/>
+    </ReportSummaryBand>
+
+    <!-- Page Footer -->
+    <PageFooterBand Name="PageFooter1" Height="20">
+      <TextObject Name="TxtFooterLeft" Left="0" Width="400" Height="18"
+                  Text="Printed on [FormatDateTime(Today, 'dd-MM-yyyy HH:mm')]"
+                  Font="Arial,8pt"/>
+      <TextObject Name="TxtFooterRight" Left="550" Width="200" Height="18"
+                  HorzAlign="Right" Font="Arial,8pt"
+                  Text="Page [Page#] of [TotalPages#]"/>
+    </PageFooterBand>
+
   </ReportPage>
 </Report>

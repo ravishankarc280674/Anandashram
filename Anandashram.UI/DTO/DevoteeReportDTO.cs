@@ -1,9 +1,10 @@
 ﻿namespace Anandashram.DTO;
-public partial class DevoteeDTO
+public partial class DevoteeReportDTO
 {
-    public DevoteeDTO()
+    public DevoteeReportDTO()
     {
     }
+    public int Id { get; set; }
     public string Code { get;set; }
 
     public string Name { get; set; } = null!;

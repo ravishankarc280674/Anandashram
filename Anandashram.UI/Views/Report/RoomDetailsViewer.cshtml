@@ -47,5 +47,6 @@
     @if (Model != null)
     {
         @await Model.Render()
+        @* @await Component.InvokeAsync("WebReport", new { webReport = Model }) *@
     }
 </div>

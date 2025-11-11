@@ -51,7 +51,7 @@ namespace Anandashram.Controllers
             {
                 string ReportName = string.Empty;
                 WebReport wr = new WebReport();
-                List<DevoteeDTO> devotees =await _devoteerepo.GetDevoteeSummaryByDateAsync(dateValue);
+                List<DevoteeReportDTO> devotees =await _devoteerepo.GetDevoteeSummaryByDateAsync(dateValue);
                 wr.Report.Load(Path.Combine(_env.ContentRootPath, "Reports", "DevoteeCheckOut.frx"));
                 List<Company> companies = new List<Company>();
                 companies.Add(_companyrepo.CompanyDetails());
@@ -97,66 +97,110 @@ namespace Anandashram.Controllers
         [HttpPost]
         public async Task<IActionResult> RoomDetailsViewer(string report = "", string typeofreport = "")
         {
-            if (report == "" || typeofreport == "")
+            if (string.IsNullOrEmpty(report) || string.IsNullOrEmpty(typeofreport))
                 return View();
-            else
+
+            WebReport wr = new WebReport();
+            string reportPath = report == "List"
+                ? Path.Combine(_env.ContentRootPath, "Reports", "RoomAllocation.frx")
+                : Path.Combine(_env.ContentRootPath, "Reports", "RoomAllocationDetail.frx");
+
+            wr.Report.Load(reportPath);
+
+            // ✅ Register Company (single object)
+            var company = _companyrepo.CompanyDetails();
+            wr.Report.RegisterData(new List<Company> { company }, "Company");
+            wr.Report.GetDataSource("Company").Enabled = true;
+
+            // ✅ Register Room data
+            List<RoomReportDTO> roomList = await _roomRepo.GetRoomsWithReservationsUpToDateAsync();
+            wr.Report.RegisterData(roomList, "Rooms");
+            wr.Report.GetDataSource("Rooms").Enabled = true;
+            wr.Report.GetDataSource("Rooms.Reservations").Enabled = true;
+
+            if (report == "Detail")
             {
-                try
+                GetDetailAllocationReport(typeofreport);
+            }
+            try
+            {
+                wr.Report.Prepare();
+
+                if (typeofreport == "screen")
                 {
-                    WebReport wr = new WebReport();
-                    if (report == "List")
-                        wr.Report.Load(Path.Combine(_env.ContentRootPath, "Reports", "RoomAllocation.frx"));
-                    else
-                        wr.Report.Load(Path.Combine(_env.ContentRootPath, "Reports", "RoomAllocationdetail.frx"));
-
-                    List<Company> companies = new List<Company>();
-                    List<RoomDTO> roomList = await _roomRepo.GetRoomsWithReservationsUpToDateAsync();
-                    companies.Add(_companyrepo.CompanyDetails());
-                    wr.Report.RegisterData(companies, "CompanyRef");
-
-                    if (report == "Detail")
-                    {
-                        wr.Report.RegisterData(roomList, "Room");
-                        wr.Report.GetDataSource("Room").Enabled = true;
-                        wr.Report.GetDataSource("Room.Reservations").Enabled = true;
-                    }
-                    else
-                    {
-                        wr.Report.RegisterData(roomList, "Rooms");
-                    }
-                    if (typeofreport == "screen")
-                    {
-                        return View(wr);
-                    }
-                    else
-                    {
-                        if (wr.Report.Prepare())
-                        {
-
-                            FastReport.Export.PdfSimple.PDFSimpleExport pDFSimpleExport = new FastReport.Export.PdfSimple.PDFSimpleExport();
-                            pDFSimpleExport.ShowProgress = false;
-                            pDFSimpleExport.Subject = "Room Availability - List";
-                            MemoryStream ms = new MemoryStream();
-                            wr.Report.Export(pDFSimpleExport, ms);
-                            wr.Report.Dispose();
-                            pDFSimpleExport.Dispose();
-                            ms.Position = 0;
-                            return File(ms, "application/pdf", "Room Availability - List.pdf");
-                        }
-                        else
-                        {
-                            return null;
-                        }
-                    }
+                    return View(wr);
                 }
-                catch (Exception ex)
+                else
                 {
-                    return null;
+                    using var pdfExport = new FastReport.Export.PdfSimple.PDFSimpleExport();
+                    pdfExport.ShowProgress = false;
+                    pdfExport.Subject = "Room Availability - List";
+                    using (var ms = new MemoryStream())
+                    {
+                        wr.Report.Export(pdfExport, ms);
+                        ms.Position = 0;
+                        var bytes = ms.ToArray(); // Copy to buffer before disposing
+
+                        wr.Report.Dispose();
+                        pdfExport.Dispose();
+
+                        return File(new MemoryStream(bytes), "application/pdf", "Room Availability - List.pdf");
+                    }
+
                 }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine("FastReport error: " + ex.Message);
+                Console.WriteLine("Stack: " + ex.StackTrace);
+                throw;
             }
         }
 
-        public IActionResult DevoteeReportViewer()
+        public async Task GetDetailAllocationReport(string typeofreport)
+        {
+            string reportPath = Path.Combine(_env.WebRootPath, "reports", "RoomAllocationDetail.frx");
+
+            using var report = new Report();
+            report.Load(reportPath);
+            var company = _companyrepo.CompanyDetails();
+            List<RoomReportDTO> roomList = await _roomRepo.GetRoomsWithReservationsReportAsync();
+            WebReport wr = new WebReport();
+
+            wr.Report.RegisterData(new List<Company> { company }, "Company");
+            wr.Report.GetDataSource("Company").Enabled = true;
+            report.RegisterData(roomList, "Rooms");
+            report.GetDataSource("Rooms").Enabled = true;
+            report.GetDataSource("Rooms.Reservations").Enabled = true;
+
+            report.SetParameterValue("Title", $"Devotee Room Report as on {DateTime.Now:dd-MM-yyyy}");
+            var totalDevotees = roomList.Sum(r => r.Reservations.Count);
+            var grandAllocated = roomList.Sum(r => r.Reservations.Sum(d => d.Allocated));
+            wr.Report.SetParameterValue("Date", DateTime.Now.ToString("dd/MM/yyyy"));
+            wr.Report.SetParameterValue("TotalCount", totalDevotees);
+            wr.Report.SetParameterValue("GrandTotal", grandAllocated);
+            report.Prepare();
+            if (typeofreport == "screen")
+                View(wr);
+            else
+            {
+                using var pdfExport = new FastReport.Export.PdfSimple.PDFSimpleExport();
+                pdfExport.ShowProgress = false;
+                pdfExport.Subject = "Room Availability - List";
+                using (var ms = new MemoryStream())
+                {
+                    wr.Report.Export(pdfExport, ms);
+                    ms.Position = 0;
+                    var bytes = ms.ToArray(); // Copy to buffer before disposing
+
+                    wr.Report.Dispose();
+                    pdfExport.Dispose();
+
+                    File(new MemoryStream(bytes), "application/pdf", "Room Availability - List.pdf");
+                }
+            }
+        }
+public IActionResult DevoteeReportViewer()
         {
             return View();
         }
@@ -176,7 +220,7 @@ namespace Anandashram.Controllers
                         return Content("No filtered data available for report.");
 
                     // 🧩 Step 2: Deserialize back to list
-                    var devotees = System.Text.Json.JsonSerializer.Deserialize<List<DevoteeDTO>>(jsonData);
+                    var devotees = System.Text.Json.JsonSerializer.Deserialize<List<DevoteeReportDTO>>(jsonData);
                     wr.Report.Load(Path.Combine(_env.ContentRootPath, "Reports", "DevoteeList.frx"));
 
                     wr.Report.RegisterData(companies, "CompanyRef");

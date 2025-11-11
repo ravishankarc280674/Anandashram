@@ -5,7 +5,7 @@
       <Column Name="Name" DataType="System.String"/>
       <Column Name="Capacity" DataType="System.Int32"/>
     </BusinessObjectDataSource>
-    <BusinessObjectDataSource Name="Company" ReferenceName="CompanyRef" DataType="System.Int32" Enabled="true">
+    <BusinessObjectDataSource Name="Company" ReferenceName="Company" DataType="System.Int32" Enabled="true">
       <Column Name="Name" DataType="System.String"/>
       <Column Name="Established" DataType="System.Int32"/>
       <Column Name="AddressLine1" DataType="System.String"/>
