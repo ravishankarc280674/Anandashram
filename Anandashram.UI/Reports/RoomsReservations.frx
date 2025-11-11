@@ -67,29 +67,12 @@
       <TextObject Name="TextCode" Left="0" Width="80" Text="[Rooms.Reservations.DevoteeCode]" Font="Arial,9pt"/>
       <TextObject Name="TextName" Left="90" Width="150" Text="[Rooms.Reservations.DevoteeName]" Font="Arial,9pt"/>
       <TextObject Name="TextCat" Left="250" Width="120" Text="[Rooms.Reservations.DevoteeCategoryName]" Font="Arial,9pt"/>
-      <TextObject Name="TextFrom" Left="380" Width="90" Text="[FormatDateTime([Rooms.Reservations.FromDate],'dd-MM-yyyy')]" Font="Arial,9pt"/>
+      <TextObject Name="TextFrom" Left="380" Width="90" Text="[Rooms.Reservations.FromDate]" Format="Date" Format.Format="dd/MM/yyyy" Font="Arial,9pt"/>
       <TextObject Name="TextAlloc" Left="480" Width="60" Text="[Rooms.Reservations.Allocated]" HorzAlign="Right" Font="Arial,9pt"/>
     </DataBand>
 
-    <!-- Per-Room Summary -->
-    <GroupFooterBand Name="RoomFooter" Height="20">
-      <TextObject Name="TxtRoomTotal" Left="300" Width="400" Height="18"
-                  Text="Total devotees in this room: [Count(Rooms.Reservations.DevoteeCode)]"
-                  Font="Arial,9pt,style=Bold" HorzAlign="Right"/>
-    </GroupFooterBand>
-
-    <!-- Report Summary -->
-    <ReportSummaryBand Name="ReportSummary1" Height="25">
-      <TextObject Name="TxtGrandTotal" Left="250" Width="400" Height="18"
-                  Text="Grand Total Allocated: [Sum(Rooms.TotalAllocated)]"
-                  Font="Arial,10pt,style=Bold" HorzAlign="Right"/>
-    </ReportSummaryBand>
-
     <!-- Page Footer -->
     <PageFooterBand Name="PageFooter1" Height="20">
-      <TextObject Name="TxtFooterLeft" Left="0" Width="400" Height="18"
-                  Text="Printed on [FormatDateTime(Today, 'dd-MM-yyyy HH:mm')]"
-                  Font="Arial,8pt"/>
       <TextObject Name="TxtFooterRight" Left="550" Width="200" Height="18"
                   HorzAlign="Right" Font="Arial,8pt"
                   Text="Page [Page#] of [TotalPages#]"/>

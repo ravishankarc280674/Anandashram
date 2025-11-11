@@ -17,7 +17,7 @@
         Room GetSelectedRoom(int id);
         Task<List<Room>> GeRoomReservations(string SortProperty, SortOrder sortOrder, string SearchText = "");
         Task<List<Room>> GetAllRoomReservations(string SearchText = "");
-         Task<List<RoomReportDTO>> GetRoomsWithReservationsUpToDateAsync();
+         Task<List<RoomReportDTO>> GetRoomsWithReservationsUpToDateAsync(DateTime dateValue);
         Task<List<RoomReportDTO>> GetRoomsWithReservationsReportAsync();
     }
 }

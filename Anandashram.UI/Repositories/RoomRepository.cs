@@ -1,4 +1,5 @@
 ﻿using AspNetCoreGeneratedDocument;
+using DocumentFormat.OpenXml;
 using Microsoft.EntityFrameworkCore.Internal;
 using System.Net;
 using System.Security.Cryptography.Xml;
@@ -171,9 +172,9 @@ namespace Anandashram.Repositories
 
             return roomList;
         }
-        public async Task<List<RoomReportDTO>> GetRoomsWithReservationsUpToDateAsync()
+        public async Task<List<RoomReportDTO>> GetRoomsWithReservationsUpToDateAsync(DateTime dateValue)
         {
-            var endOfDay = DateTime.Now.Date.AddDays(1);
+            var endOfDay = dateValue.Date.AddDays(1);
 
             var rooms = await _context.Rooms
                 .Include(r => r.Building)

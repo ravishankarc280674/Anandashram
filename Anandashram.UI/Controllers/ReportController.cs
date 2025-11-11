@@ -45,13 +45,13 @@ namespace Anandashram.Controllers
         [HttpPost]
         public async Task<IActionResult> ReportViewer(DateTime dateValue, string typeofreport = "")
         {
-            if (typeofreport == "" || dateValue ==DateTime.MinValue)
+            if (typeofreport == "" || dateValue == DateTime.MinValue)
                 return View();
             else
             {
                 string ReportName = string.Empty;
                 WebReport wr = new WebReport();
-                List<DevoteeReportDTO> devotees =await _devoteerepo.GetDevoteeSummaryByDateAsync(dateValue);
+                List<DevoteeReportDTO> devotees = await _devoteerepo.GetDevoteeSummaryByDateAsync(dateValue);
                 wr.Report.Load(Path.Combine(_env.ContentRootPath, "Reports", "DevoteeCheckOut.frx"));
                 List<Company> companies = new List<Company>();
                 companies.Add(_companyrepo.CompanyDetails());
@@ -85,45 +85,31 @@ namespace Anandashram.Controllers
                 }
             }
         }
-        public async Task<IActionResult> ReportViewer()
-        {
-           return await ReportViewer(DateTime.MinValue, "screen");
-        }
-        public IActionResult RoomDetailsViewer()
-        {
-            return View();
-        }
 
         [HttpPost]
-        public async Task<IActionResult> RoomDetailsViewer(string report = "", string typeofreport = "")
+        public async Task<IActionResult> RoomViewer(DateTime dateValue, string typeofreport = "")
         {
-            if (string.IsNullOrEmpty(report) || string.IsNullOrEmpty(typeofreport))
+            if (typeofreport == "" || dateValue == DateTime.MinValue)
                 return View();
-
-            WebReport wr = new WebReport();
-            string reportPath = report == "List"
-                ? Path.Combine(_env.ContentRootPath, "Reports", "RoomAllocation.frx")
-                : Path.Combine(_env.ContentRootPath, "Reports", "RoomAllocationDetail.frx");
-
-            wr.Report.Load(reportPath);
-
-            // ✅ Register Company (single object)
-            var company = _companyrepo.CompanyDetails();
-            wr.Report.RegisterData(new List<Company> { company }, "Company");
-            wr.Report.GetDataSource("Company").Enabled = true;
-
-            // ✅ Register Room data
-            List<RoomReportDTO> roomList = await _roomRepo.GetRoomsWithReservationsUpToDateAsync();
-            wr.Report.RegisterData(roomList, "Rooms");
-            wr.Report.GetDataSource("Rooms").Enabled = true;
-            wr.Report.GetDataSource("Rooms.Reservations").Enabled = true;
-
-            if (report == "Detail")
+            else
             {
-                GetDetailAllocationReport(typeofreport);
-            }
-            try
-            {
+                WebReport wr = new WebReport();
+                string reportPath = Path.Combine(_env.ContentRootPath, "Reports", "RoomAllocation.frx");
+
+
+                wr.Report.Load(reportPath);
+
+                // ✅ Register Company (single object)
+                var company = _companyrepo.CompanyDetails();
+                wr.Report.RegisterData(new List<Company> { company }, "Company");
+                wr.Report.GetDataSource("Company").Enabled = true;
+
+                // ✅ Register Room data
+                List<RoomReportDTO> roomList = await _roomRepo.GetRoomsWithReservationsUpToDateAsync(dateValue);
+                wr.Report.RegisterData(roomList, "Rooms");
+                wr.Report.GetDataSource("Rooms").Enabled = true;
+                wr.Report.GetDataSource("Rooms.Reservations").Enabled = true;
+                wr.Report.SetParameterValue("DatePassed", DateTime.Now.ToString("dd-MMM-yyyy"));
                 wr.Report.Prepare();
 
                 if (typeofreport == "screen")
@@ -149,58 +135,68 @@ namespace Anandashram.Controllers
 
                 }
             }
-            catch (Exception ex)
-            {
-                Console.WriteLine("FastReport error: " + ex.Message);
-                Console.WriteLine("Stack: " + ex.StackTrace);
-                throw;
-            }
         }
-
-        public async Task GetDetailAllocationReport(string typeofreport)
+        public async Task<IActionResult> ReportViewer()
         {
-            string reportPath = Path.Combine(_env.WebRootPath, "reports", "RoomAllocationDetail.frx");
-
-            using var report = new Report();
-            report.Load(reportPath);
-            var company = _companyrepo.CompanyDetails();
-            List<RoomReportDTO> roomList = await _roomRepo.GetRoomsWithReservationsReportAsync();
-            WebReport wr = new WebReport();
-
-            wr.Report.RegisterData(new List<Company> { company }, "Company");
-            wr.Report.GetDataSource("Company").Enabled = true;
-            report.RegisterData(roomList, "Rooms");
-            report.GetDataSource("Rooms").Enabled = true;
-            report.GetDataSource("Rooms.Reservations").Enabled = true;
-
-            report.SetParameterValue("Title", $"Devotee Room Report as on {DateTime.Now:dd-MM-yyyy}");
-            var totalDevotees = roomList.Sum(r => r.Reservations.Count);
-            var grandAllocated = roomList.Sum(r => r.Reservations.Sum(d => d.Allocated));
-            wr.Report.SetParameterValue("Date", DateTime.Now.ToString("dd/MM/yyyy"));
-            wr.Report.SetParameterValue("TotalCount", totalDevotees);
-            wr.Report.SetParameterValue("GrandTotal", grandAllocated);
-            report.Prepare();
-            if (typeofreport == "screen")
-                View(wr);
-            else
-            {
-                using var pdfExport = new FastReport.Export.PdfSimple.PDFSimpleExport();
-                pdfExport.ShowProgress = false;
-                pdfExport.Subject = "Room Availability - List";
-                using (var ms = new MemoryStream())
-                {
-                    wr.Report.Export(pdfExport, ms);
-                    ms.Position = 0;
-                    var bytes = ms.ToArray(); // Copy to buffer before disposing
-
-                    wr.Report.Dispose();
-                    pdfExport.Dispose();
-
-                    File(new MemoryStream(bytes), "application/pdf", "Room Availability - List.pdf");
-                }
-            }
+            return await ReportViewer(DateTime.MinValue, "screen");
         }
-public IActionResult DevoteeReportViewer()
+        public async Task<IActionResult> RoomViewer()
+        {
+            return await RoomViewer(DateTime.MinValue, "screen");
+        }
+
+        //public async Task<IActionResult> GetDetailAllocationReport(string typeofreport)
+        //{
+        //    try
+        //    {
+        //        string reportPath = Path.Combine(_env.ContentRootPath, "reports", "RoomsReservations.frx");
+
+        //        using var report = new Report();
+        //        report.Load(reportPath);
+        //        var company = _companyrepo.CompanyDetails();
+        //        List<RoomReportDTO> roomList = await _roomRepo.GetRoomsWithReservationsReportAsync();
+
+        //        report.RegisterData(new List<Company> { company }, "Company");
+        //        report.GetDataSource("Company").Enabled = true;
+        //        report.RegisterData(roomList, "Rooms");
+        //        report.GetDataSource("Rooms").Enabled = true;
+        //        report.GetDataSource("Rooms.Reservations").Enabled = true;
+
+        //        report.SetParameterValue("Title", $"Devotee Room Report as on {DateTime.Now:dd-MM-yyyy}");
+        //        var totalDevotees = roomList.Sum(r => r.Reservations.Count);
+        //        var grandAllocated = roomList.Sum(r => r.Reservations.Sum(d => d.Allocated));
+        //        report.SetParameterValue("Date", DateTime.Now.ToString("dd/MM/yyyy"));
+        //        report.SetParameterValue("TotalCount", totalDevotees);
+        //        report.SetParameterValue("GrandTotal", grandAllocated);
+        //        report.Prepare();
+        //        if (typeofreport == "screen")
+        //            return View(report);
+        //        else
+        //        {
+        //            using var pdfExport = new FastReport.Export.PdfSimple.PDFSimpleExport();
+        //            pdfExport.ShowProgress = false;
+        //            pdfExport.Subject = "Room Availability - List";
+        //            using (var ms = new MemoryStream())
+        //            {
+        //                report.Export(pdfExport, ms);
+        //                ms.Position = 0;
+        //                var bytes = ms.ToArray(); // Copy to buffer before disposing
+
+        //                report.Dispose();
+        //                pdfExport.Dispose();
+
+        //                return File(new MemoryStream(bytes), "application/pdf", "Room Availability - List.pdf");
+        //            }
+        //        }
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        Console.WriteLine("FastReport error: " + ex.Message);
+        //        Console.WriteLine("Stack: " + ex.StackTrace);
+        //        throw;
+        //    }
+        //}
+        public IActionResult DevoteeReportViewer()
         {
             return View();
         }
@@ -285,7 +281,7 @@ public IActionResult DevoteeReportViewer()
             }
         }
 
-        private IActionResult PrintScreenOrPdf(string actionButton, WebReport wr,string ReportName)
+        private IActionResult PrintScreenOrPdf(string actionButton, WebReport wr, string ReportName)
         {
             wr.Report.Prepare();
             try
@@ -321,91 +317,36 @@ public IActionResult DevoteeReportViewer()
         [HttpPost]
         public async Task<IActionResult> DevoteeReportViewer(string typeofreport = "")
         {
-            //    WebReport wr = new WebReport();
-            //    wr.Report.Load(Path.Combine(_env.ContentRootPath, "Reports", "DevoteeList.frx"));
-            //    List<Company> companies = new List<Company>();
-            //    companies.Add(_companyrepo.CompanyDetails());
-            //    wr.Report.RegisterData(companies, "CompanyRef");
-            //    List<Devotee> devotees = new List<Devotee>();
-            //    devotees.Add(await _devoteerepo.GetDevoteeWithReservations(1));
-            //    wr.Report.RegisterData(devotees, "Devotees");
-
-            //    if (typeofreport == "screen")
-            //    {
-            //        return View(wr);
-            //    }
-            //    else
-            //    {
-            //        if (wr.Report.Prepare())
-            //        {
-            //            FastReport.Export.PdfSimple.PDFSimpleExport pDFSimpleExport = new FastReport.Export.PdfSimple.PDFSimpleExport();
-            //            pDFSimpleExport.ShowProgress = false;
-            //            pDFSimpleExport.Subject = "Room Availability - List";
-            //            MemoryStream ms = new MemoryStream();
-            //            wr.Report.Export(pDFSimpleExport, ms);
-            //            wr.Report.Dispose();
-            //            pDFSimpleExport.Dispose();
-            //            ms.Position = 0;
-            //            return File(ms, "application/pdf", "DevoteeList.pdf");
-            //        }
-            //        else
-            //        {
-            //            return null;
-            //        }
-            //    }
             WebReport wr = new WebReport();
-                wr.Report.Load(Path.Combine(_env.ContentRootPath, "Reports", "DevoteeDetail.frx"));
+            wr.Report.Load(Path.Combine(_env.ContentRootPath, "Reports", "DevoteeDetail.frx"));
             List<Company> companies = new List<Company>();
             companies.Add(_companyrepo.CompanyDetails());
             wr.Report.RegisterData(companies, "CompanyRef");
             List<Devotee> devotees = new List<Devotee>();
-                devotees.Add(await _devoteerepo.GetDevoteeWithReservations(1));
+            devotees.Add(await _devoteerepo.GetDevoteeWithReservations(1));
             foreach (var d in devotees)
             {
                 d.Reservations ??= new List<Reservation>();
             }
-                wr.Report.RegisterData(devotees, "Devotees");
+            wr.Report.RegisterData(devotees, "Devotees");
             wr.Report.GetDataSource("Devotees").Enabled = true;
             wr.Report.GetDataSource("Devotees.Reservations").Enabled = true;
-
-            // 🔗 define the relation manually
-            //var relation = new Relation
-            //{
-            //    ParentDataSource = wr.Report.GetDataSource("Devotees"),
-            //    ChildDataSource = wr.Report.GetDataSource("Devotees.Reservations"),
-            //    ParentColumns = new string[] { "Id" },
-            //    ChildColumns = new string[] { "DevoteeId" }
-            //};
-            //wr.Report.Dictionary.Relations.Add(relation);
+            wr.Report.Prepare();
             if (typeofreport == "screen")
             {
                 return View(wr);
             }
             else
             {
-                try
-                {
-                    if (wr.Report.Prepare())
-                    {
-                        FastReport.Export.PdfSimple.PDFSimpleExport pDFSimpleExport = new FastReport.Export.PdfSimple.PDFSimpleExport();
-                        pDFSimpleExport.ShowProgress = false;
-                        pDFSimpleExport.Subject = "Devotee Details";
-                        MemoryStream ms = new MemoryStream();
-                        wr.Report.Export(pDFSimpleExport, ms);
-                        wr.Report.Dispose();
-                        pDFSimpleExport.Dispose();
-                        ms.Position = 0;
-                        return File(ms, "application/pdf", "DevoteeDetail.pdf");
-                    }
-                    else
-                    {
-                        return null;
-                    }
-                }
-                catch (Exception ex)
-                {
-                    return null;
-                }
+                FastReport.Export.PdfSimple.PDFSimpleExport pDFSimpleExport = new FastReport.Export.PdfSimple.PDFSimpleExport();
+                pDFSimpleExport.ShowProgress = false;
+                pDFSimpleExport.Subject = "Devotee Details";
+                MemoryStream ms = new MemoryStream();
+                wr.Report.Export(pDFSimpleExport, ms);
+                wr.Report.Dispose();
+                pDFSimpleExport.Dispose();
+                ms.Position = 0;
+                return File(ms, "application/pdf", "DevoteeDetail.pdf");
             }
         }
     }

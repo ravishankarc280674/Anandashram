@@ -21,12 +21,13 @@
     <Total Name="AllocatedTotal" Expression="[Rooms.Occupied]" Evaluator="Data1" PrintOn="PageFooter1" ResetAfterPrint="false" IncludeInvisibleRows="true"/>
     <Total Name="CapacityTotal" Expression="[Rooms.Capacity]" Evaluator="Data1" PrintOn="PageFooter1" ResetAfterPrint="false" IncludeInvisibleRows="true"/>
     <Total Name="RemainingTotal" Expression="[Rooms.RemainingCount]" Evaluator="Data1" PrintOn="PageFooter1" ResetAfterPrint="false" IncludeInvisibleRows="true"/>
+    <Parameter Name="DatePassed" DataType="System.String"/>
   </Dictionary>
   <ReportPage Name="General" Guides="0,718.2,9.45,73.95,92.85,187.35,200.25,360.75,360.2,454.7,459.05,533.55,523.05,603.55,623.05,707.55,47.25,576.45,89.95,191.35,513.55,583.55,245.7,340.2,529.5,590,705.55,601.5,696" Watermark.Font="Arial, 60pt">
     <ReportTitleBand Name="ReportTitle1" Width="718.2" Height="170.1" Guides="0,18.9,37.8,122.85,160.65,58.59,56.7,85.05,75.6,94.5,113.4">
       <TextObject Name="Text10" Width="718.2" Height="18.9" Text="[Company.Name]" AutoWidth="true" HorzAlign="Center" VertAlign="Center" Font="Arial, 14.25pt, style=Bold"/>
       <TextObject Name="Text17" Top="18.9" Width="718.2" Height="18.9" Text="Estd: [Company.Established]" HorzAlign="Center" Font="Arial, 11.25pt"/>
-      <TextObject Name="Text18" Top="122.85" Width="718.2" Height="37.8" Border.Lines="Top, Bottom" Border.TopLine.Style="Double" Border.BottomLine.Style="Double" Text="Rooms Allocation Status as of:  [Date]" HorzAlign="Center" VertAlign="Center" Font="Arial, 12pt, style=Bold"/>
+      <TextObject Name="Text18" Top="122.85" Width="718.2" Height="37.8" Border.Lines="Top, Bottom" Border.TopLine.Style="Double" Border.BottomLine.Style="Double" Text="Rooms Allocation Status as of:  [DatePassed]" HorzAlign="Center" VertAlign="Center" Font="Arial, 12pt, style=Bold"/>
       <TextObject Name="Text19" Top="37.8" Width="718.2" Height="20.79" Text="[Company.AddressLine1] [Company.AddressLine2]" HorzAlign="Center" Font="Arial, 11.25pt"/>
       <TextObject Name="Text20" Top="56.7" Width="718.2" Height="28.35" Text="[Company.State], [Company.Country] - [Company.PinCode]" HorzAlign="Center" Font="Arial, 11.25pt"/>
       <TextObject Name="Text24" Top="75.6" Width="718.2" Height="18.9" Text="Mobile: [Company.Mobile], Email: [Company.Email]" HorzAlign="Center" Font="Arial, 11.25pt"/>
