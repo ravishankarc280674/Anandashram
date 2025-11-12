@@ -33,52 +33,59 @@ namespace Anandashram.Controllers
         public async Task<IActionResult> Index(string sortExpression = "", string SearchText = "", int pg = 1, int PageSize = 100, bool Closed = false, string view = "Grid")
         {
             if (pg < 1) pg = 1;
-
-            SortModel sortModel = new SortModel();//ApplySort(sortExpression);
-            sortModel.AddColumn("code");
-            sortModel.AddColumn("name");
-            sortModel.AddColumn("description");
-            sortModel.AddColumn("mobile");
-            sortModel.AddColumn("email");
-            sortModel.AddColumn("devoteecategoryname");
-            sortModel.AddColumn("startdate");
-            sortModel.AddColumn("document");
-            sortModel.AddColumn("enddate");
-            sortModel.ApplySort(sortExpression);
-            ViewData["SortModel"] = sortModel;
-            ViewBag.PageSize = PageSize;
-            ViewBag.SearchText = SearchText;
-            ViewBag.Closed = Closed;
-            TempData["CurrentPage"] = pg;
-            var DevoteeList = await _devoteeRepo.GetItems(sortModel.SortedProperty, sortModel.SortedOrder, SearchText, pg, PageSize, Closed);
-
-            var pager = new PageModel(DevoteeList.TotalRecords, pg, PageSize) { Action = "Index", Controller = "Devotee", SearchText = SearchText, Closed = Closed };
-            pager.SortExpression = sortExpression;
-            this.ViewBag.view = view;
-            pager.ViewType = view;
-            this.ViewBag.Pager = pager;
-            this.ViewBag.PageSizes = GetPageSizes(PageSize);
-            var DevoteeDTOList = DevoteeList.Select(d => new
+            try
             {
-                d.Id,
-                d.Code,
-                d.Name,
-                d.Description,
-                d.Mobile,
-                d.Email,
-                d.DevoteeCategoryName,
-                d.StartDate,
-                d.EndDate,
-                d.AddressLine1,
-                d.AddressLine2,
-                d.State,
-                d.PinCode,
-                d.Country,
-                d.Document,
-                d.NoOfPeople
-            }).ToList();
-            HttpContext.Session.SetString("DevoteesFilterData", System.Text.Json.JsonSerializer.Serialize(DevoteeDTOList));
-            return View(DevoteeList);
+                SortModel sortModel = new SortModel();//ApplySort(sortExpression);
+                sortModel.AddColumn("code");
+                sortModel.AddColumn("name");
+                sortModel.AddColumn("description");
+                sortModel.AddColumn("mobile");
+                sortModel.AddColumn("email");
+                sortModel.AddColumn("devoteecategoryname");
+                sortModel.AddColumn("startdate");
+                sortModel.AddColumn("document");
+                sortModel.AddColumn("enddate");
+                sortModel.ApplySort(sortExpression);
+                ViewData["SortModel"] = sortModel;
+                ViewBag.PageSize = PageSize;
+                ViewBag.SearchText = SearchText;
+                ViewBag.Closed = Closed;
+                TempData["CurrentPage"] = pg;
+                var DevoteeList = await _devoteeRepo.GetItems(sortModel.SortedProperty, sortModel.SortedOrder, SearchText, pg, PageSize, Closed);
+
+                var pager = new PageModel(DevoteeList.TotalRecords, pg, PageSize) { Action = "Index", Controller = "Devotee", SearchText = SearchText, Closed = Closed };
+                pager.SortExpression = sortExpression;
+                this.ViewBag.view = view;
+                pager.ViewType = view;
+                this.ViewBag.Pager = pager;
+                this.ViewBag.PageSizes = GetPageSizes(PageSize);
+                var DevoteeDTOList = DevoteeList.Select(d => new
+                {
+                    d.Id,
+                    d.Code,
+                    d.Name,
+                    d.Description,
+                    d.Mobile,
+                    d.Email,
+                    d.DevoteeCategoryName,
+                    d.StartDate,
+                    d.EndDate,
+                    d.AddressLine1,
+                    d.AddressLine2,
+                    d.State,
+                    d.PinCode,
+                    d.Country,
+                    d.Document,
+                    d.NoOfPeople
+                }).ToList();
+                HttpContext.Session.SetString("DevoteesFilterData", System.Text.Json.JsonSerializer.Serialize(DevoteeDTOList));
+                return View(DevoteeList);
+            }
+            catch(Exception ex)
+            {
+                Console.WriteLine(ex.Message);
+            }
+            return View();
         }
          
         public List<SelectListItem> GetDevoteeCategories()

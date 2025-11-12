@@ -1,5 +1,4 @@
 ﻿@using Microsoft.AspNetCore.Identity
-
 @inject SignInManager<IdentityUser> SignInManager
 @inject UserManager<IdentityUser> UserManager
 
@@ -8,195 +7,256 @@
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Anandashram Devtee Registration</title>
-    <environment include="Development">
-        <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
-        <link href="~/font-awesome/css/all.min.css" rel="stylesheet" />
-        <link href="~/font-awesome/css/all.css" rel="stylesheet" />
-        <link href="https://fonts.googleapis.com/css2?family=Open+Sans:ital@0;1&family=Roboto:ital,wght@0,100..900;1,100..900&display=swap" rel="stylesheet">
-        <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
-    </environment>
-    <environment exclude="Development">
-        <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
-        <link rel="stylesheet" href="~/css/site.min.css" />
-        <link href="https://fonts.googleapis.com/css2?family=Open+Sans:ital@0;1&family=Roboto:ital,wght@0,100..900;1,100..900&display=swap" rel="stylesheet">
-        <link href="~/font-awesome/css/all.min.css" rel="stylesheet" />
-    </environment>
+    <title>Anandashram Devotee Management</title>
+
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="~/font-awesome/css/all.min.css" />
+    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet" />
+
+    <style>
+        /* GLOBAL STYLE */
+        body {
+            font-family: 'Roboto', sans-serif;
+            background-color: #f8f9fa;
+            margin: 0;
+            overflow-x: hidden;
+        }
+
+        /* NAVBAR */
+        nav.navbar {
+            background-color: #1b5e20; /* Deep green */
+            height: 56px;
+            z-index: 1050;
+        }
+
+        .navbar-brand {
+            color: white !important;
+            font-weight: 600;
+            letter-spacing: 0.5px;
+        }
+
+        .navbar-user {
+            color: white;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        /* SIDEBAR */
+        #sidebar {
+            width: 250px;
+            height: 100vh;
+            position: fixed;
+            top: 56px;
+            left: 0;
+            background-color: #2e7d32; /* Medium green */
+            color: #fff;
+            transition: all 0.3s ease;
+            overflow-y: auto;
+        }
+
+            #sidebar.collapsed {
+                width: 70px;
+            }
+
+            #sidebar .logo {
+                text-align: center;
+                padding: 10px;
+                border-bottom: 1px solid rgba(255, 255, 255, 0.15);
+            }
+
+                #sidebar .logo img {
+                    max-height: 70px;
+                }
+
+            #sidebar a {
+                color: #e8f5e9;
+                text-decoration: none;
+                padding: 10px 15px;
+                display: flex;
+                align-items: center;
+                justify-content: space-between;
+                font-size: 0.95rem;
+                transition: all 0.2s ease;
+            }
+
+                #sidebar a:hover {
+                    background-color: #1b5e20;
+                    color: #fff;
+                }
+
+                #sidebar a.active {
+                    background-color: #43a047;
+                    color: white;
+                    border-left: 4px solid #a5d6a7;
+                    font-weight: 600;
+                }
+
+            #sidebar .submenu a {
+                padding-left: 35px;
+                font-size: 0.9rem;
+            }
+
+            #sidebar i {
+                width: 20px;
+            }
+
+        /* CONTENT */
+        #content {
+            margin-left: 250px;
+            padding: 20px;
+            transition: all 0.3s ease;
+            min-height: calc(100vh - 70px);
+            background-color: white;
+        }
+
+        #sidebar.collapsed + #content {
+            margin-left: 70px;
+        }
+
+        main {
+            margin-top: 60px;
+        }
+
+        /* FOOTER */
+        footer {
+            background-color: #1b5e20;
+            color: white;
+            padding: 8px 0;
+            text-align: center;
+            font-size: 0.9rem;
+        }
+
+        /* TOGGLE BUTTON */
+        .sidebar-toggle {
+            background: none;
+            border: none;
+            color: white;
+            font-size: 20px;
+            margin-right: 10px;
+        }
+
+        /* Scrollbar */
+        #sidebar::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        #sidebar::-webkit-scrollbar-thumb {
+            background: rgba(255, 255, 255, 0.3);
+            border-radius: 3px;
+        }
+
+        /* Collapsed text hide */
+        #sidebar.collapsed .menu-text {
+            display: none;
+        }
+    </style>
 </head>
-@{
-            string menuTextColor = "text-white";
-}
+
 <body>
-    <div class="container-fluid" style="background: linear-gradient(to right, #28340B, #197696);">
-        <header>
-            <nav class="navbar navbar-expand-sm navbar-toggleable-sm border-bottom box-shadow mb-3">
-                <div class="container">
-                    <a class="navbar-brand @menuTextColor" asp-area="" asp-controller="Home" asp-action="Index">Anandashram</a>
-                    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target=".navbar-collapse" aria-controls="navbarSupportedContent"
-                            aria-expanded="false" aria-label="Toggle navigation">
-                        <span class="navbar-toggler-icon"></span>
-                    </button>
-                    <div class="navbar-collapse collapse d-sm-inline-flex justify-content-between">
-                        <ul class="navbar-nav flex-grow-1">
-                            @if (SignInManager.IsSignedIn(User))
-                            {
-                                  <li class="dropdown nav-item pr-2">
-                                    <a class="nav-link dropdown-toggle @menuTextColor" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
-                                        Devotee
-                                    </a>
-                                    <ul class="dropdown-menu" style="background:linear-gradient(to right,#28340B,#197696);"> 
-                                        <li class="nav-item">
-                                            <a class="nav-link @menuTextColor" asp-area="" asp-controller="Devotee" asp-action="Index">List</a>
-                                        </li>
-                                        <li class="nav-item">
-                                            <a class="nav-link @menuTextColor" asp-area="" asp-controller="DevoteeCategory" asp-action="Index">Category</a>
-                                        </li>
-                                        </ul>
-                                        </li>
-                                     <li class="dropdown nav-item pr-2">
-                                    <a class="nav-link dropdown-toggle @menuTextColor" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
-                                        Infrastructure
-                                    </a>
-                                    <ul class="dropdown-menu" style="background:linear-gradient(to right,#28340B,#197696);"> 
-                                       
-                                        <li class="nav-item">
-                                            <a class="nav-link @menuTextColor" asp-area="" asp-controller="Building" asp-action="Index">Building</a>
-                                        </li>
-                                        <li class="nav-item">
-                                            <a class="nav-link @menuTextColor" asp-area="" asp-controller="Block" asp-action="Index">Block</a>
-                                        </li>
-                                        <li class="nav-item">
-                                            <a class="nav-link @menuTextColor" asp-area="" asp-controller="Floor" asp-action="Index">Floor</a>
-                                        </li>
-                                        <li class="nav-item">
-                                            <a class="nav-link @menuTextColor" asp-area="" asp-controller="Room" asp-action="Index">Room</a>
-                                        </li>
-                                     </ul>
-                                </li>
-                                <li class="dropdown nav-item pr-2">
-                                    <a class="nav-link dropdown-toggle @menuTextColor" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
-                                        Reservation
-                                    </a>
-                                    <ul class="dropdown-menu" style="background:linear-gradient(to right,#28340B,#197696);">
-                                        <li class="nav-item">
-                                            <a class="nav-link @menuTextColor" asp-area="" asp-controller="Reservation" asp-action="Index">List</a>
-                                        </li>
-                                    </ul>
-                                </li>
-                                <li class="dropdown nav-item pr-2">
-                                    <a class="nav-link dropdown-toggle @menuTextColor" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
-                                        Reports
-                                    </a>
-                                    <ul class="dropdown-menu" style="background:linear-gradient(to right,#28340B,#197696);">
-                                        <li class="nav-item">
-                                            <a class="nav-link @menuTextColor" asp-area="" asp-controller="Report" asp-action="RoomViewer">Room Allocation</a>
-                                        </li>
-                                          <li class="nav-item">
-                                            <a class="nav-link @menuTextColor" asp-area="" asp-controller="Report" asp-action="ReportViewer">Checkout</a>
-                                        </li>
-                                    </ul>
-                                </li>
-                            }
-                        </ul>
-                        <partial name="_LoginPartial" />
-                    </div>
-                </div>
-            </nav>
-        </header>
+    <!-- NAVBAR -->
+    <nav class="navbar navbar-dark fixed-top">
+        <div class="container-fluid">
+            <button id="sidebarToggle" class="sidebar-toggle">
+                <i class="fas fa-bars"></i>
+            </button>
+            <a class="navbar-brand" asp-controller="Home" asp-action="Index">Anandashram</a>
+
+            <div class="navbar-user ms-auto">
+                @if (SignInManager.IsSignedIn(User))
+                {
+                    <span><i class="fas fa-user-circle"></i> @User.Identity.Name</span>
+                    <form asp-area="Identity" asp-page="/Account/Logout" method="post" class="d-inline">
+                        <button type="submit" class="btn btn-outline-light btn-sm">Logout</button>
+                    </form>
+                }
+                else
+                {
+                    <a asp-area="Identity" asp-page="/Account/Login" class="btn btn-outline-light btn-sm">Login</a>
+                    <a asp-area="Identity" asp-page="/Account/Register" class="btn btn-outline-light btn-sm">Register</a>
+                }
+            </div>
+        </div>
+    </nav>
+
+    <!-- SIDEBAR -->
+    <div id="sidebar">
+        <div class="logo">
+            <img src="~/images/company_logo.png" alt="Anandashram Logo" />
+        </div>
+
+        <a asp-controller="Home" asp-action="Index" class="@(ViewContext.RouteData.Values["controller"]?.ToString() == "Home" ? "active" : "")">
+            <i class="fas fa-tachometer-alt"></i> <span class="menu-text">Dashboard</span>
+        </a>
+
+        <a href="#" data-bs-toggle="collapse" data-bs-target="#menuDevotee" aria-expanded="false">
+            <i class="fas fa-user"></i> <span class="menu-text">Devotee</span> <i class="fas fa-angle-down"></i>
+        </a>
+        <div class="collapse submenu" id="menuDevotee">
+            <a asp-controller="Devotee" asp-action="Index"><i class="fas fa-list"></i>List</a>
+            <a asp-controller="DevoteeCategory" asp-action="Index"><i class="fas fa-tags"></i>Category</a>
+            <a asp-controller="DevoteeGroup" asp-action="Index"><i class="fas fa-users"></i>Groups</a>
+        </div>
+
+        <a href="#" data-bs-toggle="collapse" data-bs-target="#menuInfra" aria-expanded="false">
+            <i class="fas fa-building"></i> <span class="menu-text">Infrastructure</span> <i class="fas fa-angle-down"></i>
+        </a>
+        <div class="collapse submenu" id="menuInfra">
+            <a asp-controller="Building" asp-action="Index"><i class="fas fa-city"></i>Building</a>
+            <a asp-controller="Block" asp-action="Index"><i class="fas fa-cubes"></i>Block</a>
+            <a asp-controller="Floor" asp-action="Index"><i class="fas fa-layer-group"></i>Floor</a>
+            <a asp-controller="Room" asp-action="Index"><i class="fas fa-door-open"></i>Room</a>
+        </div>
+
+        <a href="#" data-bs-toggle="collapse" data-bs-target="#menuResv" aria-expanded="false">
+            <i class="fas fa-calendar-check"></i> <span class="menu-text">Reservation</span> <i class="fas fa-angle-down"></i>
+        </a>
+        <div class="collapse submenu" id="menuResv">
+            <a asp-controller="Reservation" asp-action="Index"><i class="fas fa-list-alt"></i>List</a>
+            <a asp-controller="Reservation" asp-action="Create"><i class="fas fa-plus-circle"></i>New Booking</a>
+        </div>
+
+        <a href="#" data-bs-toggle="collapse" data-bs-target="#menuReports" aria-expanded="false">
+            <i class="fas fa-file-alt"></i> <span class="menu-text">Reports</span> <i class="fas fa-angle-down"></i>
+        </a>
+        <div class="collapse submenu" id="menuReports">
+            <a asp-controller="Report" asp-action="RoomViewer"><i class="fas fa-bed"></i>Room Allocation</a>
+            <a asp-controller="Report" asp-action="ReportViewer"><i class="fas fa-door-closed"></i>Checkout</a>
+            <a asp-controller="Report" asp-action="Summary"><i class="fas fa-chart-pie"></i>Summary</a>
+        </div>
+
+        <a href="#" data-bs-toggle="collapse" data-bs-target="#menuSettings" aria-expanded="false">
+            <i class="fas fa-cog"></i> <span class="menu-text">Settings</span> <i class="fas fa-angle-down"></i>
+        </a>
+        <div class="collapse submenu" id="menuSettings">
+            <a asp-controller="User" asp-action="Index"><i class="fas fa-user-shield"></i>Users</a>
+            <a asp-controller="Role" asp-action="Index"><i class="fas fa-user-lock"></i>Roles</a>
+        </div>
     </div>
 
-    <div class="container">
-        <main role="main" class="pb-3">
-            <!--Success Dialog Start-->
-            <div id="myModalSuccess" class="modal fade text-width:30%;" role="dialog">
-                <div class="modal-dialog">
-                    <div class="modal-content">
-
-                        <div class="modal-header">
-                            <h2>Information</h2>
-                            <button type="button" class="close" data-dismiss="modal">&times;</button>
-                        </div>
-
-                        <div id="MyModalSuccessAlertBody" class="modal-body alert alert-success">
-                            this is a modal body. our message will appear here.
-                        </div>
-
-                        <div class="modal-footer">
-                            &nbsp;
-                            <button type="button" class="btn btn-info" data-dismiss="modal">Close</button>
-                        </div>
-
-                    </div>
-                </div>
-            </div>
-            <!--Success Dialog End-->
-            <!--Error Dialog Start-->
-            <div id="myModalError" class="modal fade text-width:30%;" role="dialog">
-                <div class="modal-dialog">
-                    <div class="modal-content">
-
-                        <div class="modal-header">
-                            <h2>Error</h2>
-                            <button type="button" class="close" data-dismiss="modal">&times;</button>
-                        </div>
-
-                        <div id="MyModalErrorAlertBody" class="modal-body alert alert-danger">
-                            this is a modal body. our message will appear here.
-                        </div>
-
-                        <div class="modal-footer">
-                            &nbsp;
-                            <button type="button" class="btn btn-info" data-dismiss="modal">Close</button>
-                        </div>
-
-                    </div>
-                </div>
-            </div>
-            <!--Error Dialog End-->
+    <!-- MAIN CONTENT -->
+    <div id="content">
+        <main>
             @RenderBody()
         </main>
     </div>
 
-    <div class="modal" tabindex="-1" id="form-modal" role="dialog">
-        <div class="modal-dialog" role="document">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <i class="fas fa-comment-dollar text-success"></i><h5 class="modal-title">Modal title</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
-                <div class="modal-body">
-                    <p>Modal body text goes here.</p>
-                </div>
-            </div>
-        </div>
-    </div>
-    <div class="loaderbody" id="loaderbody">
-            <div class="loader">
-
-            </div>
-           </div>
-    <footer class="border-top footer text-muted" style="background: linear-gradient(to left, #28340B, #197696);">
-        <div class="container @menuTextColor">
-            &copy; 2025 - Anandashram - <a asp-area="" asp-controller="Home" asp-action="Privacy" class="@menuTextColor">Privacy</a>
-        </div>
+    <footer>
+        &copy; 2025 - Anandashram | <a asp-controller="Home" asp-action="Privacy" class="text-white">Privacy</a>
     </footer>
-    <environment include="Development">
-        <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
-        <script src="~/webcamjs/webcam.min.js"></script>
-        <script src="~/webcamjs/webcam.js"></script>
-        <script src="~/lib/jquery/dist/jquery.min.js"></script>
-        <script src="~/lib/jquery/dist/jquery.js"></script>
-        <script src="~/js/site.js" asp-append-version="true"></script>
-    </environment>
-    <environment exclude="Development">
-        <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
-        <script src="~/webcamjs/webcam.min.js"></script>
-        <script src="~/lib/jquery/dist/jquery.min.js"></script>
-        <script src="~/js/site.min.js" asp-append-version="true"></script>
-    </environment>
-    <script src="~/js/notify.min.js" asp-append-version="true"></script>
+
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+
+    <script>
+        // Sidebar toggle
+        $("#sidebarToggle").click(function () {
+            $("#sidebar").toggleClass("collapsed");
+            $("#content").toggleClass("expanded");
+        });
+    </script>
+
     @await RenderSectionAsync("Scripts", required: false)
 </body>
 </html>
-
-

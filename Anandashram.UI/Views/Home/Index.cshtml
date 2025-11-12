@@ -1,20 +1,76 @@
 ﻿@{
-    ViewData["Title"] = "Home Page";
+    ViewData["Title"] = "Dashboard";
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
-<div class="IndexDiv">
-    <p>
-        <h1 class="text-center font-weight-bolder">Devotee Management</h1>
-    </p>
-    <div class="row m-2">
-        <div class="col-4">
-            <a asp-controller="Company" asp-action="Company"><img src="~/images/company_logo.png" class="img-fluid" /></a>
+<div class="container-fluid py-4">
+    <div class="text-center mb-4">
+        <h1 class="fw-bold text-success">Welcome to Anandashram</h1>
+        <p class="text-muted fs-5">Devotee Management Dashboard</p>
+    </div>
+
+    <div class="row g-4 justify-content-center">
+        <!-- Company Card -->
+        <div class="col-lg-3 col-md-4 col-sm-6">
+            <div class="card shadow-sm border-0 text-center hover-card">
+                <div class="card-body">
+                    <a asp-controller="Company" asp-action="Company">
+                        <img src="~/images/company_logo.png" class="img-fluid mb-3" style="max-height:100px;" alt="Company" />
+                    </a>
+                    <h5 class="card-title fw-semibold text-success">Company</h5>
+                </div>
+            </div>
+        </div>
+
+        <!-- Devotee Management -->
+        <div class="col-lg-3 col-md-4 col-sm-6">
+            <div class="card shadow-sm border-0 text-center hover-card">
+                <div class="card-body">
+                    <a asp-controller="Devotee" asp-action="Index" class="text-decoration-none">
+                        <i class="fas fa-user fa-3x text-success mb-3"></i>
+                        <h5 class="card-title fw-semibold text-success">Devotees</h5>
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Room Management -->
+        <div class="col-lg-3 col-md-4 col-sm-6">
+            <div class="card shadow-sm border-0 text-center hover-card">
+                <div class="card-body">
+                    <a asp-controller="Room" asp-action="Index" class="text-decoration-none">
+                        <i class="fas fa-bed fa-3x text-success mb-3"></i>
+                        <h5 class="card-title fw-semibold text-success">Rooms</h5>
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Reports -->
+        <div class="col-lg-3 col-md-4 col-sm-6">
+            <div class="card shadow-sm border-0 text-center hover-card">
+                <div class="card-body">
+                    <a asp-controller="Reports" asp-action="RoomViewer" class="text-decoration-none">
+                        <i class="fas fa-chart-bar fa-3x text-success mb-3"></i>
+                        <h5 class="card-title fw-semibold text-success">Reports</h5>
+                    </a>
+                </div>
+            </div>
         </div>
     </div>
 </div>
+
 @section Scripts {
-    @{
-        await Html.RenderPartialAsync("_ValidationScriptsPartial");
-    }
+    @await Html.PartialAsync("_ValidationScriptsPartial")
 }
+
+<style>
+    .hover-card {
+        transition: transform 0.25s ease, box-shadow 0.25s ease;
+    }
+
+        .hover-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 6px 16px rgba(0, 0, 0, 0.15);
+        }
+</style>
