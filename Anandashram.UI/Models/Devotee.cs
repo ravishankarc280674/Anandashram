@@ -34,10 +34,11 @@ public partial class Devotee
 
     [DisplayName("Docs(Aaadaar/Pan/..)")]
     public string Document { get; set; }
-    [DisplayName("Address")]
+    [DisplayName("Address Line 1")]
     [MaxLength(200)]
     public string? AddressLine1 { get; set; }
 
+    [DisplayName("Address Line 2")]
     [MaxLength(200)]
     public string? AddressLine2 { get; set; }
 

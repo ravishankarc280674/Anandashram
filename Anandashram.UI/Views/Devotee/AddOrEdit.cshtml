@@ -1,9 +1,8 @@
-﻿
-@model Anandashram.Models.Devotee
+﻿@model Anandashram.Models.Devotee
 
 @{
     string currentModel = Helper.GetTypeNames(Model.GetType().ToString());
-    ViewData["Title"] = currentModel + " - Edit";
+    ViewData["Title"] = currentModel + (Model.Id == 0 ? " - Add" : " - Edit");
     Layout = "~/Views/Shared/_Layout.cshtml";
 
     AddFile addFile = ViewBag.AddFile;
@@ -14,36 +13,86 @@
         addFile.DevoteeCode = Model.Code;
         ViewBag.AddFile = addFile;
     }
-    int pg = 1;
+    int pg = TempData["CurrentPage"] != null ? (int)TempData["CurrentPage"] : 1;
     var roomsList = ViewBag.RoomsList;
     string searchText = ViewBag.SearchText;
-    if (TempData["CurrentPage"] != null)
-    {
-        pg = (int)TempData["CurrentPage"];
-
-        TempData["CurrentPage"] = pg;
-    }
-}
-@if(Model.Id == 0)
-{
-    <h4>@currentModel - Add </h4>
-}
-else
-{
-    <h4>@currentModel - Edit </h4>
 }
 
-<hr />
 <style>
+    .section-card {
+        border: 1px solid #dcdcdc;
+        border-radius: 10px;
+        box-shadow: 0 3px 6px rgba(0,0,0,0.08);
+        margin-bottom: 1.5rem;
+        background-color: #fff;
+    }
+
+    .section-header {
+        background-color: #d9f2dc;
+        color: #064b0c;
+        font-weight: 600;
+        padding: 0.75rem 1rem;
+        border-radius: 10px 10px 0 0;
+        font-size: 1.05rem;
+    }
+
     .wrap-text-cell {
-        white-space: normal; /* Ensures text wraps */
-        word-break: break-word; /* Breaks long words if necessary */
+        white-space: normal;
+        word-break: break-word;
+    }
+
+    .btn-success {
+        background-color: #1f6f2e !important;
+        border-color: #1f6f2e !important;
+    }
+
+    .btn-outline-success {
+        color: #1f6f2e !important;
+        border-color: #1f6f2e !important;
+    }
+
+        .btn-outline-success:hover {
+            background-color: #1f6f2e !important;
+            color: #fff !important;
+        }
+
+    .card {
+        border-radius: 12px;
+        border: none;
+        box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    }
+
+    .table thead {
+        background-color: #e9f6ea;
+        color: #064b0c;
+        font-weight: 600;
+    }
+
+    .table tfoot {
+        background-color: #f4f9f4;
+        font-weight: 600;
+    }
+
+    .form-section {
+        margin-top: 1.5rem;
     }
 </style>
-<div class="card">
-    <div class="col-md-12">
+
+<div class="container-fluid mt-3">
+
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <h4 class="fw-bold text-success">@ViewData["Title"]</h4>
+        <a class="btn btn-secondary" asp-action="index"
+           asp-route-pg="@TempData.Peek("CurrentPage")" asp-route-SearchText="@ViewBag.SearchText">
+            <i class="fa fa-arrow-left"></i> Back
+        </a>
+    </div>
+
+    <div class="card p-4">
         <form asp-action="AddOrEdit">
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+
+            @* Hidden Fields *@
             <input type="hidden" asp-for="Id" />
             <input type="hidden" asp-for="Code" />
             <input type="hidden" asp-for="CreatedBy" />
@@ -51,457 +100,345 @@ else
             <input type="hidden" asp-for="ModifiedBy" />
             <input type="hidden" asp-for="ModifiedDate" />
             <input type="hidden" asp-for="Closed" />
-            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+
+            @* Profile Section *@
             @if (Model.Id != 0)
             {
-              <div class="col-md-12 d-flex">
-              
-                <div class="col-md-5 ">
-
-                        <table style="border:none;">
-                <tr>
-                                <td class="form-group col-2 " rowspan="2"><img src="@Url.Action("GetImage", "Devotee", new { fileName = Model.Code })" width="100" height="100" class="img-thumbnail rounded" target="_blank" /></td>
-                                <td style="border:none" class="text-start"><div><label class="fs-4 fw-bold" style="color: purple">@Html.DisplayFor(model => model.Name)</label></div></td>
-                                
-                    </tr>
-                            <tr style="border:none;">
-                                <td style="border:none" class="text-start">
-                      <div>
-                                <label class="fs-4 fw-bold" style="color: purple">@Html.DisplayFor(model => model.Code)</label>
-                                <a data-bs-toggle="modal" data-bs-target="#webcamModal" data-item-Id = "@Model.Id" data-item-Code = "@Model.Code">
-                                    <span class="btn btn-sm btn-outline-primary">
-                                        <i class="fa-solid fa-display" aria-hidden="true" title="Show Camera"></i>
-                                </span>
+                <div class="section-card">
+                    <div class="section-header">Profile Overview</div>
+                    <div class="p-3 row">
+                        <div class="col-md-5 d-flex">
+                            <img src="@Url.Action("GetImage", "Devotee", new { fileName = Model.Code })"
+                                 width="100" height="100"
+                                 class="img-thumbnail rounded me-3" />
+                            <div>
+                                <div class="fs-5 fw-bold text-success">@Html.DisplayFor(model => model.Name)</div>
+                                <div class="text-muted">@Html.DisplayFor(model => model.Code)</div>
+                                <a data-bs-toggle="modal" data-bs-target="#webcamModal"
+                                   data-item-Id="@Model.Id" data-item-Code="@Model.Code"
+                                   class="btn btn-sm btn-outline-success mt-2">
+                                    <i class="fa-solid fa-camera"></i> Show Camera
                                 </a>
                             </div>
-                        </td>
-                    </tr>
-                    </table>
-                   
-                </div>
-                    <div class="col-md-2">
-                    </div>
-                    <div class="col-md-5 text-end">
-                    
-                    <table align="right">
-                            <tr>
-                        <td colspan="3">
-                                        <div class="col text-end fw-bold">
-                                Document List
-                                <a data-bs-toggle="modal" data-bs-target="#uploadModal" class=" align-self-end">
-                                    <span class="btn btn-sm btn-outline-danger">
-                                        <i class="fa fa-add" aria-hidden="true" title="Add Documents"></i>
-                                    </span>
+                        </div>
+
+                        <div class="col-md-7">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <div class="fw-bold text-success fs-6">Document List</div>
+                                <a data-bs-toggle="modal" data-bs-target="#uploadModal" class="btn btn-sm btn-outline-success">
+                                    <i class="fa fa-plus"></i> Add Document
                                 </a>
                             </div>
-                        </td>
-                            </tr>
-                            @if(uploadedFiles!=null)
-                            {
-                            @foreach(var fileUpload in uploadedFiles)
-                                {
-                                   <tr>
-                                        <td class="col-sm-9">
-                                            @fileUpload.FileName
-                                        </td>
-                                        <td><span class="btn btn-sm btn-outline-secondary">@Html.ActionLink("", "GetDocument", new { fileName = @fileUpload.FileName, filePath = @fileUpload.FilePath }, new { @class = "fa-solid fa-download" })</span></td>
-                                       <td>
-                                            <a asp-action="DeleteDocument" asp-route-filePath="@fileUpload.FilePath" onsubmit="return jQueryAjaxDelete(this);" asp-route-Id="@fileUpload.DevoteeId">
-                                                <span class="btn btn-sm btn-outline-danger">
-                                                    <i class="fa fa-cut" aria-hidden="true" title="Remove"></i>
-                                                </span>
-                                            </a>
-                                       </td>
-                                   </tr>
-                               }
-                            }
-                            else
-                            {
-                                <tr>
-                                    <td>No Documents Uploaded</td>
-                                </tr>
-                            }
-                        </table>
-                </div>
-            </div>
-            <br />
-            }
-            <dl class="row">
-                <dt class="col-md-2">
-                    <label asp-for="Name" class="control-label"></label>
-                </dt>
-                <dd class="col-md-4">
-                        <input asp-for="Name" class="form-control" />
-                        <span asp-validation-for="Name" class="text-danger"></span>
-                </dd>
-                <dt class="col-md-2">
-                    <label asp-for="DevoteeCategoryId" class="control-label"></label>
-                </dt>
-                <dd class="form-group col-md-4">
-                        <select asp-for="DevoteeCategoryId" class="form-control" asp-items="ViewBag.DevoteeCategoryId"></select>
-                </dd>
-            </dl>
-            <dl class="row">
-                <dt class="col-md-2">
-                    <label asp-for="StartDate" class="control-label"></label>
-                </dt>
-                <dd class="col-md-4 form-group">
-                    <input type="date" asp-for="StartDate" class="form-control" />
-                    <span asp-validation-for="StartDate" class="text-danger"></span>
-                </dd>
-              
-                <dt class="col-md-2">
-                    <label asp-for="EndDate" class="control-label"></label>
-                </dt>
-                <dd class="col-md-4 form-group">
-                    <input type="date"  asp-for="EndDate" class="form-control" />
-                    <span asp-validation-for="EndDate" class="text-danger"></span>
-                </dd>
-            </dl>
-            <dl class="row">
-                <dt class="col-md-2">
-                    <label asp-for="NoOfPeople" class="control-label"></label>
-                </dt>
-                <dd class="col-md-4">
-                    <input asp-for="NoOfPeople" class="form-control" type="number"  step="1" min="1" max="999" id="NoOfPeople"/>
-                    <span asp-validation-for="NoOfPeople" class="text-danger"></span>
-                </dd>
-                <dt class="col-md-2">
-                    <label asp-for="Document" class="control-label"></label>
-                </dt>
-                <dd class="col-md-4">
-                    <input asp-for="Document" class="form-control" />
-                    <span asp-validation-for="Document" class="text-danger"></span>
-                </dd>
-            </dl>
-            <dl class="row">
-                <dt class="col-md-2">
-                    <label asp-for="AddressLine1" class="control-label"></label>
-                </dt>
-                <dd class="col-md-4">
-                        <input asp-for="AddressLine1" class="form-control" />
-                        <span asp-validation-for="AddressLine1" class="text-danger"></span>
-                    </dd>
-                </dl>
-
-                <dl class="row">
-                <dt class="col-md-2">
-                    
-                </dt>
-                <dd class="col-md-4">
-                        <input asp-for="AddressLine2" class="form-control" />
-                        <span asp-validation-for="AddressLine2" class="text-danger"></span>
-                    </dd>
-                </dl>
-            <dl class="row">
-                <dt class="col-md-2">
-                    <label asp-for="State" class="control-label"></label>
-                </dt>
-                <dd class="col-md-4">
-                    <input asp-for="State" class="form-control" />
-                    <span asp-validation-for="State" class="text-danger"></span>
-                </dd>
-                <dt class="col-md-2">
-                        <label asp-for="Country" class="control-label"></label>
-                </dt>
-                <dd class="col-md-4">
-                    <input asp-for="Country" class="form-control" />
-                    <span asp-validation-for="Country" class="text-danger"></span>
-                </dd>
-            </dl>
-              <dl class="row">
-                <dt class="col-md-2">
-                        <label asp-for="PinCode" class="control-label"></label>
-                </dt>
-                <dd class="col-md-4">
-                    <input asp-for="PinCode" class="form-control" />
-                    <span asp-validation-for="PinCode" class="text-danger"></span>
-                </dd>
-            </dl>
-              <dl class="row">
-                <dt class="col-md-2">
-                      <label asp-for="Mobile" class="control-label"></label>
-                </dt>
-                <dd class="col-md-4">
-                    <input asp-for="Mobile" class="form-control" />
-                    <span asp-validation-for="Mobile" class="text-danger"></span>
-                </dd>
-                <dt class="col-md-2">
-                        <label asp-for="Email" class="control-label"></label>
-                </dt>
-                <dd class="col-md-4">
-                    <input asp-for="Email" class="form-control" />
-                    <span asp-validation-for="Email" class="text-danger"></span>
-                </dd>
-            </dl>
-            <dl class="row">
-                <dt class="col-md-2">
-                    <label asp-for="Description" class="control-label"></label>
-                </dt>
-                <dd class="col-md-10">
-                    <textarea asp-for="Description" rows="2" class="form-control" ></textarea>
-                </dd>
-            </dl>
-            <br />
-            <div class="row">
-                <div class="form-group btn-group">
-                    @if (Model.Closed == false)
-                    {
-                        <input type="submit" name="actionButton" value="Submit" class="btn btn-primary" />
-                    }
-                    &nbsp;
-                    @if(Model.Id !=0 && Model.Closed==false)
-                    {
-                        <input type="submit" name="actionButton" value="Closed" class="btn btn-danger" />
-                    }
-                    @if (Model.Id != 0 && String.IsNullOrEmpty(Model.ReopenedCode) && Model.Closed == true)
-                    {
-                        <input type="submit" name="actionButton" value="Reopen" class="btn btn-info" />
-                    }
-                    &nbsp;<a class="btn btn-secondary" asp-action="index"
-                       asp-route-pg="@TempData.Peek("CurrentPage")" asp-route-SearchText ="@ViewBag.SearchText">Back</a>
-                </div>
-            </div>
-            </form>
-            <br />
-
-            @* Add Reservation Details here *@
-
-            <button class="btn btn-info" type="button" data-bs-toggle="collapse" data-bs-target="#manageReservationDiv" aria-expanded="false" aria-controls="toggleDiv">
-                Manage Reservation(s)
-            </button>
-            <br />
-           
-            <div class="collapse mt-12 border-2" id="manageReservationDiv">
-                <div class="card card-body">
-               
-                    <div class="col-12 ml-5">
-                        <div class="row col-11 ml-2">
-                            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-
-                        <dl class="row">
-                            <dt class="col-md-2">
-                                <label class="control-label">Check In Date</label>
-                            </dt>
-                            <dd class="col-md-3 form-group">
-                                    <input type="date" class="form-control" id="reg-start-date" value="@DateTime.Today.ToString("yyyy/MM/dd")" />
-                            </dd>
-
-                            <dt class="col-md-2">
-                                <label  class="control-label">Check Out Date</label>
-                            </dt>
-                            <dd class="col-md-3 form-group">
-                                    <input type="date" class="form-control" id="reg-end-date" value="@DateTime.Today.ToString("yyyy/MM/dd")" />
-                            </dd>
-                                <dd class="col-md-2 form-group">
-                                    <div class="col-2">
-                                        <input type="button" value="Close All Reservation(s)" class="btn btn-outline-success btn-block" onclick="CloseReservations()" />
-                                    </div>
-                                </dd>
-                        </dl>
-                        <table id="RegTable" class="table table-borderless table-sm mb-0 pb-0 col-md-12">
-                            <thead>
-                                    <tr style="background: #d4d454">
-                                    <th style="width:110px">
-                                        Room
-                                    </th>
-                                    <th>
-                                        Building
-                                    </th>
-                                    <th>
-                                        Block
-                                    </th>
-                                    <th>
-                                        Floor
-                                    </th>
-                                        <th>
-                                            From
-                                        </th>
-                                        <th>
-                                            To
-                                        </th>
-                                    <th>
-                                        Capacity
-                                    </th>
-                                    <th>
-                                        Remaining
-                                    </th>
-                                    <th>
-                                       Alloted
-                                    </th>
-                                   
-                                    <th>
-                                        Allot
-                                    </th>
-                                    <th style="width:60px;">
-                                        <button id='btnAddDetailRow' type="button" class="btn btn-sm btn-secondary visible" onclick="AddItem(this)">
-                                                &nbsp&nbsp;Add&nbsp&nbsp;
-                                        </button>
-                                    </th>
-                                </tr>
-                            </thead>
-
-                                <tbody id="tableBody">
-                                    <tr hidden="hidden" class="rowClass">
-                                        <td>
-                                            <select class="form-control dropdown" asp-items="ViewBag.RoomsList"></select>
-                                        </td>
-                                        <td>
-                                            <label class="building-label" />
-                                        </td>
-                                        <td>
-                                            <label class="block-label" />
-                                        </td>
-                                        <td>
-                                            <label class="floor-label" />
-                                        </td>
-                                        <td>
-                                            <label class="fromDate-label" />
-                                        </td>
-                                        <td>
-                                            <label class="toDate-label" />
-                                        </td>
-                                        <td>
-                                            <label class="maxCapacity-label" />
-                                        </td>
-                                        <td>
-                                            <label class="remaining-label" />
-                                        </td>
-                                        <td>
-                                            <label class="alreadyAllocate-label">0</label>
-                                        </td>
-
-                                      
-                                        <td style="width:100px">
-                                            <input type="number" value="0" step="1" min="0" max="100" class="form-control class-allot" />
-                                        </td>
-                                        <td style="width:60px;">
-                                            <button id='btnremove' type="button" class="btn btn-sm btn-danger visible" onclick="DeleteItem(this)">
-                                                Delete
-                                            </button>
-                                        </td>
-                                    </tr>
-                                    @for (int i = 0; i < Model.Reservations.Count; i++)
+                            <table class="table table-sm mt-2">
+                                <tbody>
+                                    @if (uploadedFiles != null)
                                     {
-                                        string rowColor = "";
-                                        if (Model.Reservations[i].Closed)
+                                        @foreach (var fileUpload in uploadedFiles)
                                         {
-                                            rowColor = "bg-warning";
+                                            <tr>
+                                                <td class="col-sm-8">@fileUpload.FileName</td>
+                                                <td>
+                                                    <a href="@Url.Action("GetDocument", new { fileName = fileUpload.FileName, filePath = fileUpload.FilePath })"
+                                                       class="btn btn-sm btn-outline-secondary">
+                                                        <i class="fa fa-download"></i>
+                                                    </a>
+                                                </td>
+                                                <td>
+                                                    <a asp-action="DeleteDocument"
+                                                       asp-route-filePath="@fileUpload.FilePath"
+                                                       asp-route-Id="@fileUpload.DevoteeId"
+                                                       onsubmit="return jQueryAjaxDelete(this);"
+                                                       class="btn btn-sm btn-outline-danger">
+                                                        <i class="fa fa-trash"></i>
+                                                    </a>
+                                                </td>
+                                            </tr>
                                         }
-                                        <tr class="@rowColor">
-                                            <td >
-                                        <select asp-for="@Model.Reservations[i].RoomId" class="form-control" asp-items="ViewBag.RoomsList" disabled></select>
-                                    </td>
-                                            <td>
-                                        @Model.Reservations[i].Room.BuildingName
-                                    </td>
-                                    <td>
-                                        @Model.Reservations[i].Room.BlockName
-                                    </td>
-                                    <td>
-                                        @Model.Reservations[i].Room.FloorName
-                                    </td>
-                                            <td>
-                                                @Model.Reservations[i].FromDate.ToString("dd/MM/yyyy")
-
-                                            </td>
-                                            <td>
-                                                @Model.Reservations[i].ToDate.ToString("dd/MM/yyyy")
-                                            </td>
-                                    <td>
-                                        @Model.Reservations[i].Room.Capacity
-                                    </td>
-                                    <td>
-                                        @Model.Reservations[i].Remaining
-                                    </td>
-                                    <td class="total-alloted">
-                                        @Model.Reservations[i].Allocated
-                                    </td>
-                                   
-                                    <td style="width:100px">
-                                                
-                                            </td>
-                                            <td style="width:60px;">
-                                            @if (Model.Reservations[i].Closed == false)
-                                            {
-                                                    <button id='btnclose' type="button" class="btn btn-sm btn-success visible" 
-                                                    onclick="return CloseItem(@Model.Reservations[i].Id,@Model.Reservations[i].DevoteeId)">
-                                                    Close
-                                                    </button>
-                                                }
-                                                else
-                                                {
-                                                    <p class="fw-bold text-success">Closed</p>
-                                                }
-                                            </td>
-                                        </tr>
                                     }
-                                   
-                           </tbody>
-                                <tfoot id="tableFooter">
-                               <tr>
-                                   <th colspan="8">
-                                       Total Allocated: 
-                                   </th>
-                                        <th class="total-fixed">
-                                            
-                                        </th>
-                                        <th colspan="2">
-                                            </th>
-                               </tr>
-                           </tfoot>
-                        </table>
+                                    else
+                                    {
+                                        <tr><td colspan="3" class="text-muted">No Documents Uploaded</td></tr>
+                                    }
+                                </tbody>
+                            </table>
+                        </div>
                     </div>
+                </div>
+            }
+
+            @* Form Section *@
+            <div class="section-card form-section">
+                <div class="section-header">Devotee Details</div>
+                <div class="p-3">
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            <label asp-for="Name" class="form-label fw-semibold"></label>
+                            <input asp-for="Name" class="form-control" />
+                            <span asp-validation-for="Name" class="text-danger"></span>
+                        </div>
+                        <div class="col-md-6">
+                            <label asp-for="DevoteeCategoryId" class="form-label fw-semibold"></label>
+                            <select asp-for="DevoteeCategoryId" class="form-select" asp-items="ViewBag.DevoteeCategoryId"></select>
+                        </div>
                     </div>
-                    <br />
-              @*       <div class="row">
-                        <div class="form-group btn-group"> *@
-                     
-                    <div class="form-group btn-group col-12">
-                    <button type="button" value="Update" class="btn btn-primary btn-block" onclick="return saveNewDetails()">Update</button>
+
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            <label asp-for="StartDate" class="form-label fw-semibold"></label>
+                            <input type="date" asp-for="StartDate" class="form-control" />
+                        </div>
+                        <div class="col-md-6">
+                            <label asp-for="EndDate" class="form-label fw-semibold"></label>
+                            <input type="date" asp-for="EndDate" class="form-control" />
+                        </div>
                     </div>
+
+                    <div class="row mb-3">
+                        <div class="col-md-4">
+                            <label asp-for="NoOfPeople" class="form-label fw-semibold"></label>
+                            <input asp-for="NoOfPeople" class="form-control" type="number" min="1" max="999" />
+                        </div>
+                        <div class="col-md-4">
+                            <label asp-for="Document" class="form-label fw-semibold"></label>
+                            <input asp-for="Document" class="form-control" />
+                        </div>
+                    </div>
+
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            <label asp-for="AddressLine1" class="form-label fw-semibold"></label>
+                            <input asp-for="AddressLine1" class="form-control" />
+                        </div>
+                        <div class="col-md-6">
+                            <label asp-for="AddressLine2" class="form-label fw-semibold"></label>
+                            <input asp-for="AddressLine2" class="form-control" />
+                        </div>
+                    </div>
+
+                    <div class="row mb-3">
+                        <div class="col-md-4">
+                            <label asp-for="State" class="form-label fw-semibold"></label>
+                            <input asp-for="State" class="form-control" />
+                        </div>
+                        <div class="col-md-4">
+                            <label asp-for="Country" class="form-label fw-semibold"></label>
+                            <input asp-for="Country" class="form-control" />
+                        </div>
+                        <div class="col-md-4">
+                            <label asp-for="PinCode" class="form-label fw-semibold"></label>
+                            <input asp-for="PinCode" class="form-control" />
+                        </div>
+                    </div>
+
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            <label asp-for="Mobile" class="form-label fw-semibold"></label>
+                            <input asp-for="Mobile" class="form-control" />
+                        </div>
+                        <div class="col-md-6">
+                            <label asp-for="Email" class="form-label fw-semibold"></label>
+                            <input asp-for="Email" class="form-control" />
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-12">
+                            <label asp-for="Description" class="form-label fw-semibold"></label>
+                            <textarea asp-for="Description" class="form-control" rows="3"></textarea>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            @* Buttons *@
+            <div class="text-center mt-4">
+                @if (!Model.Closed)
+                {
+                    <input type="submit" name="actionButton" value="Submit" class="btn btn-success me-2" />
+                }
+                @if (Model.Id != 0 && !Model.Closed)
+                {
+                    <input type="submit" name="actionButton" value="Closed" class="btn btn-danger me-2" />
+                }
+                @if (Model.Id != 0 && String.IsNullOrEmpty(Model.ReopenedCode) && Model.Closed)
+                {
+                    <input type="submit" name="actionButton" value="Reopen" class="btn btn-info me-2" />
+                }
+            </div>
+        </form>
+    </div>
+
+    @* Webcam Modal *@
+    <div id="webcamModal" class="modal fade" tabindex="-1">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header bg-success text-white">
+                    <h5 class="modal-title">Upload Profile Picture</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <partial name="_UploadProfilePic" model="@Model" />
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                </div>
             </div>
         </div>
     </div>
 
-               @* modal 1 starts here - to load the web cam *@
-    <div id="webcamModal" class="modal" tabindex="-1" role="dialog">
-        <div class="modal-dialog" style="max-width: 60%;" role="document">
+    @* Document Upload Modal *@
+    <div id="uploadModal" class="modal fade" tabindex="-1">
+        <div class="modal-dialog">
             <div class="modal-content">
-                    <div class="modal-header">
-                        <h5 class="modal-title">Upload Profile Picture</h5>
-                        <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close">
-                            <span aria-hidden="true">&times;</span>
-                        </button>
-                    </div>
-                    <div class="modal-body">
-                    <partial name="_UploadProfilePic" model="@Model" />
-                    </div>
-                    <div class="modal-footer">
-                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                    </div>
-                </div>
-            </div>
-        </div>
-    
-
-        @* modal 2 starts here - to upload documents either by browing or scanning*@
-    <div id="uploadModal" class="modal" tabindex="-1" role="dialog">
-        <div class="modal-dialog" role="document">
-            <div class="modal-content">
-                <div class="modal-header">
+                <div class="modal-header bg-success text-white">
                     <h5 class="modal-title">Upload Document / Picture</h5>
-                    <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close">
-                        <span aria-hidden="true">&times;</span>
-                    </button>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
                 </div>
                 <div class="modal-body">
                     <partial name="_UploadDocument" model="ViewBag.AddFile" />
                 </div>
+            </div>
         </div>
     </div>
 </div>
+<!-- Manage Reservations Section -->
+<div class="section-card mt-4">
+    <div class="section-header d-flex justify-content-between align-items-center">
+        <span>Manage Reservation(s)</span>
+        <button class="btn btn-sm btn-outline-success" type="button"
+                data-bs-toggle="collapse" data-bs-target="#manageReservationDiv"
+                aria-expanded="false" aria-controls="manageReservationDiv">
+            <i class="fa-solid fa-bed"></i> Show / Hide
+        </button>
+    </div>
+
+    <div class="collapse show" id="manageReservationDiv">
+        <div class="p-3">
+
+            <!-- Reservation Filters -->
+            <div class="row mb-3">
+                <div class="col-md-3">
+                    <label class="form-label fw-semibold">Check In Date</label>
+                    <input type="date" class="form-control" id="reg-start-date"
+                           value="@DateTime.Today.ToString("yyyy-MM-dd")" />
+                </div>
+                <div class="col-md-3">
+                    <label class="form-label fw-semibold">Check Out Date</label>
+                    <input type="date" class="form-control" id="reg-end-date"
+                           value="@DateTime.Today.ToString("yyyy-MM-dd")" />
+                </div>
+                <div class="col-md-3 d-flex align-items-end">
+                    <button type="button" class="btn btn-outline-success w-100"
+                            onclick="CloseReservations()">
+                        <i class="fa fa-door-closed"></i> Close All Reservation(s)
+                    </button>
+                </div>
+            </div>
+
+            <!-- Reservation Table -->
+            <div class="table-responsive">
+                <table id="RegTable" class="table table-sm table-hover align-middle border">
+                    <thead class="table-success text-dark">
+                        <tr>
+                            <th style="width:120px;">Room</th>
+                            <th>Building</th>
+                            <th>Block</th>
+                            <th>Floor</th>
+                            <th>From</th>
+                            <th>To</th>
+                            <th>Capacity</th>
+                            <th>Remaining</th>
+                            <th>Allotted</th>
+                            <th>Allot</th>
+                            <th class="text-end" style="width:100px;">
+                                <button id="btnAddDetailRow" type="button"
+                                        class="btn btn-sm btn-outline-success"
+                                        onclick="AddItem(this)">
+                                    <i class="fa fa-plus"></i> Add
+                                </button>
+                            </th>
+                        </tr>
+                    </thead>
+
+                    <tbody id="tableBody">
+                        <tr hidden class="rowClass">
+                            <td>
+                                <select class="form-control dropdown" asp-items="ViewBag.RoomsList"></select>
+                            </td>
+                            <td><label class="building-label"></label></td>
+                            <td><label class="block-label"></label></td>
+                            <td><label class="floor-label"></label></td>
+                            <td><label class="fromDate-label"></label></td>
+                            <td><label class="toDate-label"></label></td>
+                            <td><label class="maxCapacity-label"></label></td>
+                            <td><label class="remaining-label"></label></td>
+                            <td><label class="alreadyAllocate-label">0</label></td>
+                            <td>
+                                <input type="number" value="0" step="1" min="0" max="100"
+                                       class="form-control class-allot" />
+                            </td>
+                            <td class="text-end">
+                                <button type="button" class="btn btn-sm btn-outline-danger"
+                                        onclick="DeleteItem(this)">
+                                    <i class="fa fa-trash"></i> Delete
+                                </button>
+                            </td>
+                        </tr>
+
+                        @for (int i = 0; i < Model.Reservations.Count; i++)
+                        {
+                            string rowColor = Model.Reservations[i].Closed ? "table-warning" : "";
+                            <tr class="@rowColor">
+                                <td>
+                                    <select asp-for="@Model.Reservations[i].RoomId" class="form-select" asp-items="ViewBag.RoomsList" disabled></select>
+                                </td>
+                                <td>@Model.Reservations[i].Room.BuildingName</td>
+                                <td>@Model.Reservations[i].Room.BlockName</td>
+                                <td>@Model.Reservations[i].Room.FloorName</td>
+                                <td>@Model.Reservations[i].FromDate.ToString("dd/MM/yyyy")</td>
+                                <td>@Model.Reservations[i].ToDate.ToString("dd/MM/yyyy")</td>
+                                <td>@Model.Reservations[i].Room.Capacity</td>
+                                <td>@Model.Reservations[i].Remaining</td>
+                                <td class="total-alloted">@Model.Reservations[i].Allocated</td>
+                                <td></td>
+                                <td class="text-end">
+                                    @if (!Model.Reservations[i].Closed)
+                                    {
+                                        <button type="button" class="btn btn-sm btn-outline-success"
+                                                onclick="return CloseItem(@Model.Reservations[i].Id, @Model.Reservations[i].DevoteeId)">
+                                            <i class="fa fa-lock"></i> Close
+                                        </button>
+                                    }
+                                    else
+                                    {
+                                        <span class="badge bg-success">Closed</span>
+                                    }
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+
+                    <tfoot>
+                        <tr class="table-light fw-semibold">
+                            <td colspan="8" class="text-end">Total Allocated:</td>
+                            <td class="total-fixed text-success"></td>
+                            <td colspan="2"></td>
+                        </tr>
+                    </tfoot>
+                </table>
+            </div>
+
+            <!-- Save Button -->
+            <div class="text-center mt-3">
+                <button type="button" class="btn btn-success px-4"
+                        onclick="return saveNewDetails()">
+                    <i class="fa fa-save"></i> Update Reservations
+                </button>
+            </div>
+        </div>
+    </div>
 </div>
+
 
 @section Scripts {
     @{

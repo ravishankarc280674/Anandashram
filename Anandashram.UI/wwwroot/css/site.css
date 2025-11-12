@@ -1,4 +1,4 @@
-/* Please see documentation at https://docs.microsoft.com/aspnet/core/client-side/bundling-and-minification
+﻿/* Please see documentation at https://docs.microsoft.com/aspnet/core/client-side/bundling-and-minification
 for details on configuring this project to bundle and minify static web assets. */
 
 a.navbar-brand {
@@ -194,4 +194,100 @@ thead th {
 
 .CodesTable thead, .CodesTable tbody, .CodesTable td {
     border: none !important;
+}
+/* 🌿 Global green theme enhancements */
+:root {
+    --main-green: #198754; /* Bootstrap success green */
+    --main-green-dark: #146c43; /* Darker accent for hover/focus */
+    --main-green-light: #d1e7dd; /* Light background tone */
+}
+
+/* Section Card */
+.section-card {
+    background-color: #fff;
+    border: 1px solid #dee2e6;
+    border-radius: 0.75rem;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+    overflow: hidden;
+}
+
+/* Section Header */
+.section-header {
+    background-color: var(--main-green);
+    color: #fff;
+    font-weight: 600;
+    font-size: 1.05rem;
+    padding: 0.75rem 1rem;
+    border-bottom: 2px solid var(--main-green-dark);
+    text-transform: uppercase;
+}
+
+    .section-header button {
+        background: #fff !important;
+        color: var(--main-green-dark) !important;
+        border: 1px solid var(--main-green-dark);
+        font-weight: 600;
+        transition: all 0.2s ease-in-out;
+    }
+
+        .section-header button:hover {
+            background: var(--main-green-dark) !important;
+            color: #fff !important;
+        }
+
+/* Table Styles */
+.table-success th {
+    background-color: var(--main-green-light) !important;
+    border-bottom: 2px solid var(--main-green-dark);
+    color: #212529;
+    font-weight: 600;
+}
+
+.table-hover tbody tr:hover {
+    background-color: #f8f9fa !important;
+}
+
+.table tfoot td {
+    background-color: #f1f3f2 !important;
+}
+
+/* Buttons */
+.btn-outline-success {
+    color: var(--main-green);
+    border-color: var(--main-green);
+}
+
+    .btn-outline-success:hover {
+        background-color: var(--main-green);
+        color: #fff;
+    }
+
+.btn-success {
+    background-color: var(--main-green);
+    border-color: var(--main-green-dark);
+}
+
+    .btn-success:hover {
+        background-color: var(--main-green-dark);
+    }
+
+/* Input and Label Adjustments */
+label.form-label {
+    color: #495057;
+    font-size: 0.9rem;
+}
+
+input.form-control,
+select.form-control,
+select.form-select {
+    border-radius: 0.4rem;
+}
+
+/* Utility Spacing */
+.mt-4 {
+    margin-top: 1.5rem !important;
+}
+
+.p-3 {
+    padding: 1rem !important;
 }
