@@ -3,44 +3,90 @@
 @{
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
-<h4>Reports</h4>
-<hr />
 
-<div class="col-md-12 d-flex">
-    <form asp-action="ReportViewer" method="post" class="col-md-12 d-flex">
-        <div class="col-md-5">
-              <fieldset>
-                  <dl>
-                        <dt>Choose Check out Date:</dt>
-                  <dd>
-                        <input type="date" id="dateValue" name="dateValue" value="@DateTime.Today.ToString("yyyy/MM/dd")" />
-                </dd>
-                </dl>
-                </fieldset>
+<div class="container mt-4">
+    <div class="card shadow-lg border-0">
+        <div class="card-header bg-success text-white d-flex justify-content-between align-items-center">
+            <h4 class="mb-0 fw-bold">
+                <i class="fas fa-file-alt me-2"></i> Reports
+            </h4>
+        </div>
+
+        <div class="card-body">
+            <form asp-action="ReportViewer" method="post" class="row g-4 align-items-end mb-4">
+                <!-- Date Selection -->
+                <div class="col-md-5">
+                    <label for="dateValue" class="form-label fw-semibold text-secondary">
+                        <i class="fas fa-calendar-alt me-2 text-success"></i> Choose Check-out Date:
+                    </label>
+                    <input type="date" id="dateValue" name="dateValue"
+                           value="@DateTime.Today.ToString("yyyy-MM-dd")"
+                           class="form-control border-success shadow-sm" />
                 </div>
-        <div class="col-md-5">
-        <fieldset>
-            <dl><dt>Choose Report Type:</dt>
-                <dd>
-                        <input type="radio" id="typeofreport" name="typeofreport" value="screen" checked="checked" />
-                    <label>Screen</label>&nbsp;
 
-                        <input type="radio" id="typeofreport" name="typeofreport" value="pdf" />
-                    <label>Pdf</label>
-                </dd>
-            </dl>
-        </fieldset>
-    </div>
-        <div class="col-md-2">
-            <input type="submit" value="Submit" class="btn btn-primary" />
+                <!-- Report Type -->
+                <div class="col-md-5">
+                    <label class="form-label fw-semibold text-secondary d-block">
+                        <i class="fas fa-list-alt me-2 text-success"></i> Choose Report Type:
+                    </label>
+                    <div class="form-check form-check-inline">
+                        <input class="form-check-input" type="radio" id="reportScreen" name="typeofreport" value="screen" checked />
+                        <label class="form-check-label fw-bold" for="reportScreen">
+                            <i class="fas fa-desktop text-success me-1"></i> Screen
+                        </label>
+                    </div>
+                    <div class="form-check form-check-inline">
+                        <input class="form-check-input" type="radio" id="reportPdf" name="typeofreport" value="pdf" />
+                        <label class="form-check-label fw-bold" for="reportPdf">
+                            <i class="fas fa-file-pdf text-danger me-1"></i> PDF
+                        </label>
+                    </div>
+                </div>
+
+                <!-- Submit Button -->
+                <div class="col-md-2 text-center">
+                    <button type="submit" class="btn btn-success fw-bold px-4 shadow-sm">
+                        <i class="fas fa-play-circle me-2"></i> Generate
+                    </button>
+                </div>
+            </form>
+
+            <!-- Report Viewer -->
+            <div class="report-container border border-3 border-success rounded p-3">
+                @if (Model != null)
+                {
+                    @await Model.Render()
+                }
+                else
+                {
+                    <div class="alert alert-warning text-center fw-semibold" role="alert">
+                        <i class="fas fa-info-circle me-2"></i> No report available. Please generate one.
+                    </div>
+                }
             </div>
-    </form>
-   
+        </div>
+    </div>
 </div>
 
-<div>
-    @if (Model != null)
-    {
-        @await Model.Render()
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
     }
-</div>
+}
+
+<style>
+    .report-container {
+        background-color: #ffffff;
+        min-height: 500px;
+        box-shadow: 0 0 15px rgba(0, 0, 0, 0.08);
+        transition: all 0.3s ease-in-out;
+    }
+
+        .report-container:hover {
+            box-shadow: 0 0 20px rgba(25, 135, 84, 0.3);
+        }
+
+    .card-header h4 {
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    }
+</style>

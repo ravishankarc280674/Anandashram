@@ -1,91 +1,148 @@
 ﻿@using Anandashram.UI.Tools.Core.Models
-
 @model PageModel
+
 <style>
+    .toolbar {
+        background-color: black;
+        border-radius: 10px;
+        min-height: 45px;
+        padding: 8px 12px;
+    }
+
+        .toolbar .form-control {
+            height: 32px;
+            width: 220px;
+        }
+
     .page-link {
         color: black !important;
     }
 
     .page-item.active .page-link {
-        z-index: 3;
-        color: #fff;
+        color: #fff !important;
         background-color: red !important;
-        border-color: red;
+        border-color: red !important;
+    }
+
+    .page-item .page-link:hover {
+        background-color: #f0f0f0;
+    }
+
+    .btn-outline-secondary {
+        border: 1px solid #666;
+    }
+
+    .btn-danger {
+        background-color: red;
+        border: none;
+    }
+
+    .toolbar .form-check-label {
+        color: white;
     }
 </style>
 
-<div class="container btn-group" style="background-color:black; border-radius:10px; height:45px;">
-	<div class="col-4 p-0 justify-content-end mt-1">
-		<form asp-action="index">
-			<span class="btn-group">
-				<input class="form-control" type="text"
-					   name="SearchText"
-					   value="@ViewBag.SearchText"
-					   placeholder="Search Key" />
+<div class="container-fluid d-flex justify-content-between align-items-center flex-wrap toolbar">
 
-				<span class="ml-2 p-1 btn-group btn-danger" style="border-radius:10px;">
-					<i class="pl-2 fa fa-search align-self-center" aria-hidden="true"></i>
-					<input class="btn btn-sm font-weight-bold text-white"
-						   type="submit" value="Search" />
-				</span>
-			</span>
-		</form>
-	</div>
-    
-	<div class="container mt-1">
+    <!-- LEFT SIDE: Search -->
+    <form asp-action="Index"
+          asp-route-SearchText="@ViewBag.SearchText"
+          class="d-flex align-items-center m-0 flex-nowrap">
 
-		@if (Model.TotalPages > 0)
-		{
-			<ul class="pagination justify-content-end">
-				<li>
-					<form asp-controller="Report" asp-route-reportType="@ViewBag.ReportType" asp-action="ShowReport" method="post" target="_blank">
-						<button type="submit" class="btn btn-sm btn-outline-secondary" name="actionButton" value="Screen"><i class="fa fa-print" aria-hidden="true" title="Screen" style="color:#28a745;"></i></button>
-						<button type="submit" class="btn btn-sm btn-outline-secondary" name="actionButton" value="Pdf"><i class="fa-solid fa-file-pdf" title="pdf" style="color:#dc3545;"></i></button>
-						@* <button type="submit" class="btn btn-sm btn-outline-secondary" name="actionButton" value="Csv"><i class="fa-solid fa-file-excel" title="csv" style="color:#fd7e14;"></i></button> *@
-					</form>
-				</li><li>&nbsp;</li>
-				@if (Model.CurrentPage > 1)
-				{
-					<li class="page-item">
-						<a class="page-link" asp-controller="@Model.Controller" asp-action="@Model.Action" asp-route-pg="1"
-						   asp-route-SearchText="@Model.SearchText" asp-route-pageSize="@Model.PageSize">First</a>
-					</li>
-					<li>
-						<a class="page-link" asp-controller="@Model.Controller" asp-action="@Model.Action"
-						   asp-route-pg="@(Model.CurrentPage - 1)"
-						   asp-route-SearchText="@Model.SearchText" asp-route-pageSize="@Model.PageSize">Previous</a>
-					</li>
-				}
-				@for (var pge = Model.StartPage; pge <= Model.EndPage; pge++)
-				{
-					<li class="page-item @(pge == Model.CurrentPage ? "active" : "")">
-						@if (pge != Model.CurrentPage)
-						{
-							<a class="page-link" asp-controller="@Model.Controller" asp-action="@Model.Action" asp-route-pg="@pge"
-							   asp-route-SearchText="@Model.SearchText" asp-route-pageSize="@Model.PageSize"> @pge </a>
-						}
-						else
-						{
-							<span class="page-link">@pge</span>
-						}
-					</li>
+        <input class="form-control me-2"
+               type="text" name="SearchText"
+               value="@ViewBag.SearchText"
+               placeholder="Search Key" />
 
-				}
-				@if (Model.CurrentPage < Model.TotalPages)
-				{
-					<li class="page-item">
-						<a class="page-link" asp-controller="@Model.Controller" asp-action="@Model.Action"
-						   asp-route-SearchText="@Model.SearchText" asp-route-pg="@(Model.CurrentPage + 1)" asp-route-pageSize="@Model.PageSize">Next</a>
-					</li>
-					<li class="page-item">
-						<a class="page-link" asp-controller="@Model.Controller" asp-action="@Model.Action" asp-route-sortExpression="@Model.SortExpression"
-						   asp-route-SearchText="@Model.SearchText" asp-route-pg="@(Model.TotalPages)" asp-route-PageSize="@Model.PageSize">Last</a>
-					</li>
-				}
-			</ul>
-		}
-	</div>
+        <button type="submit"
+                class="btn btn-danger d-flex align-items-center px-3"
+                style="height:32px; border-radius:8px;">
+            <i class="fa fa-search me-1"></i> Search
+        </button>
+    </form>
 
+    <!-- RIGHT SIDE -->
+    <div class="d-flex align-items-center flex-wrap justify-content-end gap-2">
+
+        <!-- REPORT BUTTONS -->
+        @if (Model != null)
+        {
+            <form asp-controller="Report"
+                  asp-route-reportType="@ViewBag.ReportType"
+                  asp-action="ShowReport"
+                  method="post" target="_blank"
+                  class="d-flex align-items-center gap-1 m-0">
+
+                <button type="submit" class="btn btn-sm btn-outline-secondary"
+                        name="actionButton" value="Screen" title="View on Screen">
+                    <i class="fa fa-print" style="color:#28a745;"></i>
+                </button>
+
+                <button type="submit" class="btn btn-sm btn-outline-secondary"
+                        name="actionButton" value="Pdf" title="Download PDF">
+                    <i class="fa fa-file-pdf" style="color:#dc3545;"></i>
+                </button>
+            </form>
+        }
+
+        <!-- PAGINATION -->
+        @if (Model.TotalPages > 0)
+        {
+            <ul class="pagination mb-0 d-flex align-items-center justify-content-end ms-2">
+
+                @if (Model.CurrentPage > 1)
+                {
+                    <li class="page-item">
+                        <a class="page-link"
+                           asp-controller="@Model.Controller"
+                           asp-action="@Model.Action"
+                           asp-route-pg="1"
+                           asp-route-SearchText="@Model.SearchText"
+                           asp-route-pageSize="@Model.PageSize">First</a>
+                    </li>
+                    <li class="page-item">
+                        <a class="page-link"
+                           asp-controller="@Model.Controller"
+                           asp-action="@Model.Action"
+                           asp-route-pg="@(Model.CurrentPage - 1)"
+                           asp-route-SearchText="@Model.SearchText"
+                           asp-route-pageSize="@Model.PageSize">Previous</a>
+                    </li>
+                }
+
+                @for (var pge = Model.StartPage; pge <= Model.EndPage; pge++)
+                {
+                    <li class="page-item @(pge == Model.CurrentPage ? "active" : "")">
+                        <a class="page-link"
+                           asp-controller="@Model.Controller"
+                           asp-action="@Model.Action"
+                           asp-route-pg="@pge"
+                           asp-route-SearchText="@Model.SearchText"
+                           asp-route-pageSize="@Model.PageSize">@pge</a>
+                    </li>
+                }
+
+                @if (Model.CurrentPage < Model.TotalPages)
+                {
+                    <li class="page-item">
+                        <a class="page-link"
+                           asp-controller="@Model.Controller"
+                           asp-action="@Model.Action"
+                           asp-route-pg="@(Model.CurrentPage + 1)"
+                           asp-route-SearchText="@Model.SearchText"
+                           asp-route-pageSize="@Model.PageSize">Next</a>
+                    </li>
+
+                    <li class="page-item">
+                        <a class="page-link"
+                           asp-controller="@Model.Controller"
+                           asp-action="@Model.Action"
+                           asp-route-pg="@(Model.TotalPages)"
+                           asp-route-SearchText="@Model.SearchText"
+                           asp-route-pageSize="@Model.PageSize">Last</a>
+                    </li>
+                }
+            </ul>
+        }
+    </div>
 </div>
-
-
