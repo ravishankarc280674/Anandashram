@@ -50,6 +50,7 @@ builder.Services.AddDefaultIdentity<IdentityUser>(options =>
 builder.Services.ConfigureApplicationCookie(options =>
 {
     options.LoginPath = "/Identity/Account/Login"; // Redirect here when not logged in
+    options.LogoutPath = "/Identity/Account/Logout";
     options.AccessDeniedPath = "/Identity/Account/AccessDenied";
     options.ExpireTimeSpan = TimeSpan.FromMinutes(30); // Match session timeout
     options.SlidingExpiration = true; // Extend cookie if user is active
@@ -58,15 +59,18 @@ builder.Services.ConfigureApplicationCookie(options =>
 // 🔹 MVC and global authorization policy
 builder.Services.AddControllersWithViews(options =>
 {
-    // Require login by default for all controllers
     var policy = new AuthorizationPolicyBuilder()
         .RequireAuthenticatedUser()
         .Build();
     options.Filters.Add(new AuthorizeFilter(policy));
 
-    // Disable antiforgery globally (if required for your UI)
     options.Filters.Add(new IgnoreAntiforgeryTokenAttribute());
-});
+}).AddRazorPagesOptions(options =>
+{
+    // ✅ Allow anonymous access to Identity pages
+    options.Conventions.AllowAnonymousToAreaFolder("Identity", "/Account");
+}); ;
+
 
 builder.Services.Configure<ValidationSettings>(builder.Configuration.GetSection("ValidationSettings"));
 builder.Services.AddAuthorization();
@@ -127,11 +131,17 @@ app.UseSession();
 // 🔹 Middleware to check for expired session and force login
 app.Use(async (context, next) =>
 {
-    // If user is authenticated but session expired, redirect to login
     if (context.User.Identity?.IsAuthenticated == true)
     {
         if (context.Session.GetString("UserId") == null)
         {
+            // If it's an AJAX request, return 401 instead of redirecting
+            if (context.Request.Headers["X-Requested-With"] == "XMLHttpRequest")
+            {
+                context.Response.StatusCode = StatusCodes.Status401Unauthorized;
+                return;
+            }
+
             var signInManager = context.RequestServices.GetRequiredService<SignInManager<IdentityUser>>();
             await signInManager.SignOutAsync();
             context.Response.Redirect("/Identity/Account/Login");

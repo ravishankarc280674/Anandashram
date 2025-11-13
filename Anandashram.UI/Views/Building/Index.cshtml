@@ -1,50 +1,33 @@
 ﻿@model IEnumerable<Building>
 @{
     string currentModel = Helper.GetTypeNames(Model.GetType().ToString());
-    ViewData["Title"] = "Building - List";
+    ViewData["Title"] = $"{currentModel} - List";
     SortModel sortModel = (SortModel)ViewData["SortModel"];
-    int pg = 1;
-    if (TempData["CurrentPage"] != null)
-    {
-        pg = (int)TempData["CurrentPage"];
-
+    int pg = TempData["CurrentPage"] != null ? (int)TempData["CurrentPage"] : 1;
         TempData["CurrentPage"] = pg;
-    }
     PageModel pager = ViewBag.Pager;
     var SearchText = @ViewBag.SearchText;
-    int pageNo = 0;
-    if (ViewBag.SearchPager != null)
-    {
-        pager = ViewBag.SearchPager;
-        pageNo = pager.CurrentPage;
-    }
+    int pageNo = ViewBag.SearchPager?.CurrentPage ?? 0;
 }
-<div class="container-fluid btn-group">
-    <div class="col-10">
-        <h3><i class="fas fa-comment-dollar text-success"></i> @currentModel - List</h3>
+<div class="container-fluid">
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <h3 class="mb-0 text-success">
+            <i class="fas fa-building"></i> @currentModel - List
+        </h3>
+        <a onclick="showInPopup('@Url.Action("AddOrEdit", "Building", null, Context.Request.Scheme)',
+                                '@currentModel - New')"
+           class="btn btn-success">
+            <i class="fas fa-plus-circle"></i> Create New
+        </a>
     </div>
-    <div class="col-2 justify-content-end">
-        <p>
-            <a onclick="showInPopup('@Url.Action("AddOrEdit", "Building",null, Context.Request.Scheme)','@currentModel - New')" class="btn btn-success"><i class="fas fa-random"></i>Create New</a>
-        </p>
-    </div>
-</div>
-<br />
 
+    <partial name="_pager" model="@pager" />
 
-<div class="row">
-    <div class="col-12">
-        <partial name="_pager" model="@pager" />
+    <div id="view-all">
+        @await Html.PartialAsync("_ViewAll", Model)
     </div>
-</div>
-<!--table comes here-->
-<div id="view-all">
-    @await Html.PartialAsync("_ViewAll", Model)
-</div>
-<div class="row">
-    <div class="col-12">
-        <partial name="_BottomBar" model="@pager" />
-    </div>
+
+    <partial name="_BottomBar" model="@pager" />
 </div>
 
 @section Scripts {

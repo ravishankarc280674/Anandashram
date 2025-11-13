@@ -13,18 +13,25 @@ $(function() {
         $('#loaderbody').addClass('hide');
     });
 });
-
 showInPopup = (url, title) => {
+    debugger;
     $.ajax({
         type: "GET",
-        url:url,
+        url: url,
         success: function (res) {
             $("#form-modal .modal-body").html(res);
             $("#form-modal .modal-title").html(title);
-            $('#form-modal').modal('show');
+            $("#form-modal").modal('show');
+        },
+        error: function (xhr) {
+            if (xhr.status === 401) {
+                // Session expired or not authorized
+                window.location.href = '/Identity/Account/Login';
+            } else {
+                alert("An error occurred while loading the form.");
             }
+        }
     });
-
 }
 
 jQueryAjaxPost = form => {
@@ -85,3 +92,15 @@ jQueryAjaxDelete = form => {
     }
     return false;
 }
+
+document.addEventListener("DOMContentLoaded", function () {
+    const sidebarToggle = document.getElementById("sidebarToggle");
+    const wrapper = document.getElementById("wrapper");
+
+    if (sidebarToggle) {
+        sidebarToggle.addEventListener("click", function (e) {
+            e.preventDefault();
+            wrapper.classList.toggle("toggled");
+        });
+    }
+});

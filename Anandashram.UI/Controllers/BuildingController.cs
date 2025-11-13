@@ -98,11 +98,8 @@ namespace Anandashram.Controllers
                 building.ModifiedBy = this.User.FindFirstValue(ClaimTypes.NameIdentifier);
                 building.ModifiedDate = DateTime.Now;
             }
-
             return View(building);
         }
-
-
         [HttpPost]
         
         

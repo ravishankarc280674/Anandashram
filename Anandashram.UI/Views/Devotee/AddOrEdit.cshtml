@@ -113,7 +113,7 @@
                                  class="img-thumbnail rounded me-3" />
                             <div>
                                 <div class="fs-5 fw-bold text-success">@Html.DisplayFor(model => model.Name)</div>
-                                <div class="text-muted">@Html.DisplayFor(model => model.Code)</div>
+                                <div class="font-weight-bold fs-2 text-danger">@Html.DisplayFor(model => model.Code)</div>
                                 <a data-bs-toggle="modal" data-bs-target="#webcamModal"
                                    data-item-Id="@Model.Id" data-item-Code="@Model.Code"
                                    class="btn btn-sm btn-outline-success mt-2">
@@ -254,15 +254,15 @@
             <div class="text-center mt-4">
                 @if (!Model.Closed)
                 {
-                    <input type="submit" name="actionButton" value="Submit" class="btn btn-success me-2" />
+                    <input type="submit" name="actionButton" value="Submit Devotee Details" class="btn btn-success me-2" />
                 }
                 @if (Model.Id != 0 && !Model.Closed)
                 {
-                    <input type="submit" name="actionButton" value="Closed" class="btn btn-danger me-2" />
+                    <input type="submit" name="actionButton" value="Close Devotee Details" class="btn btn-danger me-2" />
                 }
                 @if (Model.Id != 0 && String.IsNullOrEmpty(Model.ReopenedCode) && Model.Closed)
                 {
-                    <input type="submit" name="actionButton" value="Reopen" class="btn btn-info me-2" />
+                    <input type="submit" name="actionButton" value="Reopen Devotee Details" class="btn btn-info me-2" />
                 }
             </div>
         </form>
@@ -307,7 +307,7 @@
         <span>Manage Reservation(s)</span>
         <button class="btn btn-sm btn-outline-success" type="button"
                 data-bs-toggle="collapse" data-bs-target="#manageReservationDiv"
-                aria-expanded="false" aria-controls="manageReservationDiv">
+                aria-expanded="false" aria-controls="toggleDiv">
             <i class="fa-solid fa-bed"></i> Show / Hide
         </button>
     </div>
@@ -418,7 +418,7 @@
                         }
                     </tbody>
 
-                    <tfoot>
+                    <tfoot id="tfoot">
                         <tr class="table-light fw-semibold">
                             <td colspan="8" class="text-end">Total Allocated:</td>
                             <td class="total-fixed text-success"></td>
@@ -436,10 +436,7 @@
                 </button>
             </div>
         </div>
-    </div>
-</div>
-
-
+        </div>
 @section Scripts {
     @{
         await Html.RenderPartialAsync("_ValidationScriptsPartial");
@@ -557,6 +554,7 @@
 
 
         function saveNewDetails(){
+            debugger;
             var table = document.getElementById('RegTable');
                 //var rows = table.getElementsByTagName('tr');
                  let reservationList=[];
@@ -605,8 +603,8 @@
                 }
                 if(reservationList.length>0)
                 {
-                  
-                     var tableFoot = document.getElementById('tableFooter');
+
+                                     var tableFoot = document.getElementById('tfoot');
                          var rowFooter = tableFoot.rows[0];
                         var col=rowFooter.cells[1];
                         totalAllocated =  col.textContent;
@@ -689,7 +687,7 @@
                         }
                     }
                 }
-                 var tableFoot = document.getElementById('tableFooter');
+                                 var tableFoot = document.getElementById('tfoot');
                  var rowFooter = tableFoot.rows[0];
                 var col=rowFooter.cells[1];
                 col.textContent = sum;
