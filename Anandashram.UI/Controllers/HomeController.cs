@@ -1,6 +1,7 @@
-using System.Diagnostics;
 using Anandashram.Models;
 using Microsoft.AspNetCore.Mvc;
+using System.Diagnostics;
+using System.Drawing;
 
 namespace Anandashram.Controllers
 {
@@ -15,7 +16,23 @@ namespace Anandashram.Controllers
 
         public IActionResult Index()
         {
-            return View();
+            var model = new DashboardVM
+            {
+
+                //TotalDevotees = _context.Devotees.Count(),
+                //TotalRooms = _context.Rooms.Count(),
+                //AvailableRooms = _context.Rooms.Count(r => r.IsAvailable),
+                //TodayCheckIns = _context.Bookings.Count(b => b.CheckInDate == DateTime.Today),
+                //TodayCheckOuts = _context.Bookings.Count(b => b.CheckOutDate == DateTime.Today),
+
+                TotalDevotees = 2121,
+                TotalRooms = 280,
+                AvailableRooms = 114,
+                TodayCheckIns = 22,
+                TodayCheckOuts =16,
+            };
+
+            return View(model);
         }
 
         public IActionResult Privacy()

@@ -4,33 +4,44 @@
     ViewData["Title"] = "Register";
 }
 
+<div class="IndexDiv d-flex col-12">
+    <div class="row justify-content-center col-md-12">
+        <div class="CenteredContainer  col-lg-4">
+            <form id="register" asp-route-returnUrl="@Model.ReturnUrl"
+                  method="post"
+                  class="p-4 shadow-sm rounded bg-white border border-light text-center">
 
-<div class="container IndexDiv">
+                <h5 class="text-success fw-semibold mb-3">Create a new account</h5>
+                <hr class="mb-4" />
 
-    <div class="row">
+                <div asp-validation-summary="All" class="text-danger mb-3"></div>
 
-        <div class="container CenteredContainer text-center  col-10">
-            <form id="register" asp-route-returnUrl="@Model.ReturnUrl" method="post">
-
-                <h5>Create a new account.</h5>
-                <hr />
-                <div asp-validation-summary="All" class="text-danger"></div>
-
-                <div class="form-group">
-                    <input asp-for="Input.Email" class="form-control" placeholder="Email" />
+                <div class="form-group mb-3">
+                    <input asp-for="Input.Email"
+                           class="form-control rounded"
+                           placeholder="Email" />
                 </div>
-                <div class="form-group">
-                    <input asp-for="Input.Password" class="form-control" placeholder="Password" />
+
+                <div class="form-group mb-3">
+                    <input asp-for="Input.Password"
+                           class="form-control rounded"
+                           placeholder="Password" />
                 </div>
-                <div class="form-group">
-                    <input asp-for="Input.ConfirmPassword" class="form-control" placeholder="Confirm Password" />
+
+                <div class="form-group mb-3">
+                    <input asp-for="Input.ConfirmPassword"
+                           class="form-control rounded"
+                           placeholder="Confirm Password" />
                 </div>
-                <br />
-                <input type="submit" class="btn btn-danger text-white" value="Register" />
+
+                <button type="submit"
+                        class="btn btn-success w-100 text-white fw-semibold">
+                    Register
+                </button>
+
             </form>
         </div>
     </div>
-
 </div>
 
 @section Scripts {

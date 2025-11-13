@@ -1,46 +1,113 @@
-﻿@{
+﻿@model DashboardVM
+
+@{
     ViewData["Title"] = "Dashboard";
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
 <div class="container-fluid py-4">
+
+    <!-- Heading -->
     <div class="text-center mb-4">
         <h1 class="fw-bold text-success">Welcome to Anandashram</h1>
         <p class="text-muted fs-5">Devotee Management Dashboard</p>
     </div>
 
+    <!-- ====== STATISTICS SECTION ====== -->
+    <div class="row g-4 mb-5 justify-content-center">
+
+        <!-- Total Devotees -->
+        <div class="col-lg-2 col-md-4 col-sm-6">
+            <div class="card shadow-sm stats-card border-0 text-center">
+                <div class="card-body">
+                    <i class="fas fa-users text-success fa-2x"></i>
+                    <h6 class="mt-2 text-muted">Total Devotees</h6>
+                    <h3 class="fw-bold text-success">@Model.TotalDevotees</h3>
+                </div>
+            </div>
+        </div>
+
+        <!-- Total Rooms -->
+        <div class="col-lg-2 col-md-4 col-sm-6">
+            <div class="card shadow-sm stats-card border-0 text-center">
+                <div class="card-body">
+                    <i class="fas fa-bed text-success fa-2x"></i>
+                    <h6 class="mt-2 text-muted">Total Rooms</h6>
+                    <h3 class="fw-bold text-success">@Model.TotalRooms</h3>
+                </div>
+            </div>
+        </div>
+
+        <!-- Available Rooms -->
+        <div class="col-lg-2 col-md-4 col-sm-6">
+            <div class="card shadow-sm stats-card border-0 text-center">
+                <div class="card-body">
+                    <i class="fas fa-door-open text-success fa-2x"></i>
+                    <h6 class="mt-2 text-muted">Available Rooms</h6>
+                    <h3 class="fw-bold text-success">@Model.AvailableRooms</h3>
+                </div>
+            </div>
+        </div>
+
+        <!-- Today's Check-ins -->
+        <div class="col-lg-2 col-md-4 col-sm-6">
+            <div class="card shadow-sm stats-card border-0 text-center">
+                <div class="card-body">
+                    <i class="fas fa-sign-in-alt text-success fa-2x"></i>
+                    <h6 class="mt-2 text-muted">Today's Check-ins</h6>
+                    <h3 class="fw-bold text-success">@Model.TodayCheckIns</h3>
+                </div>
+            </div>
+        </div>
+
+        <!-- Today's Check-outs -->
+        <div class="col-lg-2 col-md-4 col-sm-6">
+            <div class="card shadow-sm stats-card border-0 text-center">
+                <div class="card-body">
+                    <i class="fas fa-sign-out-alt text-success fa-2x"></i>
+                    <h6 class="mt-2 text-muted">Today's Check-outs</h6>
+                    <h3 class="fw-bold text-success">@Model.TodayCheckOuts</h3>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+
+    <!-- ========== EXISTING MENU CARDS ========== -->
     <div class="row g-4 justify-content-center">
+
         <!-- Company Card -->
         <div class="col-lg-3 col-md-4 col-sm-6">
             <div class="card shadow-sm border-0 text-center hover-card">
                 <div class="card-body">
                     <a asp-controller="Company" asp-action="Company">
-                        <img src="~/images/company_logo.png" class="img-fluid mb-3" style="max-height:100px;" alt="Company" />
+                        <img src="~/images/company_logo.png" class="img-fluid mb-3" style="max-height:100px;" />
                     </a>
                     <h5 class="card-title fw-semibold text-success">Company</h5>
                 </div>
             </div>
         </div>
 
-        <!-- Devotee Management -->
+        <!-- Devotees -->
         <div class="col-lg-3 col-md-4 col-sm-6">
             <div class="card shadow-sm border-0 text-center hover-card">
                 <div class="card-body">
                     <a asp-controller="Devotee" asp-action="Index" class="text-decoration-none">
                         <i class="fas fa-user fa-3x text-success mb-3"></i>
-                        <h5 class="card-title fw-semibold text-success">Devotees</h5>
+                        <h5 class="fw-semibold text-success">Devotees</h5>
                     </a>
                 </div>
             </div>
         </div>
 
-        <!-- Room Management -->
+        <!-- Rooms -->
         <div class="col-lg-3 col-md-4 col-sm-6">
             <div class="card shadow-sm border-0 text-center hover-card">
                 <div class="card-body">
                     <a asp-controller="Room" asp-action="Index" class="text-decoration-none">
                         <i class="fas fa-bed fa-3x text-success mb-3"></i>
-                        <h5 class="card-title fw-semibold text-success">Rooms</h5>
+                        <h5 class="fw-semibold text-success">Rooms</h5>
                     </a>
                 </div>
             </div>
@@ -52,25 +119,49 @@
                 <div class="card-body">
                     <a asp-controller="Reports" asp-action="RoomViewer" class="text-decoration-none">
                         <i class="fas fa-chart-bar fa-3x text-success mb-3"></i>
-                        <h5 class="card-title fw-semibold text-success">Reports</h5>
+                        <h5 class="fw-semibold text-success">Reports</h5>
                     </a>
                 </div>
             </div>
         </div>
+
     </div>
 </div>
 
-@section Scripts {
-    @await Html.PartialAsync("_ValidationScriptsPartial")
-}
-
 <style>
     .hover-card {
-        transition: transform 0.25s ease, box-shadow 0.25s ease;
+        transition: transform .25s ease, box-shadow .25s ease;
     }
 
         .hover-card:hover {
             transform: translateY(-5px);
-            box-shadow: 0 6px 16px rgba(0, 0, 0, 0.15);
+            box-shadow: 0 6px 16px rgba(0,0,0,0.15);
         }
+
+    .stats-card {
+        background: #f7fff7; /* light green tint */
+        border-left: 4px solid #198754; /* bootstrap success green */
+        border-radius: 8px;
+    }
+
+    <style >
+    .dashboard-card {
+        height: 220px; /* set card height */
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .dashboard-card .card-body {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .dashboard-card img {
+        max-height: 90px; /* keeps image proportional */
+        object-fit: contain;
+    }
+</style>
 </style>
