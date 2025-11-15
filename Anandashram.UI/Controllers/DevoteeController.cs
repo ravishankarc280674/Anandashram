@@ -122,8 +122,7 @@ namespace Anandashram.Controllers
         // GET: Devotee/Details/5
         public async Task<IActionResult> Details(int id)
         {
-            var devotee = await _devoteeRepo.GetDevotee(id);
-            ViewBag.DevoteeCategoryId = GetDevoteeCategories();
+            var devotee = await _devoteeRepo.GetDevoteeWithReservations(id);
             if (devotee == null)
             {
                 return NotFound();

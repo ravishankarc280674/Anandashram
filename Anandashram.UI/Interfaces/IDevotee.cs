@@ -7,20 +7,13 @@ namespace Anandashram.Interfaces
     {
         Task<PaginatedList<Devotee>> GetItems(string SortProperty, SortOrder sortOrder, string SearchText = "", int pageIndex = 1, int pageSize = 5, bool Checked = false); //read all
         Task<Devotee> GetDevotee(int id); // read particular item
-
         Task<Devotee> Create(Devotee devotee);
-
         Task<Devotee> Edit(Devotee devotee);
-
         Task<Devotee> Delete(Devotee devotee);
-
         bool IsDevoteeNameExists(string name);
         bool IsDevoteeNameExists(string name, int Id);
         Task<List<Devotee>> GetAllDevotees(bool Checked);
-
         Task<Devotee> GetDevoteeWithReservations(int devoteeId);
-
         Task<List<DevoteeReportDTO>> GetDevoteeSummaryByDateAsync(DateTime dateValue);
-
     }
 }

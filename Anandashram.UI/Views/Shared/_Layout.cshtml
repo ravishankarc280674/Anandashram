@@ -305,7 +305,6 @@
 
     <script src="~/lib/jquery/dist/jquery.min.js"></script>
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
-    <script src="~/lib/bootstrap/dist/js/bootstrap.min.js"></script>
     <script src="~/webcamjs/webcam.min.js"></script>
     <script src="~/js/site.js" asp-append-version="true"></script>
     <script src="~/js/notify.min.min.js"></script>6
@@ -315,3 +314,17 @@
   
 </body>
 </html>
+<script>
+      document.addEventListener("DOMContentLoaded", function () {
+          document.querySelectorAll('[data-bs-toggle="tooltip"]').forEach(el => {
+              new bootstrap.Tooltip(el, { container: 'body' });
+          });
+      });
+
+    // Sidebar toggle
+    $("#sidebarToggle").click(function () {
+        $("#sidebar").toggleClass("collapsed");
+        $("#content").toggleClass("expanded");
+    });
+  
+</script>

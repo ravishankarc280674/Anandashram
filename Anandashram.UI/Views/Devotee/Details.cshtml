@@ -1,6 +1,7 @@
 ﻿@model Anandashram.Models.Devotee
 @{
     ViewData["Title"] = "Devotee Details";
+    var uploadedFiles = ViewBag.UploadedFiles;
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
@@ -9,6 +10,67 @@
         <div class="card-header bg-success text-white">
             <h4 class="mb-0">Devotee Details</h4>
         </div>
+        <div class="container mt-3">
+
+            <div class="row">
+                <!-- Profile Picture -->
+                <div class="col-md-3 text-center">
+                    <img src="@Url.Action("GetImage", "Devotee", new { fileName = Model.Code })"
+                         class="img-thumbnail shadow-sm"
+                         style="max-width: 220px; height:auto;" />
+                </div>
+
+                <!-- Documents -->
+                <div class="col-md-9">
+                    <h5 class="mb-3">Documents List</h5>
+                    <table class="table table-sm mt-2">
+                        <tbody>
+                            @if (uploadedFiles != null)
+                            {
+                                @foreach (var fileUpload in uploadedFiles)
+                                {
+                                    <tr>
+                                        <td class="col-sm-8">@fileUpload.FileName</td>
+                                        <td>
+                                            <a href="@Url.Action("GetDocument", new { fileName = fileUpload.FileName, filePath = fileUpload.FilePath })"
+                                               class="btn btn-sm btn-outline-secondary">
+                                                <i class="fa fa-download"></i>
+                                            </a>
+                                        </td>
+                                    </tr>
+                                }
+                            }
+                            else
+                            {
+                                <tr><td colspan="3" class="text-muted">No Documents Uploaded</td></tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        <form asp-action="AddOrEdit">
+            <input type="hidden" asp-for="Id" />
+            <input type="hidden" asp-for="Code" />
+            <input type="hidden" asp-for="CreatedBy" />
+            <input type="hidden" asp-for="CreatedDate" />
+            <input type="hidden" asp-for="ModifiedBy" />
+            <input type="hidden" asp-for="ModifiedDate" />
+            <input type="hidden" asp-for="Name" />
+            <input type="hidden" asp-for="DevoteeCategoryId" />
+            <input type="hidden" asp-for="Mobile" />
+            <input type="hidden" asp-for="Email" />
+            <input type="hidden" asp-for="Document" />
+            <input type="hidden" asp-for="Description" />
+            <input type="hidden" asp-for="NoOfPeople" />
+            <input type="hidden" asp-for="EndDate" />
+            <input type="hidden" asp-for="StartDate" />
+            <input type="hidden" asp-for="Document" />
+            <input type="hidden" asp-for="PinCode" />
+            <input type="hidden" asp-for="Country" />
+            <input type="hidden" asp-for="State" />
+            <input type="hidden" asp-for="AddressLine2" />
+            <input type="hidden" asp-for="AddressLine1" />
+            <input type="hidden" asp-for="Closed" />
 
         <div class="card-body">
             <dl class="row">
@@ -28,18 +90,7 @@
                 <dd class="col-sm-9">@Html.DisplayFor(m => m.Email)</dd>
 
                 <dt class="col-sm-3">Docs (Aadhar / PAN / ...)</dt>
-                <dd class="col-sm-9">
-                    @if (!string.IsNullOrEmpty(Model.Document))
-                    {
-                        <a href="@Url.Content(Model.Document)" target="_blank" class="btn btn-outline-success btn-sm">
-                            <i class="fas fa-download"></i> View / Download
-                        </a>
-                    }
-                    else
-                    {
-                        <span class="text-muted fst-italic">No document uploaded</span>
-                    }
-                </dd>
+                <dd class="col-sm-9">@Html.DisplayFor(m => m.Document)</dd>
 
                 <dt class="col-sm-3">Address Line 1</dt>
                 <dd class="col-sm-9">@Html.DisplayFor(m => m.AddressLine1)</dd>
@@ -111,10 +162,17 @@
             }
 
             <div class="text-end">
+        
+
+                @if (Model.Id != 0 && String.IsNullOrEmpty(Model.ReopenedCode) && Model.Closed)
+                {
+                    <button type="submit" name="actionButton" value="Reopen" class="btn btn-info me-2">Reopen Devotee Details</button>
+                }
                 <a asp-action="Index" class="btn btn-secondary">
                     <i class="fas fa-arrow-left"></i> Back
                 </a>
             </div>
         </div>
+        </form>
     </div>
 </div>

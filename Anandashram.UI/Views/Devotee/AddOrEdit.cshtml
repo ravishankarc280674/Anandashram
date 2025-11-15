@@ -254,15 +254,16 @@
             <div class="text-center mt-4">
                 @if (!Model.Closed)
                 {
-                    <input type="submit" name="actionButton" value="Submit Devotee Details" class="btn btn-success me-2" />
+                    <button type="submit" name="actionButton" value="Submit" class="btn btn-success me-2">Submit Devotee Details</button>
                 }
                 @if (Model.Id != 0 && !Model.Closed)
                 {
-                    <input type="submit" name="actionButton" value="Close Devotee Details" class="btn btn-danger me-2" />
+                    <button type="submit" name="actionButton" value="Closed" class="btn btn-danger me-2">
+                    Close Devotee Details </button>
                 }
                 @if (Model.Id != 0 && String.IsNullOrEmpty(Model.ReopenedCode) && Model.Closed)
                 {
-                    <input type="submit" name="actionButton" value="Reopen Devotee Details" class="btn btn-info me-2" />
+                    <button type="submit" name="actionButton" value="Reopen" class="btn btn-info me-2">Reopen Devotee Details</button>
                 }
             </div>
         </form>

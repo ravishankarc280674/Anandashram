@@ -195,7 +195,12 @@
     .btn-outline-danger i {
         font-size: 1rem;
     }
-     
+
+    .tooltip-inner {
+        max-width: 300px; /* Adjust as needed */
+        white-space: normal;
+        text-align: left;
+    }
 </style>
 
 
@@ -305,7 +310,15 @@
                             <td class="@rowClass">@item.EndDate.ToString("dd/MM/yyyy")</td>
                             <td class="@rowClass">@item.Mobile</td>
                             <td class="@rowClass">@item.Email</td>
-                            <td class="@rowClass" data-bs-toggle="tooltip" title="@item.Document">...</td>
+                            <td class="@rowClass">
+                                <span data-bs-toggle="tooltip"
+                                      data-bs-placement="bottom"
+                                      data-bs-html="true"
+                                      title="@item.Document"
+                                      style="cursor: pointer; display:inline-block; width:100%;">
+                                    <i class="fa-solid fa-file-lines"></i>
+                                </span>
+                            </td>
                             <td class="@rowClass">@item.NoOfPeople</td>
                             <td class="sticky-col last-col" style="background:#94a09c">
                                 <div class="btn-group">
@@ -395,17 +408,17 @@ else
                                     <dt class="col-sm-4 fw-semibold">Mobile:</dt>
                                     <dd class="col-sm-8">@item.Mobile</dd>
 
-                                    <dt class="col-sm-4 fw-semibold">Document:</dt>
-                                    <dd class="col-sm-8 text-truncate" title="@item.Document">
-                                        @if (!string.IsNullOrEmpty(item.Document))
-                                        {
-                                            <span>@item.Document</span>
-                                        }
-                                        else
-                                        {
-                                            <span class="text-muted">N/A</span>
-                                        }
+                                    <dt class="col-sm-4 fw-semibold">Document</dt>
+                                    <dd class="col-sm-8">
+                                        <span data-bs-toggle="tooltip"
+                                              data-bs-placement="bottom"
+                                              data-bs-html="true"
+                                              title="@item.Document"
+                                              style="cursor: pointer; display:inline-block; width:100%;">
+                                            <i class="fa-solid fa-file-lines"></i>
+                                        </span>
                                     </dd>
+
                                 </dl>
                             </div>
 
@@ -453,12 +466,3 @@ else
         <partial name="_BottomBar" model="@pager" />
     </div>
 </div>
-
-<script>
-    document.addEventListener('DOMContentLoaded', function () {
-        const tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
-        tooltipTriggerList.map(function (el) {
-            return new bootstrap.Tooltip(el);
-        });
-    });
-</script>
