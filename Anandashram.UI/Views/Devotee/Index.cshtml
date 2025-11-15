@@ -292,7 +292,7 @@
                         <tr>
                             <td class="sticky-col first-col" style="background:#94a09c">
                                 <img src="@Url.Action("GetImage", "Devotee", new { fileName = item.Code })"
-                                     width="45" height="45" class="rounded-circle" />
+                                     width="35" height="35" class="rounded-circle" />
                             </td>
                             <td class="sticky-col second-col" style="background:#94a09c">
                                 @if (!item.Closed)
@@ -397,9 +397,8 @@ else
                                     </dd>
 
                                     <dt class="col-sm-12 text-center">
-                                        <img src="@Url.Action("GetImage", "Devotee", new { fileName = item.Code })"
-                                             class="img-fluid rounded shadow-sm mt-2 mb-2"
-                                             style="max-width: 250px; height: 150px; object-fit: cover;" />
+                                        <img src="@Url.Action("GetImage", "Devotee", new { fileName = @item.Code })"
+                                             class="img-thumbnail shadow-sm" style="max-width: 250px; height: 150px; object-fit: cover;" />
                                     </dt>
 
                                     <dt class="col-sm-4 fw-semibold">Category:</dt>

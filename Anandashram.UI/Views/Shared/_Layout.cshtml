@@ -302,7 +302,17 @@
     </footer> *@
     </div>
 
-
+    <div class="modal fade" id="imageModal" tabindex="-1">
+        <div class="modal-dialog modal-dialog-centered modal-fullscreen">
+            <div class="modal-content bg-dark">
+                <div class="modal-body d-flex justify-content-center align-items-center p-0">
+                    <img id="fullImage" class="img-fluid" style="max-height:100vh;" />
+                </div>
+                <button type="button" class="btn-close btn-close-white position-absolute top-0 end-0 m-3"
+                        data-bs-dismiss="modal"></button>
+            </div>
+        </div>
+    </div>
     <script src="~/lib/jquery/dist/jquery.min.js"></script>
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
     <script src="~/webcamjs/webcam.min.js"></script>
@@ -326,5 +336,14 @@
         $("#sidebar").toggleClass("collapsed");
         $("#content").toggleClass("expanded");
     });
-  
+      document.addEventListener("DOMContentLoaded", () => {
+        const img = document.getElementById("profilePic");
+        const modalImage = document.getElementById("fullImage");
+        const modal = new bootstrap.Modal(document.getElementById("imageModal"));
+
+        img.addEventListener("click", () => {
+            modalImage.src = img.src;
+            modal.show();
+        });
+    });
 </script>

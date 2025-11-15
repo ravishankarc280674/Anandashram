@@ -15,11 +15,11 @@
             <div class="row">
                 <!-- Profile Picture -->
                 <div class="col-md-3 text-center">
-                    <img src="@Url.Action("GetImage", "Devotee", new { fileName = Model.Code })"
+                    <img id="profilePic"
+                         src="@Url.Action("GetImage", "Devotee", new { fileName = Model.Code })"
                          class="img-thumbnail shadow-sm"
-                         style="max-width: 220px; height:auto;" />
+                         style="max-width: 220px; height:auto; cursor:pointer;" />
                 </div>
-
                 <!-- Documents -->
                 <div class="col-md-9">
                     <h5 class="mb-3">Documents List</h5>
