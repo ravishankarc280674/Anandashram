@@ -195,7 +195,8 @@ namespace Anandashram.Repositories
                     FloorName = x.room.Floor != null ? x.room.Floor.Name : string.Empty,
                     Capacity = x.room.Capacity,
                     Occupied = x.reservations.Sum(r => (int?)r.Allocated) ?? 0,
-                    RemainingCount = x.room.Capacity - (x.reservations.Sum(r => (int?)r.Allocated) ?? 0)
+                    RemainingCount = x.room.Capacity - (x.reservations.Sum(r => (int?)r.Allocated) ?? 0),
+                    TotalRemaining = x.room.Capacity - (x.reservations.Sum(r => (int?)r.Allocated) ?? 0)
                 })
                 .ToListAsync();
             return rooms;
@@ -219,6 +220,7 @@ namespace Anandashram.Repositories
                     Capacity = r.Capacity,
                     TotalAllocated = r.Reservations.Sum(rv => (int?)rv.Allocated) ?? 0,
                     TotalRemaining = r.Capacity - (r.Reservations.Sum(rv => (int?)rv.Allocated) ?? 0),
+                    RemainingCount = r.Capacity - (r.Reservations.Sum(rv => (int?)rv.Allocated) ?? 0),
 
                     Reservations = r.Reservations.Select(rv => new ReservationReportDTO
                     {

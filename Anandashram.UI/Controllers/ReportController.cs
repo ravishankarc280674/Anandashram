@@ -10,6 +10,7 @@ using Microsoft.AspNetCore.Components.Forms;
 using Microsoft.AspNetCore.Diagnostics;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.CodeAnalysis.VisualBasic.Syntax;
+using System;
 using System.Collections.Generic;
 using System.Composition;
 using System.IO;
@@ -87,55 +88,48 @@ namespace Anandashram.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> RoomViewer(DateTime dateValue, string typeofreport = "")
+        public async Task<IActionResult> RoomViewer(DateTime dateValue, string typeofreport = "", string reportformat = "list")
         {
             if (typeofreport == "" || dateValue == DateTime.MinValue)
                 return View();
-            else
+
+            WebReport wr = new WebReport();
+            string reportPath = Path.Combine(_env.ContentRootPath, "Reports",
+                reportformat == "list" ? "RoomAllocation.frx" : "RoomAllocationDetail.frx");
+
+            wr.Report.Load(reportPath);
+
+            // Register Company
+            var company = _companyrepo.CompanyDetails();
+            wr.Report.RegisterData(new List<Company> { company }, "Company");
+            wr.Report.GetDataSource("Company").Enabled = true;
+
+            // Register Rooms (master) — each Room has List<ReservationReportDTO> Reservations
+            List<RoomReportDTO> roomList = await _roomRepo.GetRoomsWithReservationsUpToDateAsync(dateValue);
+            wr.Report.RegisterData(roomList, "Rooms");
+            wr.Report.GetDataSource("Rooms").Enabled = true;
+
+            // IMPORTANT: enable the child collection datasource (OpenSource expects this)
+            // Use this *exact* name because the FRX below references Rooms.Reservations
+            wr.Report.GetDataSource("Rooms.Reservations").Enabled = true;
+
+            // Always set DatePassed (FRX references it)
+            wr.Report.SetParameterValue("DatePassed", dateValue.ToString("dd-MMM-yyyy"));
+
+            if (typeofreport == "screen")
             {
-                WebReport wr = new WebReport();
-                string reportPath = Path.Combine(_env.ContentRootPath, "Reports", "RoomAllocation.frx");
-
-
-                wr.Report.Load(reportPath);
-
-                // ✅ Register Company (single object)
-                var company = _companyrepo.CompanyDetails();
-                wr.Report.RegisterData(new List<Company> { company }, "Company");
-                wr.Report.GetDataSource("Company").Enabled = true;
-
-                // ✅ Register Room data
-                List<RoomReportDTO> roomList = await _roomRepo.GetRoomsWithReservationsUpToDateAsync(dateValue);
-                wr.Report.RegisterData(roomList, "Rooms");
-                wr.Report.GetDataSource("Rooms").Enabled = true;
-                wr.Report.GetDataSource("Rooms.Reservations").Enabled = true;
-                wr.Report.SetParameterValue("DatePassed", DateTime.Now.ToString("dd-MMM-yyyy"));
-                wr.Report.Prepare();
-
-                if (typeofreport == "screen")
-                {
-                    return View(wr);
-                }
-                else
-                {
-                    using var pdfExport = new FastReport.Export.PdfSimple.PDFSimpleExport();
-                    pdfExport.ShowProgress = false;
-                    pdfExport.Subject = "Room Availability - List";
-                    using (var ms = new MemoryStream())
-                    {
-                        wr.Report.Export(pdfExport, ms);
-                        ms.Position = 0;
-                        var bytes = ms.ToArray(); // Copy to buffer before disposing
-
-                        wr.Report.Dispose();
-                        pdfExport.Dispose();
-
-                        return File(new MemoryStream(bytes), "application/pdf", "Room Availability - List.pdf");
-                    }
-
-                }
+                return View(wr);
             }
+
+            // Prepare only for export
+            wr.Report.Prepare();
+            using var pdfExport = new FastReport.Export.PdfSimple.PDFSimpleExport();
+            using var ms = new MemoryStream();
+            wr.Report.Export(pdfExport, ms);
+            ms.Position = 0;
+            return File(ms.ToArray(), "application/pdf", "Room Allocation - Detail.pdf");
         }
+
         public async Task<IActionResult> ReportViewer()
         {
             return await ReportViewer(DateTime.MinValue, "screen");
