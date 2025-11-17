@@ -139,57 +139,6 @@ namespace Anandashram.Controllers
             return await RoomViewer(DateTime.MinValue, "screen");
         }
 
-        //public async Task<IActionResult> GetDetailAllocationReport(string typeofreport)
-        //{
-        //    try
-        //    {
-        //        string reportPath = Path.Combine(_env.ContentRootPath, "reports", "RoomsReservations.frx");
-
-        //        using var report = new Report();
-        //        report.Load(reportPath);
-        //        var company = _companyrepo.CompanyDetails();
-        //        List<RoomReportDTO> roomList = await _roomRepo.GetRoomsWithReservationsReportAsync();
-
-        //        report.RegisterData(new List<Company> { company }, "Company");
-        //        report.GetDataSource("Company").Enabled = true;
-        //        report.RegisterData(roomList, "Rooms");
-        //        report.GetDataSource("Rooms").Enabled = true;
-        //        report.GetDataSource("Rooms.Reservations").Enabled = true;
-
-        //        report.SetParameterValue("Title", $"Devotee Room Report as on {DateTime.Now:dd-MM-yyyy}");
-        //        var totalDevotees = roomList.Sum(r => r.Reservations.Count);
-        //        var grandAllocated = roomList.Sum(r => r.Reservations.Sum(d => d.Allocated));
-        //        report.SetParameterValue("Date", DateTime.Now.ToString("dd/MM/yyyy"));
-        //        report.SetParameterValue("TotalCount", totalDevotees);
-        //        report.SetParameterValue("GrandTotal", grandAllocated);
-        //        report.Prepare();
-        //        if (typeofreport == "screen")
-        //            return View(report);
-        //        else
-        //        {
-        //            using var pdfExport = new FastReport.Export.PdfSimple.PDFSimpleExport();
-        //            pdfExport.ShowProgress = false;
-        //            pdfExport.Subject = "Room Availability - List";
-        //            using (var ms = new MemoryStream())
-        //            {
-        //                report.Export(pdfExport, ms);
-        //                ms.Position = 0;
-        //                var bytes = ms.ToArray(); // Copy to buffer before disposing
-
-        //                report.Dispose();
-        //                pdfExport.Dispose();
-
-        //                return File(new MemoryStream(bytes), "application/pdf", "Room Availability - List.pdf");
-        //            }
-        //        }
-        //    }
-        //    catch (Exception ex)
-        //    {
-        //        Console.WriteLine("FastReport error: " + ex.Message);
-        //        Console.WriteLine("Stack: " + ex.StackTrace);
-        //        throw;
-        //    }
-        //}
         public IActionResult DevoteeReportViewer()
         {
             return View();
@@ -269,7 +218,15 @@ namespace Anandashram.Controllers
                         ReportName = "Floors";
                         return PrintScreenOrPdf(actionButton, wr, ReportName);
                     }
-
+                case "Room":
+                    {
+                        wr.Report.Load(Path.Combine(_env.ContentRootPath, "Reports", "Rooms.frx"));
+                        wr.Report.RegisterData(companies, "Company");
+                        wr.Report.RegisterData(await _roomRepo.GetRoomsAsync(), "Rooms");
+                        //wr.Report.SetParameterValue("Title", "Rooms");
+                        ReportName = "Rooms";
+                        return PrintScreenOrPdf(actionButton, wr, ReportName);
+                    }
                 default:
                     return View(wr);
             }
@@ -277,7 +234,6 @@ namespace Anandashram.Controllers
 
         private IActionResult PrintScreenOrPdf(string actionButton, WebReport wr, string ReportName)
         {
-            wr.Report.Prepare();
             try
             {
                 switch (actionButton)
@@ -288,6 +244,7 @@ namespace Anandashram.Controllers
                         }
                     case "Pdf":
                         {
+                            wr.Report.Prepare();
                             using var stream = new MemoryStream();
                             var pdfExport = new PDFSimpleExport();
                             wr.Report.Export(pdfExport, stream);

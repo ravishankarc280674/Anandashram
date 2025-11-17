@@ -5,114 +5,97 @@
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
-<div class="container-fluid py-4">
+<div class="row g-3 mb-4 text-center">
 
     <!-- Heading -->
-    <div class="text-center mb-4">
+    <div class="text-center mb-1">
         <h1 class="fw-bold text-success">Welcome to Anandashram</h1>
         <p class="text-muted fs-5">Devotee Management Dashboard</p>
     </div>
 
     <!-- ====== STATISTICS SECTION ====== -->
-    <div class="row g-4 mb-5 justify-content-center">
-
+    <div class="row g-4 mb-2 justify-content-center">
         <!-- Total Devotees -->
-        <div class="col-lg-2 col-md-2 col-sm-6">
-            <div class="card shadow-sm stats-card border-0 text-center">
-                <div class="card-body">
-                    <i class="fas fa-users text-success fa-2x"></i>
-                    <h6 class="mt-2 text-muted">Total Devotees</h6>
-                    <h3 class="fw-bold text-success">@Model.TotalDevoteesCount</h3>
-                </div>
-            </div>
-        </div>
-        <!-- Total Active Devotees -->
-        <div class="col-lg-2 col-md-2 col-sm-6">
-            <div class="card shadow-sm stats-card border-0 text-center">
-                <div class="card-body">
-                    <i class="fas fa-bed text-success fa-2x"></i>
-                    <h6 class="mt-2 text-muted">Active Devotees</h6>
-                    <h3 class="fw-bold text-success">@Model.TotalActiveDevotees</h3>
-                </div>
-            </div>
-        </div>
-        <!-- Total Rooms Capacity -->
-        <div class="col-lg-2 col-md-2 col-sm-6">
-            <div class="card shadow-sm stats-card border-0 text-center">
-                <div class="card-body">
-                    <i class="fas fa-bed text-success fa-2x"></i>
-                    <h6 class="mt-2 text-muted">Total Capacity</h6>
-                    <h3 class="fw-bold text-success">@Model.TotalRoomCapacity</h3>
+        <div class="col-md-3">
+            <div class="card shadow border-0 h-100 bg-primary text-white rounded-4">
+                <div class="card-body text-center">
+                    <i class="fas fa-users fa-2x mb-2"></i>
+                    <h6 class="fw-semibold">Total Devotees</h6>
+                    <h2 class="fw-bold text-white">@Model.TotalDevoteesCount</h2>
                 </div>
             </div>
         </div>
 
-        <!--Total Room Capacity Available -->
-        <div class="col-lg-2 col-md-2 col-sm-6">
-            <div class="card shadow-sm stats-card border-0 text-center">
-                <div class="card-body">
-                    <i class="fas fa-door-open text-success fa-2x"></i>
-                    <h6 class="mt-2 text-muted">Available Capacity</h6>
-                    <h3 class="fw-bold text-success">@Model.TotalRoomCapacityAvailable</h3>
-                </div>
-            </div>
-        </div>
-       
-        <!-- Today's Check-ins -->
-        <div class="col-lg-2 col-md-2 col-sm-6">
-            <div class="card shadow-sm stats-card border-0 text-center">
-                <div class="card-body">
-                    <i class="fas fa-sign-in-alt text-success fa-2x"></i>
-                    <h6 class="mt-2 text-muted">Today's Check-ins</h6>
-                    <h3 class="fw-bold text-success">@Model.TodaysCheckIns</h3>
+        <!-- Active Devotees -->
+        <div class="col-md-3">
+            <div class="card shadow border-0 h-100 bg-success text-white rounded-4">
+                <div class="card-body text-center">
+                    <i class="fas fa-user-check fa-2x mb-2"></i>
+                    <h6 class="fw-semibold">Active Devotees</h6>
+                    <h2 class="fw-bold text-white">@Model.TotalActiveDevotees</h2>
                 </div>
             </div>
         </div>
 
-        <!-- Today's Check-outs -->
-        <div class="col-lg-2 col-md-4 col-sm-6">
-            <div class="card shadow-sm stats-card border-0 text-center">
-                <div class="card-body">
-                    <i class="fas fa-sign-out-alt text-success fa-2x"></i>
-                    <h6 class="mt-2 text-muted">Today's Check-outs</h6>
-                    <h3 class="fw-bold text-success">@Model.TodaysCheckOuts</h3>
+        <!-- Total Room Capacity -->
+        <div class="col-md-3">
+            <div class="card shadow border-0 h-100 bg-warning text-dark rounded-4">
+                <div class="card-body text-center">
+                    <i class="fas fa-hotel fa-2x mb-2"></i>
+                    <h6 class="fw-semibold">Total Capacity</h6>
+                    <h2 class="fw-bold text-dark">@Model.TotalRoomCapacity</h2>
                 </div>
             </div>
         </div>
 
+        <!-- Available Room Capacity -->
+        <div class="col-md-3">
+            <div class="card shadow border-0 h-100 bg-info text-white rounded-4">
+                <div class="card-body text-center">
+                    <i class="fas fa-door-open fa-2x mb-2"></i>
+                    <h6 class="fw-semibold">Available Capacity</h6>
+                    <h2 class="fw-bold text-white">@Model.TotalRoomCapacityAvailable</h2>
+                </div>
+            </div>
+        </div>
     </div>
 
-    <!-- Chart -->
-    <div class="card">
-        <div class="card-body" style="min-height: 250px;">
+
+    <!-- ========== Chart =========== -->
+    <div class="card shadow-sm border-0">
+        <div class="card-header fw-bold bg-light">
+            This Month — Check-In / Check-Out Trend
+        </div>
+        <div class="card-body position-relative" style="height: 350px;">
             <canvas id="trendChart"></canvas>
         </div>
     </div>
 
-    <div id="weeklySummary" class="mt-3 fw-bold"></div>
+    <div id="weeklySummary" class="mt-3 fw-bold text-center"></div>
+
 
     <!-- ========== EXISTING MENU CARDS ========== -->
     <div class="row g-4 justify-content-center">
 
         <!-- Company Card -->
         <div class="col-lg-3 col-md-4 col-sm-6">
-            <div class="card shadow-sm border-0 text-center hover-card">
+            <div class="card shadow border-0 text-center rounded-4 hover-card bg-primary text-white">
                 <div class="card-body">
-                    <a asp-controller="Company" asp-action="Company">
-                        <img src="~/images/company_logo.png" class="img-fluid mb-3" style="max-height:100px;" />
+                    <a asp-controller="Company" asp-action="Company" class="text-decoration-none text-white">
+                        <i class="fas fa-building fa-3x mb-3"></i>
+                        <h5 class="fw-semibold">Company</h5>
                     </a>
-                    <h5 class="card-title fw-semibold text-success">Company</h5>
                 </div>
             </div>
         </div>
 
         <!-- Devotees -->
         <div class="col-lg-3 col-md-4 col-sm-6">
-            <div class="card shadow-sm border-0 text-center hover-card">
+            <div class="card shadow border-0 text-center rounded-4 hover-card bg-success text-white">
                 <div class="card-body">
-                    <a asp-controller="Devotee" asp-action="Index" class="text-decoration-none">
-                        <i class="fas fa-user fa-3x text-success mb-3"></i>
-                        <h5 class="fw-semibold text-success">Devotees</h5>
+                    <a asp-controller="Devotee" asp-action="Index" class="text-decoration-none text-white">
+                        <i class="fas fa-users fa-3x mb-3"></i>
+                        <h5 class="fw-semibold">Devotees</h5>
                     </a>
                 </div>
             </div>
@@ -120,36 +103,36 @@
 
         <!-- Rooms -->
         <div class="col-lg-3 col-md-4 col-sm-6">
-            <div class="card shadow-sm border-0 text-center hover-card">
+            <div class="card shadow border-0 text-center rounded-4 hover-card bg-warning text-dark">
                 <div class="card-body">
-                    <a asp-controller="Room" asp-action="Index" class="text-decoration-none">
-                        <i class="fas fa-bed fa-3x text-success mb-3"></i>
-                        <h5 class="fw-semibold text-success">Rooms</h5>
+                    <a asp-controller="Room" asp-action="Index" class="text-decoration-none text-dark">
+                        <i class="fas fa-hotel fa-3x mb-3"></i>
+                        <h5 class="fw-semibold">Rooms</h5>
                     </a>
                 </div>
             </div>
         </div>
 
-        <!-- Reports -->
+        <!-- Reservations -->
         <div class="col-lg-3 col-md-4 col-sm-6">
-            <div class="card shadow-sm border-0 text-center hover-card">
+            <div class="card shadow border-0 text-center rounded-4 hover-card bg-info text-white">
                 <div class="card-body">
-                    <a asp-controller="Reservation" asp-action="Index" class="text-decoration-none">
-                        <i class="fas fa-chart-bar fa-3x text-success mb-3"></i>
-                        <h5 class="fw-semibold text-success">Reservations</h5>
+                    <a asp-controller="Reservation" asp-action="Index" class="text-decoration-none text-white">
+                        <i class="fas fa-calendar-check fa-3x mb-3"></i>
+                        <h5 class="fw-semibold">Reservations</h5>
                     </a>
                 </div>
             </div>
         </div>
 
     </div>
+
 </div>
 
 <style>
     .hover-card {
         transition: transform .25s ease, box-shadow .25s ease;
     }
-
         .hover-card:hover {
             transform: translateY(-5px);
             box-shadow: 0 6px 16px rgba(0,0,0,0.15);
@@ -160,99 +143,92 @@
         border-left: 4px solid #198754; /* bootstrap success green */
         border-radius: 8px;
     }
-
     .dashboard-card {
         height: 220px; /* set card height */
         display: flex;
         align-items: center;
         justify-content: center;
     }
-
         .dashboard-card .card-body {
             display: flex;
             flex-direction: column;
             align-items: center;
             justify-content: center;
         }
-
         .dashboard-card img {
             max-height: 90px; /* keeps image proportional */
             object-fit: contain;
         }
-
     #trendChart {
         height: 250px !important;
     }
-
+    .card {
+        border-radius: 14px;
+    }
+    .card-header {
+        font-size: 1.1rem;
+    }
 </style>
 @section Scripts {
     <script src="~/lib/chart.js/chart.umd.js"></script>
     <script>
-        console.log("Chart script loaded...");
+    const labels = @Html.Raw(System.Text.Json.JsonSerializer.Serialize(Model.ChartDTO.Dates));
+    const checkIns = @Html.Raw(System.Text.Json.JsonSerializer.Serialize(Model.ChartDTO.DailyCheckIns));
+    const checkOuts = @Html.Raw(System.Text.Json.JsonSerializer.Serialize(Model.ChartDTO.DailyCheckOuts));
 
-        const labels = @Html.Raw(System.Text.Json.JsonSerializer.Serialize(Model.ChartDTO.Dates));
-        const checkIns = @Html.Raw(System.Text.Json.JsonSerializer.Serialize(Model.ChartDTO.DailyCheckIns));
-        const checkOuts = @Html.Raw(System.Text.Json.JsonSerializer.Serialize(Model.ChartDTO.DailyCheckOuts));
+    const todayIndex = labels.length - 1;
 
-        const todayIndex = labels.length - 1;
+    const ctx = document.getElementById('trendChart');
 
-        const ctx = document.getElementById('trendChart');
-
-        const trendChart = new Chart(ctx, {
-            type: 'line',
-            data: {
-                labels: labels,
-                datasets: [
-                    {
-                        label: 'Check-Ins',
-                        data: checkIns,
-                        tension: 0.4,
-                        borderWidth: 3,
-                        pointRadius: 5,
-                        pointStyle: "circle",
-                        pointBackgroundColor: (ctx) =>
-                            ctx.dataIndex === todayIndex ? '#dc3545' : '#007bff',
-                        borderColor: '#007bff',
-                        fill: false
-                    },
-                    {
-                        label: 'Check-Outs',
-                        data: checkOuts,
-                        tension: 0.4,
-                        borderWidth: 3,
-                        pointRadius: 5,
-                        pointStyle: "circle",
-                        pointBackgroundColor: (ctx) =>
-                            ctx.dataIndex === todayIndex ? '#28a745' : '#28a745',
-                        borderColor: '#28a745',
-                        fill: false
-                    }
-                ]
-            },
-            options: {
-                responsive: true,
-                maintainAspectRatio: false, // FIX: Prevent height collapse
-                animation: {
-                    duration: 1400,
-                    easing: 'easeOutQuart'
+    const trendChart = new Chart(ctx, {
+        type: 'line',
+        data: {
+            labels: labels,
+            datasets: [
+                {
+                    label: 'Check-Ins',
+                    data: checkIns,
+                    tension: 0.4,
+                    borderWidth: 3,
+                    pointRadius: 6,
+                    hoverRadius: 10,
+                    borderColor: '#007bff',
+                    pointBackgroundColor: (ctx) =>
+                        ctx.dataIndex === todayIndex ? '#dc3545' : '#007bff'
                 },
-                plugins: {
-                    tooltip: { mode: 'index', intersect: false },
-                    legend: { display: true }
-                },
-                scales: {
-                    y: {
-                        beginAtZero: true,
-                        ticks: { precision: 0 }
-                    }
+                {
+                    label: 'Check-Outs',
+                    data: checkOuts,
+                    tension: 0.4,
+                    borderWidth: 3,
+                    pointRadius: 6,
+                    hoverRadius: 10,
+                    borderColor: '#28a745',
+                    pointBackgroundColor: (ctx) =>
+                        ctx.dataIndex === todayIndex ? '#ffc107' : '#28a745'
                 }
+            ]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            interaction: { mode: 'index', intersect: false },
+            plugins: {
+                legend: { display: true },
+                tooltip: { callbacks: { labelColor: () => ({ borderColor: 'white' }) } }
+            },
+            scales: {
+                y: { beginAtZero: true }
             }
-        });
+        }
+    });
 
-        // Weekly Summary (last 7 days)
-        document.getElementById("weeklySummary").innerHTML =
-            `📊 Last 7 Days → Check-Ins: <b>${checkIns.slice(-7).reduce((a, b) => a + b, 0)}</b> |
-             Check-Outs: <b>${checkOuts.slice(-7).reduce((a, b) => a + b, 0)}</b>`;
-    </script>
+    // Weekly Summary
+    document.getElementById("weeklySummary").innerHTML =
+        `📊 Last 7 Days → 
+         Check-Ins: <b>${checkIns.slice(-7).reduce((a, b) => a + b, 0)}</b> |
+         Check-Outs: <b>${checkOuts.slice(-7).reduce((a, b) => a + b, 0)}</b>`;
+</script>
+
 }
 

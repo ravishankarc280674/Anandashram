@@ -398,3 +398,11 @@ html, body {
     height: 100%;
     margin: 0;
 }
+.hover-card {
+    transition: transform 0.2s ease-in-out, box-shadow 0.2s;
+}
+
+    .hover-card:hover {
+        transform: translateY(-6px);
+        box-shadow: 0 8px 20px rgba(0,0,0,0.15);
+    }

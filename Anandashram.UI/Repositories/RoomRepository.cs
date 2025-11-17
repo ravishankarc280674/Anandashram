@@ -239,5 +239,24 @@ namespace Anandashram.Repositories
 
             return rooms;
         }
+
+        public async Task<List<RoomDTO>> GetRoomsAsync()
+        {
+            var rooms = await _context.Rooms
+                .Include(r => r.Building)
+                .Include(r => r.Block)
+                .Include(r => r.Floor)
+                .Select(r => new RoomDTO
+                {
+                    RoomName = r.Name,
+                    BuildingName = r.Building != null ? r.Building.Name : string.Empty,
+                    BlockName = r.Block != null ? r.Block.Name : string.Empty,
+                    FloorName = r.Floor != null ? r.Floor.Name : string.Empty,
+                    Capacity = r.Capacity
+                })
+                .ToListAsync();
+
+            return rooms;
+        }
     }
 }

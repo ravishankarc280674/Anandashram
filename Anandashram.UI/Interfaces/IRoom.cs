@@ -19,5 +19,7 @@
         Task<List<Room>> GetAllRoomReservations(string SearchText = "");
          Task<List<RoomReportDTO>> GetRoomsWithReservationsUpToDateAsync(DateTime dateValue);
         Task<List<RoomReportDTO>> GetRoomsWithReservationsReportAsync();
+
+        Task<List<RoomDTO>> GetRoomsAsync();
     }
 }

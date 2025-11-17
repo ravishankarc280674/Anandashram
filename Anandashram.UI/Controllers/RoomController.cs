@@ -35,6 +35,7 @@ namespace Anandashram.Controllers
             ViewData["SortModel"] = sortModel;
             ViewBag.PageSize = PageSize;
             ViewBag.SearchText = SearchText;
+            ViewBag.ReportType = "Room";
             ViewBag.view = view;
             TempData["CurrentPage"] = pg;
             var RoomList = await _roomRepo.GetItems(sortModel.SortedProperty, sortModel.SortedOrder, SearchText, pg, PageSize);
@@ -76,26 +77,6 @@ namespace Anandashram.Controllers
 
             return floors;
         }
-      
-        //private List<SelectListItem> GetPageSizes(int selectedPageSize = 5)
-        //{
-        //    var pagesSizes = new List<SelectListItem>();
-
-        //    if (selectedPageSize == 5)
-        //        pagesSizes.Add(new SelectListItem("5", "5", true));
-        //    else
-        //        pagesSizes.Add(new SelectListItem("5", "5"));
-
-        //    for (int lp = 10; lp <= 100; lp += 10)
-        //    {
-        //        if (lp == selectedPageSize)
-        //        { pagesSizes.Add(new SelectListItem(lp.ToString(), lp.ToString(), true)); }
-        //        else
-        //            pagesSizes.Add(new SelectListItem(lp.ToString(), lp.ToString()));
-        //    }
-
-        //    return pagesSizes;
-        //}
 
         // GET: Room/Details/5
         public async Task<IActionResult> Details(int id)
@@ -233,8 +214,6 @@ namespace Anandashram.Controllers
 
             TempData["SuccessMessage"] = "Room " + room.Name + " Deleted Successfully";
             return RedirectToAction(nameof(Index), new { pg = currentPage });
-
-
         }
     }
 }

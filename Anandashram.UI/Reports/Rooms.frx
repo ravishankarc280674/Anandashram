@@ -1,109 +1,112 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<Report ScriptLanguage="CSharp" ReportInfo.Created="2025-11-16">
-
+<Report ScriptLanguage="CSharp">
   <Dictionary>
-    <BusinessObjectDataSource Name="Rooms" ReferenceName="Rooms" Enabled="True">
+    <BusinessObjectDataSource Name="Company" ReferenceName="Company" Enabled="True">
       <Column Name="Name" DataType="System.String"/>
-      <Column Name="BuildingId" DataType="System.Int32"/>
-      <Column Name="BlockId" DataType="System.Int32"/>
-      <Column Name="FloorId" DataType="System.Int32"/>
-      <Column Name="Capacity" DataType="System.Int32"/>
+      <Column Name="Established" DataType="System.Int32"/>
+      <Column Name="AddressLine1" DataType="System.String"/>
+      <Column Name="AddressLine2" DataType="System.String"/>
+      <Column Name="State" DataType="System.String"/>
+      <Column Name="Country" DataType="System.String"/>
+      <Column Name="PinCode" DataType="System.String"/>
+      <Column Name="Mobile" DataType="System.String"/>
+      <Column Name="Email" DataType="System.String"/>
+      <Column Name="Website" DataType="System.String"/>
+    </BusinessObjectDataSource>
+
+    <BusinessObjectDataSource Name="Rooms" ReferenceName="Rooms" Enabled="True">
+      <Column Name="RoomName" DataType="System.String"/>
       <Column Name="BuildingName" DataType="System.String"/>
       <Column Name="BlockName" DataType="System.String"/>
       <Column Name="FloorName" DataType="System.String"/>
+      <Column Name="Capacity" DataType="System.Int32"/>
     </BusinessObjectDataSource>
+
+    <Parameter Name="Title" DataType="System.String"/>
   </Dictionary>
 
 
-  <ReportPage Name="Page1"
-              PaperWidth="210" PaperHeight="297"
-              LeftMargin="10" RightMargin="10"
-              TopMargin="10" BottomMargin="10">
+  <ReportPage Name="Page1" PaperWidth="210" PaperHeight="297"
+              LeftMargin="10" RightMargin="10" TopMargin="10" BottomMargin="10">
 
-    <!-- HEADER -->
-    <PageHeaderBand Height="35">
-      <TextObject Width="750" Height="20"
-                  Text="Room Capacity Report"
-                  HorzAlign="Center"
+    <ReportTitleBand Height="80">
+      <TextObject Width="750" Height="20" Text="[Company.Name]" HorzAlign="Center"
+                  Font="Arial,14pt,Bold"/>
+      <TextObject Top="20" Width="750" Height="16"
+                  Text="[Title]" HorzAlign="Center"
                   Font="Arial,12pt,Bold"/>
-      <TextObject Width="750" Top="20" Height="14"
-                  Text="Printed: [FormatDateTime(Now(),'dd-MM-yyyy HH:mm')]"
-                  HorzAlign="Center"
-                  Font="Arial,8pt"/>
-    </PageHeaderBand>
+      <TextObject Top="40" Width="750" Height="16"
+                  Text="[Date]"
+                  HorzAlign="Center" Font="Arial,9pt"/>
+    </ReportTitleBand>
 
 
     <!-- TABLE HEADER -->
     <DataHeaderBand Height="24" DataSource="Rooms">
-      <TableObject Name="tblHeader" Width="750" Height="24">
-        <TableColumn Width="150"/>
-        <TableColumn Width="150"/>
-        <TableColumn Width="130"/>
-        <TableColumn Width="200"/>
-        <TableColumn Width="120"/>
+      <TableObject Width="750" Height="24">
+        <TableColumn Width="230"/>
+        <TableColumn Width="230"/>
+        <TableColumn Width="100"/>
+        <TableColumn Width="140"/>
+        <TableColumn Width="50"/>
 
         <TableRow Height="24" Fill.Color="#28a745">
-          <TableCell Text="Building" TextFill.Color="White" Border.Lines="All" HorzAlign="Center"/>
-          <TableCell Text="Block" TextFill.Color="White" Border.Lines="All" HorzAlign="Center"/>
-          <TableCell Text="Floor" TextFill.Color="White" Border.Lines="All" HorzAlign="Center"/>
-          <TableCell Text="Room Name" TextFill.Color="White" Border.Lines="All" HorzAlign="Center"/>
-          <TableCell Text="Capacity" TextFill.Color="White" Border.Lines="All" HorzAlign="Right"/>
+          <TableCell Text="Building" TextFill.Color="White" Border.Lines="All"
+                     HorzAlign="Center" VertAlign="Middle"/>
+          <TableCell Text="Block" TextFill.Color="White" Border.Lines="All"
+                     HorzAlign="Center" VertAlign="Middle"/>
+          <TableCell Text="Floor" TextFill.Color="White" Border.Lines="All"
+                     HorzAlign="Center" VertAlign="Middle"/>
+          <TableCell Text="Room" TextFill.Color="White" Border.Lines="All"
+                     HorzAlign="Center" VertAlign="Middle"/>
+          <TableCell Text="Capacity" TextFill.Color="White" Border.Lines="All"
+                     HorzAlign="Right" VertAlign="Middle"/>
         </TableRow>
       </TableObject>
     </DataHeaderBand>
 
 
-    <!-- DETAILS -->
-    <DataBand Name="RoomBand" DataSource="Rooms" Height="20">
-      <TableObject Name="tblDetail" Width="750" Height="20">
-        <TableColumn Width="150"/>
-        <TableColumn Width="150"/>
-        <TableColumn Width="130"/>
-        <TableColumn Width="200"/>
-        <TableColumn Width="120"/>
+    <!-- MERGED ROWS WORK HERE -->
+    <DataBand Name="DetailBand" DataSource="Rooms" Height="20">
+      <TableObject Width="750" Height="20">
+        <TableColumn Width="230"/>
+        <TableColumn Width="230"/>
+        <TableColumn Width="100"/>
+        <TableColumn Width="140"/>
+        <TableColumn Width="50"/>
 
-        <TableRow Height="20"
-                  Fill.Color="IIf([Row#] % 2 == 0, '#e9f7ea', 'Transparent')">
+        <TableRow Height="20">
 
           <TableCell Border.Lines="All"
                      Text="[Rooms.BuildingName]"
-                     RepeatOnEveryPage="true"
-                     RepeatValues="false"/>
+                     RepeatValues="false"  HorzAlign="Right" VertAlign="Middle"/>
 
           <TableCell Border.Lines="All"
                      Text="[Rooms.BlockName]"
-                     RepeatOnEveryPage="true"
-                     RepeatValues="false"/>
+                     RepeatValues="false"  HorzAlign="Right" VertAlign="Middle"/>
 
           <TableCell Border.Lines="All"
                      Text="[Rooms.FloorName]"
-                     RepeatOnEveryPage="true"
-                     RepeatValues="false"/>
+                     RepeatValues="false"  HorzAlign="Right" VertAlign="Middle"/>
 
           <TableCell Border.Lines="All"
-                     Text="[Rooms.Name]"/>
+                     Text="[Rooms.RoomName]"
+                      HorzAlign="Right" VertAlign="Middle"/>
 
           <TableCell Border.Lines="All"
-                     HorzAlign="Right"
-                     Text="[Rooms.Capacity]"/>
+                     Text="[Rooms.Capacity]"
+                     HorzAlign="Right" VertAlign="Middle"/>
+
         </TableRow>
       </TableObject>
     </DataBand>
 
 
-    <!-- REPORT SUMMARY -->
     <ReportSummaryBand Height="22">
       <TextObject Width="750" Height="22"
-                  Text="TOTAL ROOMS: [Count([Rooms.BuildingId])]    TOTAL CAPACITY: [Sum([Rooms.Capacity])]"
-                  HorzAlign="Right"
-                  Font="Arial,10pt,Bold"/>
+                  Text="Total Rooms: [Count([Rooms.RoomName])]   Total Capacity: [Sum([Rooms.Capacity])]"
+                  HorzAlign="Right" Font="Arial,10pt,Bold"/>
     </ReportSummaryBand>
-
-
-    <!-- FOOTER -->
-    <PageFooterBand Height="15">
-      <TextObject Width="350" Text="Page [Page#]/[TotalPages#]" Font="Arial,8pt"/>
-    </PageFooterBand>
 
   </ReportPage>
 
