@@ -8,31 +8,19 @@ namespace Anandashram.Controllers
     public class HomeController : Controller
     {
         private readonly ILogger<HomeController> _logger;
-
-        public HomeController(ILogger<HomeController> logger)
+        private readonly IHome _homeRepo;
+        public HomeController(ILogger<HomeController> logger, IHome homeRepo)
         {
+            _homeRepo = homeRepo;
             _logger = logger;
         }
-
+       
         public IActionResult Index()
         {
-            var model = new DashboardVM
-            {
-
-                //TotalDevotees = _context.Devotees.Count(),
-                //TotalRooms = _context.Rooms.Count(),
-                //AvailableRooms = _context.Rooms.Count(r => r.IsAvailable),
-                //TodayCheckIns = _context.Bookings.Count(b => b.CheckInDate == DateTime.Today),
-                //TodayCheckOuts = _context.Bookings.Count(b => b.CheckOutDate == DateTime.Today),
-
-                TotalDevotees = 2121,
-                TotalRooms = 280,
-                AvailableRooms = 114,
-                TodayCheckIns = 22,
-                TodayCheckOuts =16,
-            };
-
+            var model = _homeRepo.GetHomeData();
+            model.ChartDTO = _homeRepo.GetDashBoardChartForCheckInCheckOut();
             return View(model);
+
         }
 
         public IActionResult Privacy()

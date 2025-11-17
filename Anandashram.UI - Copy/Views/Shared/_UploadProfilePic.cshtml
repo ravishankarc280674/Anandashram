@@ -1,0 +1,23 @@
+﻿@model Anandashram.Models.Devotee
+
+<input type="hidden" id="Id" value="456" />
+<input type="hidden" id="DevoteeId" asp-for="Id" />
+<input type="hidden" id="DevoteeCode" asp-for="Code" />
+<table border="0" cellpadding="0" cellspacing="0">
+    <tr> 
+        <td><div id="my_camera" style="width: 100%; height: auto;"></div></td>
+        <td><div id="results" style="display: none;"></div></td>
+    </tr>
+    <tr>
+        <td align="center">
+            <span id="btnCaptureSpan" style="width: 100%;" class="btn btn-sm btn-outline-primary" onclick="takeSnapshot()">
+                <i id="btnCapture" class="fa fa-camera" aria-hidden="true" title="Capture"></i>
+            </span>
+        </td>
+        <td align="center">
+            <span id="btnUploadSpan" style="width: 100%; display:none;" class="btn btn-sm btn-outline-primary">
+                <i id="btnUpload" class="fa fa-upload" title="Upload" onclick="saveImage()"></i>
+            </span>
+        </td>
+    </tr>
+</table>

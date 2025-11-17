@@ -1,0 +1,56 @@
+﻿@model Anandashram.Models.AddFile
+ 
+    
+<div class="col-md-12">
+    <form asp-action="UploadDocument" enctype="multipart/form-data">
+        <input type="hidden" asp-for="DevoteeId" />
+        <input type="hidden" asp-for="DevoteeCode" />
+        <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+     <dl class="row">
+        <dt class="col-sm-4">
+            <label class="control-label" asp-for="FileName"></label>
+        </dt>
+        <dd class="col-sm-8">
+            <div class="form-group">
+                <input asp-for="FileName" class="form-control" />
+                <span asp-validation-for="FileName" class="text-danger"></span>
+            </div>
+        </dd>
+    </dl>
+        <fieldset>
+        @* <div class="text-black"> *@
+            @* <label class="fw-bold">File Upload Type: &nbsp;&nbsp;</label> *@
+           @*  <label>
+                Scan <input type="radio" id="scanner" name="option" value="divScan" checked="checked" onchange="showControl()" />
+            </label>
+
+            <label>
+                File<input type="radio" id="browse" name="option" value="divFile" onchange="showControl()" />
+                </label>
+            </div> *@
+            <div>
+               @*  <div id="divScan" class="col-sm-8 btn-secondary" style="border:solid;display:block">
+                    <div style="border:solid"></div>
+                </div> *@
+                <div id="divFile" style="border:solid;display:solid" class="btn-outline-primary">
+                    <input type="file" id="ImageFile" name="ImageFile" asp-for="ImageFile" />
+                    <span asp-validation-for="ImageFile" class="text-danger"></span>
+                </div>
+            </div>
+        
+            </fieldset>
+            <br />
+             <div class="form-group btn-group col-md-12">
+                <input type="submit" value="Submit" class="btn btn-primary" />
+            </div>
+    </form>
+        </div>
+<script>
+    function showControl() {
+        // Hide all controls
+        document.getElementById('divFile').style.display = 'none';
+        document.getElementById('divScan').style.display = 'none';
+         var selectedValue = document.querySelector('input[name="option"]:checked').value;
+        document.getElementById(selectedValue).style.display = 'block';
+    }
+</script>

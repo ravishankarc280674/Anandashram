@@ -1,0 +1,171 @@
+﻿@model dynamic
+@{
+    string currentModel = Helper.GetTypeNames(Model.GetType().ToString());
+    SortModel sortModel = (SortModel)ViewData["SortModel"];
+    int pg = 1;
+    string searchText = ViewBag.SearchText;
+    if (TempData["CurrentPage"] != null)
+    {
+        pg = (int)TempData["CurrentPage"];
+        TempData["CurrentPage"] = pg;
+    }
+    PageModel pager = ViewBag.Pager;
+    int pageNo = 0;
+    if (ViewBag.SearchPager != null)
+    {
+        pager = ViewBag.SearchPager;
+        pageNo = pager.CurrentPage;
+    }
+    ViewData["SortModel"] = sortModel;
+    if (pager != null)
+    {
+        ViewBag.Pager = pager;
+    }
+}
+
+<style>
+    /* 🌿 Modern Green Theme Table */
+    .table-container {
+        background-color: #f7fdf7;
+        border-radius: 10px;
+        overflow: hidden;
+        box-shadow: 0 0 6px rgba(0, 0, 0, 0.1);
+    }
+
+    table.green-table {
+        width: 100%;
+        border-collapse: separate;
+        border-spacing: 0;
+        margin-bottom: 0;
+    }
+
+    .green-table thead th {
+        background-color: #1f6f43;
+        color: white;
+        font-weight: bold;
+        text-align: center;
+        vertical-align: middle;
+        padding: 10px;
+        font-size: 16px;
+    }
+
+    .green-table tbody td {
+        vertical-align: middle;
+        padding: 10px;
+        font-size: 15px;
+    }
+
+    .green-table tbody tr:nth-child(even) {
+        background-color: #e9f5ea;
+    }
+
+    .green-table tbody tr:hover {
+        background-color: #d7f3d8;
+    }
+
+    .btn-group .btn {
+        border-radius: 6px !important;
+        font-size: 14px;
+        padding: 5px 8px;
+        margin: 0 2px;
+    }
+
+    .btn-info {
+        background-color: #2e7d32 !important;
+        border-color: #256d29 !important;
+    }
+
+        .btn-info:hover {
+            background-color: #1b5e20 !important;
+        }
+
+    .btn-danger {
+        background-color: #c62828 !important;
+        border-color: #b71c1c !important;
+    }
+
+        .btn-danger:hover {
+            background-color: #8e0000 !important;
+        }
+
+    .table-no-data {
+        text-align: center;
+        font-style: italic;
+        color: #777;
+        background-color: #fafafa;
+    }
+
+    .action-icon {
+        font-size: 16px;
+        vertical-align: middle;
+    }
+</style>
+
+<div class="table-container mt-3">
+    <table class="table green-table">
+        <thead>
+            <tr>
+                <th>
+                    <i class="@sortModel.GetColumn("name").SortIcon" aria-hidden="true"></i>
+                    <a class="text-white text-decoration-none"
+                       asp-action="Index"
+                       asp-route-sortExpression="@sortModel.GetColumn("name").SortExpression"
+                       asp-route-SearchText="@ViewBag.SearchText"
+                       asp-route-PageSize="@ViewBag.PageSize">
+                        Name
+                    </a>
+                </th>
+                <th>
+                    <i class="@sortModel.GetColumn("description").SortIcon" aria-hidden="true"></i>
+                    <a class="text-white text-decoration-none"
+                       asp-action="Index"
+                       asp-route-sortExpression="@sortModel.GetColumn("description").SortExpression"
+                       asp-route-SearchText="@ViewBag.SearchText"
+                       asp-route-PageSize="@ViewBag.PageSize">
+                        Description
+                    </a>
+                </th>
+                <th>&nbsp;</th>
+            </tr>
+        </thead>
+
+        <tbody>
+            @if (Model != null && Model.Count > 0)
+            {
+                foreach (var item in Model)
+                {
+                    <tr>
+                        <td>@item.Name</td>
+                        <td>@item.Description</td>
+                        <td class="text-center">
+                            <div class="btn-group">
+                                <!-- Edit Button -->
+                                <a onclick="showInPopup('@Url.Action("AddOrEdit", currentModel, new { id = item.Id }, Context.Request.Scheme)',
+                                                        'Edit @currentModel')"
+                                   class="btn btn-sm btn-outline-success me-1">
+                                    <i class="fas fa-pencil-alt action-icon"></i>
+                                </a>
+
+                                <!-- Delete Button -->
+                                <form asp-action="Delete"
+                                      asp-route-id="@item.Id"
+                                      onsubmit="return jQueryAjaxDelete(this);"
+                                      class="d-inline">
+                                    <button type="submit" class="btn btn-danger text-white" title="Delete">
+                                        <i class="fas fa-trash action-icon"></i>
+                                    </button>
+                                </form>
+                            </div>
+                        </td>
+                    </tr>
+                }
+            }
+            else
+            {
+                <tr>
+                    <td colspan="3" class="table-no-data">No Records Found</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>

@@ -1,0 +1,53 @@
+<Project Sdk="Microsoft.NET.Sdk.Web">
+
+  <PropertyGroup>
+    <TargetFramework>net8.0</TargetFramework>
+    <Nullable>disable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <UserSecretsId>aspnet-Anandashram-eb0d0b2a-b9c8-4a4b-9f23-675522a2c7d6</UserSecretsId>
+  </PropertyGroup>
+  <PropertyGroup>
+    <SatelliteResourceLanguages>en-US</SatelliteResourceLanguages>
+  </PropertyGroup>
+  <ItemGroup>
+    <Compile Remove="Repositories\Floor.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Content Remove="Views\Devotee\Create.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Reports\**" CopyToPublishDirectory="Always" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Remove="Views\Devotee\vcmi5ofo.ym5~" />
+    <None Remove="Views\Room\dxmld1qb.eh5~" />
+  </ItemGroup>
+<ItemGroup>
+  <Content Update="wwwroot\**\*.txt" CopyToOutputDirectory="Never" />
+  <Content Update="wwwroot\**\*.resx" CopyToOutputDirectory="Never" />
+</ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="BuildBundlerMinifier2022" Version="2.9.11" />
+    <PackageReference Include="FastReport.Data.Excel" Version="2026.1.2" />
+    <PackageReference Include="FastReport.OpenSource" Version="2026.1.2" />
+    <PackageReference Include="FastReport.OpenSource.Data.MsSql" Version="2021.4.0" />
+    <PackageReference Include="FastReport.OpenSource.Export.PdfSimple" Version="2026.1.2" />
+    <PackageReference Include="FastReport.OpenSource.Web" Version="2026.1.2" />
+    <PackageReference Include="Microsoft.AspNetCore.Diagnostics.EntityFrameworkCore" Version="8.0.19" />
+    <PackageReference Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" Version="8.0.19" />
+    <PackageReference Include="Microsoft.AspNetCore.Identity.UI" Version="8.0.19" />
+    <PackageReference Include="Microsoft.AspNetCore.ResponseCompression" Version="2.3.0" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Sqlite" Version="8.0.11" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="8.0.19" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="8.0.19" />
+    <PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Design" Version="8.0.7" />
+    <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
+  
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Anandashram.UI.Tools\Anandashram.UI.Tools.csproj" />
+  </ItemGroup>
+
+</Project>

@@ -1,0 +1,253 @@
+﻿@model IEnumerable<Room>
+@{
+    string currentModel = Helper.GetTypeNames(Model.GetType().ToString());
+    SortModel sortModel = (SortModel)ViewData["SortModel"];
+    int pg = 1;
+    if (TempData["CurrentPage"] != null)
+    {
+        pg = (int)TempData["CurrentPage"];
+        TempData["CurrentPage"] = pg;
+    }
+    PageModel pager = ViewBag.Pager;
+    int pageNo = 0;
+    if (ViewBag.SearchPager != null)
+    {
+        pager = ViewBag.SearchPager;
+        pageNo = pager.CurrentPage;
+    }
+}
+
+<style>
+    /* 🌿 MAIN CONTAINER */
+    .reservation-container {
+        background-color: #f6fff7;
+        border-radius: 10px;
+        padding: 15px;
+        box-shadow: 0 0 10px rgba(0, 64, 0, 0.1);
+    }
+
+    /* 🌿 MAIN TABLE STYLE */
+    .green-table {
+        width: 100%;
+        border-collapse: separate;
+        border-spacing: 0;
+        margin: 0;
+    }
+
+        .green-table th {
+            background: linear-gradient(90deg, #256d29, #2e7d32);
+            color: white;
+            text-align: center;
+            font-weight: bold;
+            padding: 10px;
+            font-size: 16px;
+        }
+
+        .green-table td {
+            text-align: center;
+            padding: 10px;
+            font-size: 15px;
+            vertical-align: middle;
+        }
+
+        .green-table tbody tr:nth-child(even) {
+            background-color: #ecf9ee;
+        }
+
+        .green-table tbody tr:hover {
+            background-color: #d8f5db;
+            transition: 0.2s;
+        }
+
+    .clickable-row {
+        cursor: pointer;
+        background-color: #e5f6e7;
+        font-weight: 500;
+    }
+
+        .clickable-row:hover {
+            background-color: #c7ebca !important;
+        }
+
+    .collapse-content {
+        background-color: #f1f9f2;
+        border-left: 4px solid #388e3c;
+        border-right: 4px solid #388e3c;
+        border-bottom: 4px solid #388e3c;
+        border-radius: 0 0 10px 10px;
+    }
+
+    /* 🌿 INNER (RESERVATION) TABLE */
+    .inner-table {
+        width: 100%;
+        border-collapse: collapse;
+        margin-top: 10px;
+        background-color: #ffffff;
+        border-radius: 8px;
+    }
+
+        .inner-table th {
+            background-color: #1b5e20;
+            color: #fff;
+            font-weight: bold;
+            padding: 8px;
+            font-size: 14px;
+        }
+
+        .inner-table td {
+            padding: 8px;
+            border-top: 1px solid #e0e0e0;
+        }
+
+        .inner-table tr:nth-child(even) {
+            background-color: #f2faf3;
+        }
+
+    .capacity-row th {
+        background: #4caf50;
+        color: #fff;
+        font-size: 15px;
+    }
+
+    .no-records {
+        text-align: center;
+        font-weight: 600;
+        color: #555;
+        background-color: #f9f9f9;
+    }
+
+    /* 🌿 ICONS & LINKS */
+    .clickable-row i {
+        color: #2e7d32;
+        margin-right: 5px;
+    }
+
+    a.devotee-link {
+        font-weight: bold;
+        color: #1565c0;
+        text-decoration: none;
+    }
+
+        a.devotee-link:hover {
+            color: #0d47a1;
+            text-decoration: underline;
+        }
+</style>
+
+<div class="reservation-container mt-3">
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <h3 class="fw-bold text-success mb-0">Reservation List</h3>
+    </div>
+
+    <div class="row mb-2">
+        <div class="col-12">
+            <partial name="_PagerSearchOnly" model="@pager" />
+        </div>
+    </div>
+
+    <div class="table-responsive">
+        <table id="tblRoomList" class="table green-table">
+            <thead>
+                <tr>
+                    <th>Room</th>
+                    <th>Building</th>
+                    <th>Block</th>
+                    <th>Floor</th>
+                </tr>
+            </thead>
+            <tbody>
+                @{
+                    var distinctRooms = Model
+                    .DistinctBy(p => p.Id)
+                    .Select(g => new
+                    {
+                        g.Id,
+                        g.Name,
+                        g.BuildingName,
+                        g.BlockName,
+                        g.FloorName,
+                        g.Capacity,
+                        g.Occupied,
+                        g.RemainingCount,
+                        g.Reservations
+                    })
+                    .ToList();
+
+                    foreach (var room in distinctRooms)
+                    {
+                        <tr data-bs-toggle="collapse" data-bs-target="#room-@room.Id" class="clickable-row">
+                            <td><i class="fas fa-chevron-down"></i> @room.Name</td>
+                            <td>@room.BuildingName</td>
+                            <td>@room.BlockName</td>
+                            <td>@room.FloorName</td>
+                        </tr>
+
+                        var reservationList = room.Reservations.ToList();
+                        <tr id="room-@room.Id" class="collapse collapse-content">
+                            <td colspan="4">
+                                <table class="inner-table">
+                                    <thead>
+                                        <tr class="capacity-row">
+                                            <th colspan="4">
+                                                Capacity: @room.Capacity &nbsp;&nbsp; | &nbsp;&nbsp;
+                                                Occupied: @room.Occupied &nbsp;&nbsp; | &nbsp;&nbsp;
+                                                Remaining: @room.RemainingCount
+                                            </th>
+                                        </tr>
+                                        <tr>
+                                            <th>Devotee Code</th>
+                                            <th>Devotee Name</th>
+                                            <th>Check-In</th>
+                                            <th>Allotted</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        @if (reservationList.Count > 0)
+                                        {
+                                            foreach (var res in reservationList)
+                                            {
+                                                <tr>
+                                                    <td>
+                                                        <a asp-action="AddOrEdit" asp-controller="Devotee"
+                                                           asp-route-id="@res.Devotee.Id"
+                                                           class="devotee-link">
+                                                            @res.Devotee.Code
+                                                        </a>
+                                                    </td>
+                                                    <td>@res.Devotee.Name</td>
+                                                    <td>@res.FromDate.ToString("dd/MM/yyyy")</td>
+                                                    <td>@res.Allocated</td>
+                                                </tr>
+                                            }
+                                        }
+                                        else
+                                        {
+                                            <tr>
+                                                <td colspan="4" class="no-records">No Records Found</td>
+                                            </tr>
+                                        }
+                                    </tbody>
+                                </table>
+                            </td>
+                        </tr>
+                    }
+                }
+            </tbody>
+        </table>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        $('.clickable-row').on('click', function () {
+            $('.collapse.show').not($(this).next('.collapse')).collapse('hide');
+            $(this).next('.collapse').collapse('toggle');
+        });
+
+        $('.collapse').on('shown.bs.collapse', function () {
+            $(this).prev('.clickable-row').find('i').removeClass('fa-chevron-down').addClass('fa-chevron-up');
+        }).on('hidden.bs.collapse', function () {
+            $(this).prev('.clickable-row').find('i').removeClass('fa-chevron-up').addClass('fa-chevron-down');
+        });
+    </script>
+}

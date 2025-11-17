@@ -1,0 +1,87 @@
+﻿@model Anandashram.Models.Room
+@{
+    string currentModel = Helper.GetTypeNames(Model.GetType().ToString());
+    ViewData["Title"] = currentModel + " - Edit";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="section-card mt-4 mx-auto" style="max-width: 800px;">
+    <div class="section-header d-flex justify-content-between align-items-center">
+        <span><i class="fa-solid fa-door-open me-2"></i>@currentModel - Edit</span>
+        <a class="btn btn-sm btn-light fw-semibold"
+           asp-action="Index" asp-route-pg="@TempData.Peek("CurrentPage")">
+            <i class="fa-solid fa-arrow-left"></i> Back
+        </a>
+    </div>
+
+    <div class="p-4">
+        <form asp-action="Edit" class="needs-validation" novalidate>
+            <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
+
+            <!-- Hidden Fields -->
+            <input type="hidden" asp-for="Id" />
+            <input type="hidden" asp-for="CreatedBy" />
+            <input type="hidden" asp-for="CreatedDate" />
+            <input type="hidden" asp-for="ModifiedBy" />
+            <input type="hidden" asp-for="ModifiedDate" />
+
+            <!-- Room Name -->
+            <div class="mb-3">
+                <label asp-for="Name" class="form-label fw-semibold"></label>
+                <input asp-for="Name" class="form-control" placeholder="Enter room name" />
+                <span asp-validation-for="Name" class="text-danger"></span>
+            </div>
+
+            <!-- Description -->
+            <div class="mb-3">
+                <label asp-for="Description" class="form-label fw-semibold"></label>
+                <input asp-for="Description" class="form-control" placeholder="Optional description" />
+            </div>
+
+            <!-- Building -->
+            <div class="row mb-3">
+                <div class="col-md-6">
+                    <label asp-for="BuildingId" class="form-label fw-semibold"></label>
+                    <select asp-for="BuildingId" class="form-select" asp-items="ViewBag.BuildingId"></select>
+                </div>
+
+                <!-- Block -->
+                <div class="col-md-6">
+                    <label asp-for="BlockId" class="form-label fw-semibold"></label>
+                    <select asp-for="BlockId" class="form-select" asp-items="ViewBag.BlockId"></select>
+                </div>
+            </div>
+
+            <!-- Floor -->
+            <div class="mb-3">
+                <label class="form-label fw-semibold">Floor</label>
+                <select asp-for="FloorId" class="form-select" asp-items="ViewBag.FloorId"></select>
+                <span asp-validation-for="FloorId" class="text-danger"></span>
+            </div>
+
+            <!-- Capacity -->
+            <div class="mb-4">
+                <label asp-for="Capacity" class="form-label fw-semibold"></label>
+                <input asp-for="Capacity" class="form-control" type="number" min="0" placeholder="Enter room capacity" />
+                <span asp-validation-for="Capacity" class="text-danger"></span>
+            </div>
+
+            <!-- Buttons -->
+            <div class="text-center">
+                <button type="submit" class="btn btn-success px-4 me-2">
+                    <i class="fa-solid fa-save"></i> Save
+                </button>
+                <a class="btn btn-outline-secondary px-4"
+                   asp-action="Index" asp-route-pg="@TempData.Peek("CurrentPage")">
+                    <i class="fa-solid fa-arrow-rotate-left"></i> Cancel
+                </a>
+            </div>
+        </form>
+    </div>
+</div>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+}

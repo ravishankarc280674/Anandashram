@@ -1,0 +1,112 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Report ScriptLanguage="CSharp" ReportInfo.Created="2025-11-16">
+  <Dictionary>
+    <BusinessObjectDataSource Name="Company" ReferenceName="Company" Enabled="True">
+      <Column Name="Name" DataType="System.String"/>
+      <Column Name="Address" DataType="System.String"/>
+      <Column Name="Phone" DataType="System.String"/>
+    </BusinessObjectDataSource>
+
+    <!-- MASTER: Rooms (must match wr.Report.RegisterData(..., "Rooms")) -->
+    <BusinessObjectDataSource Name="Rooms" ReferenceName="Rooms" Enabled="True">
+      <Column Name="Id" DataType="System.Int32"/>
+      <Column Name="Name" DataType="System.String"/>
+      <Column Name="RoomName" DataType="System.String"/>
+      <Column Name="BuildingName" DataType="System.String"/>
+      <Column Name="BlockName" DataType="System.String"/>
+      <Column Name="FloorName" DataType="System.String"/>
+      <Column Name="Capacity" DataType="System.Int32"/>
+      <Column Name="TotalAllocated" DataType="System.Int32"/>
+      <Column Name="TotalRemaining" DataType="System.Int32"/>
+    </BusinessObjectDataSource>
+
+    <!-- CHILD: Reservations as nested collection ReferenceName must be "Rooms.Reservations" -->
+    <BusinessObjectDataSource Name="Reservations" ReferenceName="Rooms.Reservations" Enabled="True">
+      <Column Name="RoomId" DataType="System.Int32"/>
+      <Column Name="Id" DataType="System.Int32"/>
+      <Column Name="DevoteeCode" DataType="System.String"/>
+      <Column Name="DevoteeName" DataType="System.String"/>
+      <Column Name="DevoteeCategoryName" DataType="System.String"/>
+      <Column Name="FromDate" DataType="System.DateTime"/>
+      <Column Name="Allocated" DataType="System.Int32"/>
+      <Column Name="Closed" DataType="System.Boolean"/>
+    </BusinessObjectDataSource>
+  </Dictionary>
+
+  <ReportPage Name="Page1" PaperWidth="210" PaperHeight="297"
+              LeftMargin="10" RightMargin="10" TopMargin="10" BottomMargin="10">
+
+    <!-- Page header -->
+    <PageHeaderBand Height="48">
+      <TextObject Text="[Company.Name]" Width="700" Height="22" Font="Arial,14pt,Bold" HorzAlign="Center"/>
+      <TextObject Text="[Company.Address]" Top="22" Width="700" Height="16" Font="Arial,9pt" HorzAlign="Center"/>
+      <TextObject Top="38" Width="700" Height="10" Text="As on: [DatePassed]" Font="Arial,8pt" HorzAlign="Center"/>
+    </PageHeaderBand>
+
+    <!-- Group header per Room (grouping by Rooms.Id) -->
+    <GroupHeaderBand Name="GH_Room" Condition="[Rooms.Id]" Height="26">
+      <TextObject Text="[Rooms.Name] - [Rooms.RoomName]" Width="700" Height="26"
+                  Font="Arial,10pt,Bold" Padding="4,3,3,3"
+                  Fill.Color="#28a745" TextFill.Color="White"/>
+      <!-- Table header for reservations placed inside group header (so OpenSource accepts it) -->
+      <TableObject Top="28" Width="700">
+        <TableColumn Width="100"/>
+        <TableColumn Width="200"/>
+        <TableColumn Width="150"/>
+        <TableColumn Width="100"/>
+        <TableColumn Width="150"/>
+        <TableRow Height="20" Fill.Color="#28a745">
+          <TableCell Text="Devotee Code" TextFill.Color="White" Border.Lines="All"/>
+          <TableCell Text="Name" TextFill.Color="White" Border.Lines="All"/>
+          <TableCell Text="Category" TextFill.Color="White" Border.Lines="All"/>
+          <TableCell Text="From Date" TextFill.Color="White" Border.Lines="All"/>
+          <TableCell Text="Allocated" TextFill.Color="White" Border.Lines="All" HorzAlign="Right"/>
+        </TableRow>
+      </TableObject>
+      <!-- No-data line shown when the nested collection is empty -->
+      <TextObject Top="50" Width="700" Height="18"
+                  Text="No reservations found for this room"
+                  HorzAlign="Center"
+                  Border.Lines="All"
+                  Fill.Color="Transparent"
+                  VisibleExpression="Count([Reservations.DevoteeCode]) == 0"/>
+    </GroupHeaderBand>
+
+    <!-- Details: child collection. DataSource MUST be Rooms.Reservations -->
+    <DataBand Name="DB_Reservations" ChildDataSource="Reservations" Height="20">
+      <TableObject Width="700">
+        <TableColumn Width="100"/>
+        <TableColumn Width="200"/>
+        <TableColumn Width="150"/>
+        <TableColumn Width="100"/>
+        <TableColumn Width="150"/>
+        <TableRow Height="20">
+          <TableCell Border.Lines="All" Text="[DevoteeCode]"
+                     TextFill.Color="IIf([Closed], 'Red', 'Black')"/>
+          <TableCell Border.Lines="All" Text="[DevoteeName]"
+                     Fill.Color="IIf([Row#] % 2 == 0, '#e9f7ea','Transparent')"/>
+          <TableCell Border.Lines="All" Text="[DevoteeCategoryName]"/>
+          <TableCell Border.Lines="All" Text="[FormatDateTime([FromDate], 'dd-MM-yyyy')]"/>
+          <TableCell Border.Lines="All" Text="[Allocated]" HorzAlign="Right"/>
+        </TableRow>
+      </TableObject>
+    </DataBand>
+
+    <!-- Group footer: room totals (right aligned) -->
+    <GroupFooterBand Height="24">
+      <TextObject Width="700" Height="22" HorzAlign="Right" Font="Arial,9pt,Bold"
+                  Text="Capacity: [Rooms.Capacity]    Alloc: [Sum([Reservations.Allocated])]    Rem: [Rooms.TotalRemaining]"/>
+    </GroupFooterBand>
+
+    <!-- Report totals -->
+    <ReportSummaryBand Height="28">
+      <TextObject Width="700" Height="25" HorzAlign="Right" Font="Arial,10pt,Bold"
+                  Text="TOTAL Rooms: [Count([Rooms.Id])]    TOTAL Alloc: [Sum([Rooms.TotalAllocated])]    TOTAL Rem: [Sum([Rooms.TotalRemaining])]"/>
+    </ReportSummaryBand>
+
+    <PageFooterBand Height="16">
+      <TextObject Text="Page [Page#] of [TotalPages#]" Width="350"/>
+      <TextObject Text="Printed: [FormatDateTime(Now(), 'dd-MM-yyyy HH:mm')]" Width="350" HorzAlign="Right"/>
+    </PageFooterBand>
+  </ReportPage>
+</Report>

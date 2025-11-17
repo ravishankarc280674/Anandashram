@@ -1,0 +1,54 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Report ScriptLanguage="CSharp" ReportInfo.Created="10/20/2025 10:28:46" ReportInfo.Modified="10/20/2025 17:13:24" ReportInfo.CreatorVersion="2026.1.0.0">
+  <Dictionary>
+      <BusinessObjectDataSource Name="DevoteeCategories" ReferenceName="GeneralRef" DataType="null" Enabled="True">
+        <Column Name="Name" DataType="System.String"/>
+        <Column Name="Description" DataType="System.String"/>
+      </BusinessObjectDataSource>
+    <BusinessObjectDataSource Name="Company" ReferenceName="CompanyRef" DataType="null" Enabled="True">
+      <Column Name="Name" DataType="System.String"/>
+      <Column Name="Established" DataType="System.Int32"/>
+      <Column Name="AddressLine1" DataType="System.String"/>
+      <Column Name="AddressLine2" DataType="System.String"/>
+      <Column Name="State" DataType="System.String"/>
+      <Column Name="Country" DataType="System.String"/>
+      <Column Name="PinCode" DataType="System.String"/>
+      <Column Name="Mobile" DataType="System.String"/>
+      <Column Name="Email" DataType="System.String"/>
+      <Column Name="Website" DataType="System.String"/>
+    </BusinessObjectDataSource>
+  <Parameter Name="Title" DataType="System.String" AsString=""/>
+  <Parameter Name="Address 1" DataType="System.String" AsString=""/>
+  <Parameter Name="Address 2" DataType="System.String" AsString=""/>
+  <Parameter Name="Mobile" DataType="System.String" AsString=""/>
+  <Parameter Name="Website" DataType="System.String" AsString=""/>
+    <Parameter Name="Address" DataType="System.String" AsString=""/>
+  </Dictionary>
+  <ReportPage Name="General" Watermark.Font="Arial, 60pt">
+    <ReportTitleBand Name="ReportTitle1" Width="718.2" Height="189">
+      <TextObject Name="Text10" Width="718.2" Height="18.9" Text="[Company.Name]" AutoWidth="true" HorzAlign="Center" VertAlign="Center" Font="Arial, 14.25pt, style=Bold"/>
+      <TextObject Name="Text17" Top="18.9" Width="718.2" Height="18.9" Text="Estd: [Company.Established]" HorzAlign="Center" Font="Arial, 11.25pt"/>
+      <TextObject Name="Text18" Top="122.85" Width="718.2" Height="37.8" Border.Lines="Top, Bottom" Border.TopLine.Style="Double" Border.BottomLine.Style="Double" Text="[Title]" HorzAlign="Center" VertAlign="Center" Font="Arial, 12pt, style=Bold"/>
+      <TextObject Name="Text19" Top="37.8" Width="718.2" Height="20.79" Text="[Company.AddressLine1] [Company.AddressLine2]" HorzAlign="Center" Font="Arial, 11.25pt"/>
+      <TextObject Name="Text20" Top="56.7" Width="718.2" Height="28.35" Text="[Company.State], [Company.Country] - [Company.PinCode]" HorzAlign="Center" Font="Arial, 11.25pt"/>
+      <TextObject Name="Text24" Top="75.6" Width="718.2" Height="18.9" Text="Mobile: [Company.Mobile], Email: [Company.Email]" HorzAlign="Center" Font="Arial, 11.25pt"/>
+      <TextObject Name="Text25" Top="94.5" Width="718.2" Height="18.9" Text="Website: [Company.Website]" HorzAlign="Center" Font="Arial, 11.25pt"/>
+    </ReportTitleBand>
+    <PageHeaderBand Name="PageHeader1" Top="193" Width="718.2" Height="18.9" Border.Lines="Top, Bottom" Fill.Color="LightGray">
+      <TextObject Name="Text1" Left="75.6" Width="255.15" Height="18.9" Text="Name" Font="Arial, 10pt, style=Bold"/>
+      <TextObject Name="Text4" Left="340.2" Width="378" Height="18.9" Text="Description" HorzAlign="Justify" Font="Arial, 10pt, style=Bold"/>
+    </PageHeaderBand>
+    <DataBand Name="Data1" Top="215.9" Width="718.2" Height="37.8" Border.Lines="Bottom" DataSource="DevoteeCategories">
+      <TableObject Name="Table1" Left="47.25" Width="529.2" Height="22.9" Border.Lines="All">
+        <TableRow Name="Row1"/>
+        <TableRow Name="Row2" Height="1"/>
+        <TableRow Name="Row3" Height="1"/>
+        <TableRow Name="Row4" Height="1"/>
+        <TableRow Name="Row5" Height="1"/>
+      </TableObject>
+      <TextObject Name="Text8" Left="75.6" Top="9.45" Width="255.15" Height="28.35" Text="[DevoteeCategories.Name]" Font="Arial, 10pt"/>
+      <TextObject Name="Text9" Left="340.2" Top="9.45" Width="378" Height="28.35" CanGrow="true" Text="[DevoteeCategories.Description]" Font="Arial, 10pt"/>
+    </DataBand>
+    <PageFooterBand Name="PageFooter1" Top="257.7" Width="718.2" Height="40.6"/>
+  </ReportPage>
+</Report>

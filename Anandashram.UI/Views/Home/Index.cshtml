@@ -1,7 +1,7 @@
-﻿@model DashboardVM
+﻿@model HomeDTO
 
 @{
-    ViewData["Title"] = "Dashboard";
+    ViewData["Title"] = "Home";
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
@@ -17,45 +17,54 @@
     <div class="row g-4 mb-5 justify-content-center">
 
         <!-- Total Devotees -->
-        <div class="col-lg-2 col-md-4 col-sm-6">
+        <div class="col-lg-2 col-md-2 col-sm-6">
             <div class="card shadow-sm stats-card border-0 text-center">
                 <div class="card-body">
                     <i class="fas fa-users text-success fa-2x"></i>
                     <h6 class="mt-2 text-muted">Total Devotees</h6>
-                    <h3 class="fw-bold text-success">@Model.TotalDevotees</h3>
+                    <h3 class="fw-bold text-success">@Model.TotalDevoteesCount</h3>
                 </div>
             </div>
         </div>
-
-        <!-- Total Rooms -->
-        <div class="col-lg-2 col-md-4 col-sm-6">
+        <!-- Total Active Devotees -->
+        <div class="col-lg-2 col-md-2 col-sm-6">
             <div class="card shadow-sm stats-card border-0 text-center">
                 <div class="card-body">
                     <i class="fas fa-bed text-success fa-2x"></i>
-                    <h6 class="mt-2 text-muted">Total Rooms</h6>
-                    <h3 class="fw-bold text-success">@Model.TotalRooms</h3>
+                    <h6 class="mt-2 text-muted">Active Devotees</h6>
+                    <h3 class="fw-bold text-success">@Model.TotalActiveDevotees</h3>
+                </div>
+            </div>
+        </div>
+        <!-- Total Rooms Capacity -->
+        <div class="col-lg-2 col-md-2 col-sm-6">
+            <div class="card shadow-sm stats-card border-0 text-center">
+                <div class="card-body">
+                    <i class="fas fa-bed text-success fa-2x"></i>
+                    <h6 class="mt-2 text-muted">Total Capacity</h6>
+                    <h3 class="fw-bold text-success">@Model.TotalRoomCapacity</h3>
                 </div>
             </div>
         </div>
 
-        <!-- Available Rooms -->
-        <div class="col-lg-2 col-md-4 col-sm-6">
+        <!--Total Room Capacity Available -->
+        <div class="col-lg-2 col-md-2 col-sm-6">
             <div class="card shadow-sm stats-card border-0 text-center">
                 <div class="card-body">
                     <i class="fas fa-door-open text-success fa-2x"></i>
-                    <h6 class="mt-2 text-muted">Available Rooms</h6>
-                    <h3 class="fw-bold text-success">@Model.AvailableRooms</h3>
+                    <h6 class="mt-2 text-muted">Available Capacity</h6>
+                    <h3 class="fw-bold text-success">@Model.TotalRoomCapacityAvailable</h3>
                 </div>
             </div>
         </div>
-
+       
         <!-- Today's Check-ins -->
-        <div class="col-lg-2 col-md-4 col-sm-6">
+        <div class="col-lg-2 col-md-2 col-sm-6">
             <div class="card shadow-sm stats-card border-0 text-center">
                 <div class="card-body">
                     <i class="fas fa-sign-in-alt text-success fa-2x"></i>
                     <h6 class="mt-2 text-muted">Today's Check-ins</h6>
-                    <h3 class="fw-bold text-success">@Model.TodayCheckIns</h3>
+                    <h3 class="fw-bold text-success">@Model.TodaysCheckIns</h3>
                 </div>
             </div>
         </div>
@@ -66,13 +75,21 @@
                 <div class="card-body">
                     <i class="fas fa-sign-out-alt text-success fa-2x"></i>
                     <h6 class="mt-2 text-muted">Today's Check-outs</h6>
-                    <h3 class="fw-bold text-success">@Model.TodayCheckOuts</h3>
+                    <h3 class="fw-bold text-success">@Model.TodaysCheckOuts</h3>
                 </div>
             </div>
         </div>
 
     </div>
 
+    <!-- Chart -->
+    <div class="card">
+        <div class="card-body" style="min-height: 250px;">
+            <canvas id="trendChart"></canvas>
+        </div>
+    </div>
+
+    <div id="weeklySummary" class="mt-3 fw-bold"></div>
 
     <!-- ========== EXISTING MENU CARDS ========== -->
     <div class="row g-4 justify-content-center">
@@ -117,9 +134,9 @@
         <div class="col-lg-3 col-md-4 col-sm-6">
             <div class="card shadow-sm border-0 text-center hover-card">
                 <div class="card-body">
-                    <a asp-controller="Reports" asp-action="RoomViewer" class="text-decoration-none">
+                    <a asp-controller="Reservation" asp-action="Index" class="text-decoration-none">
                         <i class="fas fa-chart-bar fa-3x text-success mb-3"></i>
-                        <h5 class="fw-semibold text-success">Reports</h5>
+                        <h5 class="fw-semibold text-success">Reservations</h5>
                     </a>
                 </div>
             </div>
@@ -144,7 +161,6 @@
         border-radius: 8px;
     }
 
-    <style >
     .dashboard-card {
         height: 220px; /* set card height */
         display: flex;
@@ -152,16 +168,91 @@
         justify-content: center;
     }
 
-    .dashboard-card .card-body {
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        justify-content: center;
+        .dashboard-card .card-body {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .dashboard-card img {
+            max-height: 90px; /* keeps image proportional */
+            object-fit: contain;
+        }
+
+    #trendChart {
+        height: 250px !important;
     }
 
-    .dashboard-card img {
-        max-height: 90px; /* keeps image proportional */
-        object-fit: contain;
-    }
 </style>
-</style>
+@section Scripts {
+    <script src="~/lib/chart.js/chart.umd.js"></script>
+    <script>
+        console.log("Chart script loaded...");
+
+        const labels = @Html.Raw(System.Text.Json.JsonSerializer.Serialize(Model.ChartDTO.Dates));
+        const checkIns = @Html.Raw(System.Text.Json.JsonSerializer.Serialize(Model.ChartDTO.DailyCheckIns));
+        const checkOuts = @Html.Raw(System.Text.Json.JsonSerializer.Serialize(Model.ChartDTO.DailyCheckOuts));
+
+        const todayIndex = labels.length - 1;
+
+        const ctx = document.getElementById('trendChart');
+
+        const trendChart = new Chart(ctx, {
+            type: 'line',
+            data: {
+                labels: labels,
+                datasets: [
+                    {
+                        label: 'Check-Ins',
+                        data: checkIns,
+                        tension: 0.4,
+                        borderWidth: 3,
+                        pointRadius: 5,
+                        pointStyle: "circle",
+                        pointBackgroundColor: (ctx) =>
+                            ctx.dataIndex === todayIndex ? '#dc3545' : '#007bff',
+                        borderColor: '#007bff',
+                        fill: false
+                    },
+                    {
+                        label: 'Check-Outs',
+                        data: checkOuts,
+                        tension: 0.4,
+                        borderWidth: 3,
+                        pointRadius: 5,
+                        pointStyle: "circle",
+                        pointBackgroundColor: (ctx) =>
+                            ctx.dataIndex === todayIndex ? '#28a745' : '#28a745',
+                        borderColor: '#28a745',
+                        fill: false
+                    }
+                ]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false, // FIX: Prevent height collapse
+                animation: {
+                    duration: 1400,
+                    easing: 'easeOutQuart'
+                },
+                plugins: {
+                    tooltip: { mode: 'index', intersect: false },
+                    legend: { display: true }
+                },
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        ticks: { precision: 0 }
+                    }
+                }
+            }
+        });
+
+        // Weekly Summary (last 7 days)
+        document.getElementById("weeklySummary").innerHTML =
+            `📊 Last 7 Days → Check-Ins: <b>${checkIns.slice(-7).reduce((a, b) => a + b, 0)}</b> |
+             Check-Outs: <b>${checkOuts.slice(-7).reduce((a, b) => a + b, 0)}</b>`;
+    </script>
+}
+

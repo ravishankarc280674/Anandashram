@@ -97,6 +97,7 @@ builder.Services.AddScoped<IRoom, RoomRepository>();
 builder.Services.AddScoped<IFileManagement, FileManagement>();
 builder.Services.AddScoped<IDevoteeCategory, DevoteeCategoryRepository>();
 builder.Services.AddScoped<IReservation, ReservationRepository>();
+builder.Services.AddScoped<IHome, HomeRepository>();
 builder.Services.AddFastReport();
 
 var app = builder.Build();

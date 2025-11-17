@@ -1,0 +1,73 @@
+﻿@model Anandashram.Models.Building
+
+@{
+    ViewData["Title"] = "Building - Edit";
+    Layout = null;
+
+ SortModel sortModel = (SortModel)ViewData["SortModel"];
+    int pg = 1;
+    string searchText = ViewBag.SearchText;
+    if (TempData["CurrentPage"] != null)
+    {
+        pg = (int)TempData["CurrentPage"];
+
+        TempData["CurrentPage"] = pg;
+    }
+    PageModel pager = ViewBag.Pager;
+
+    int pageNo = 0;
+    if (ViewBag.SearchPager != null)
+    {
+        pager = ViewBag.SearchPager;
+        pageNo = pager.CurrentPage;
+    }
+    ViewData["SortModel"] = sortModel;
+    if (pager     != null)
+    {
+        ViewBag.Pager = pager;
+    }
+}
+<div class="row">
+    <div class="col-md-12">
+        <form asp-action="AddOrEdit" asp-route-id="@Model.Id" asp-route-pg="@pg" asp-route-SearchText="@ViewBag.SearchText" asp-route-PageSize="@ViewBag.PageSize" asp-route-Closed="@ViewBag.Closed" onsubmit="return jQueryAjaxPost(this);" autocomplete="off">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <input type="hidden" asp-for="Id" />
+            <input type="hidden" asp-for="CreatedBy" />
+            <input type="hidden" asp-for="CreatedDate" />
+            <input type="hidden" asp-for="ModifiedBy" />
+            <input type="hidden" asp-for="ModifiedDate" />
+            <dl class="row">
+                <dt class="col-md-3">
+                    <label asp-for="Name" class="control-label"></label>
+                </dt>
+                <dd class="col-md-9">
+                    <div class="form-group">
+                        <input asp-for="Name" class="form-control" />
+                        <span asp-validation-for="Name" class="text-danger"></span>
+                    </div>
+                </dd>
+                <dt class="col-md-3">
+                    <label asp-for="Description" class="control-label"></label>
+                </dt>
+                <dd class="col-md-9">
+                    <div class="form-group">
+                        <input asp-for="Description" class="form-control" />
+                        <span asp-validation-for="Description" class="text-danger"></span>
+                    </div>
+                </dd>
+            </dl>
+            <div class="row">
+
+            <div class="col-md-12">
+                <input type="submit" value="Submit" class="btn btn-primary btn-block" />
+            </div>
+            </div>
+        </form>
+    </div>
+</div>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+}

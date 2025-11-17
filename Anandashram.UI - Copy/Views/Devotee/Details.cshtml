@@ -1,0 +1,178 @@
+﻿@model Anandashram.Models.Devotee
+@{
+    ViewData["Title"] = "Devotee Details";
+    var uploadedFiles = ViewBag.UploadedFiles;
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="container py-4">
+    <div class="card shadow-sm border-0 rounded-3">
+        <div class="card-header bg-success text-white">
+            <h4 class="mb-0">Devotee Details</h4>
+        </div>
+        <div class="container mt-3">
+
+            <div class="row">
+                <!-- Profile Picture -->
+                <div class="col-md-3 text-center">
+                    <img id="profilePic"
+                         src="@Url.Action("GetImage", "Devotee", new { fileName = Model.Code })"
+                         class="img-thumbnail shadow-sm"
+                         style="max-width: 220px; height:auto; cursor:pointer;" />
+                </div>
+                <!-- Documents -->
+                <div class="col-md-9">
+                    <h5 class="mb-3">Documents List</h5>
+                    <table class="table table-sm mt-2">
+                        <tbody>
+                            @if (uploadedFiles != null)
+                            {
+                                @foreach (var fileUpload in uploadedFiles)
+                                {
+                                    <tr>
+                                        <td class="col-sm-8">@fileUpload.FileName</td>
+                                        <td>
+                                            <a href="@Url.Action("GetDocument", new { fileName = fileUpload.FileName, filePath = fileUpload.FilePath })"
+                                               class="btn btn-sm btn-outline-secondary">
+                                                <i class="fa fa-download"></i>
+                                            </a>
+                                        </td>
+                                    </tr>
+                                }
+                            }
+                            else
+                            {
+                                <tr><td colspan="3" class="text-muted">No Documents Uploaded</td></tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        <form asp-action="AddOrEdit">
+            <input type="hidden" asp-for="Id" />
+            <input type="hidden" asp-for="Code" />
+            <input type="hidden" asp-for="CreatedBy" />
+            <input type="hidden" asp-for="CreatedDate" />
+            <input type="hidden" asp-for="ModifiedBy" />
+            <input type="hidden" asp-for="ModifiedDate" />
+            <input type="hidden" asp-for="Name" />
+            <input type="hidden" asp-for="DevoteeCategoryId" />
+            <input type="hidden" asp-for="Mobile" />
+            <input type="hidden" asp-for="Email" />
+            <input type="hidden" asp-for="Document" />
+            <input type="hidden" asp-for="Description" />
+            <input type="hidden" asp-for="NoOfPeople" />
+            <input type="hidden" asp-for="EndDate" />
+            <input type="hidden" asp-for="StartDate" />
+            <input type="hidden" asp-for="Document" />
+            <input type="hidden" asp-for="PinCode" />
+            <input type="hidden" asp-for="Country" />
+            <input type="hidden" asp-for="State" />
+            <input type="hidden" asp-for="AddressLine2" />
+            <input type="hidden" asp-for="AddressLine1" />
+            <input type="hidden" asp-for="Closed" />
+
+        <div class="card-body">
+            <dl class="row">
+                <dt class="col-sm-3">Code</dt>
+                <dd class="col-sm-9">@Html.DisplayFor(m => m.Code)</dd>
+
+                <dt class="col-sm-3">Name</dt>
+                <dd class="col-sm-9">@Html.DisplayFor(m => m.Name)</dd>
+
+                <dt class="col-sm-3">Category</dt>
+                <dd class="col-sm-9">@Html.DisplayFor(m => m.DevoteeCategoryName)</dd>
+
+                <dt class="col-sm-3">Mobile</dt>
+                <dd class="col-sm-9">@Html.DisplayFor(m => m.Mobile)</dd>
+
+                <dt class="col-sm-3">Email</dt>
+                <dd class="col-sm-9">@Html.DisplayFor(m => m.Email)</dd>
+
+                <dt class="col-sm-3">Docs (Aadhar / PAN / ...)</dt>
+                <dd class="col-sm-9">@Html.DisplayFor(m => m.Document)</dd>
+
+                <dt class="col-sm-3">Address Line 1</dt>
+                <dd class="col-sm-9">@Html.DisplayFor(m => m.AddressLine1)</dd>
+
+                <dt class="col-sm-3">Address Line 2</dt>
+                <dd class="col-sm-9">@Html.DisplayFor(m => m.AddressLine2)</dd>
+
+                <dt class="col-sm-3">State</dt>
+                <dd class="col-sm-9">@Html.DisplayFor(m => m.State)</dd>
+
+                <dt class="col-sm-3">Country</dt>
+                <dd class="col-sm-9">@Html.DisplayFor(m => m.Country)</dd>
+
+                <dt class="col-sm-3">Pin Code</dt>
+                <dd class="col-sm-9">@Html.DisplayFor(m => m.PinCode)</dd>
+
+                <dt class="col-sm-3">Check-In Date</dt>
+                <dd class="col-sm-9">@Model.StartDate.ToString("dd-MM-yyyy")</dd>
+
+                <dt class="col-sm-3">Check-Out Date</dt>
+                <dd class="col-sm-9">@Model.EndDate.ToString("dd-MM-yyyy")</dd>
+
+                <dt class="col-sm-3">Number of People</dt>
+                <dd class="col-sm-9">@Html.DisplayFor(m => m.NoOfPeople)</dd>
+
+                <dt class="col-sm-3">Additional Information</dt>
+                <dd class="col-sm-9">@Html.DisplayFor(m => m.Description)</dd>
+            </dl>
+
+            <hr />
+
+            <!-- Reservations List -->
+            <h5 class="text-success mb-3">Reservation Details</h5>
+            @if (Model.Reservations != null && Model.Reservations.Any())
+            {
+                <div class="table-responsive mb-4">
+                    <table class="table table-bordered table-striped align-middle">
+                        <thead class="table-success">
+                            <tr>
+                                <th>Room</th>
+                                <th>Building</th>
+                                <th>Block</th>
+                                <th>Floor</th>
+                                <th>Check-In</th>
+                                <th>Check-Out</th>
+                                <th>No. of Days</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var r in Model.Reservations)
+                            {
+                                <tr>
+                                    <td>@r.Room?.Name</td>
+                                    <td>@r.Room?.Building?.Name</td>
+                                    <td>@r.Room?.Block?.Name</td>
+                                    <td>@r.Room?.Floor?.Name</td>
+                                    <td>@r.FromDate.ToString("dd-MM-yyyy")</td>
+                                    <td>@r.ToDate.ToString("dd-MM-yyyy")</td>
+                                    <td>@((r.ToDate - r.FromDate).Days)</td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            }
+            else
+            {
+                <div class="text-muted fst-italic mb-4">No reservations available</div>
+            }
+
+            <div class="text-end">
+        
+
+                @if (Model.Id != 0 && String.IsNullOrEmpty(Model.ReopenedCode) && Model.Closed)
+                {
+                    <button type="submit" name="actionButton" value="Reopen" class="btn btn-info me-2">Reopen Devotee Details</button>
+                }
+                <a asp-action="Index" class="btn btn-secondary">
+                    <i class="fas fa-arrow-left"></i> Back
+                </a>
+            </div>
+        </div>
+        </form>
+    </div>
+</div>
