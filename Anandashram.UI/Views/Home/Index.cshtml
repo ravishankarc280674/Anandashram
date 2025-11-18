@@ -14,59 +14,59 @@
     </div>
 
     <!-- ====== STATISTICS SECTION ====== -->
-    <div class="row g-4 mb-2 justify-content-center">
+    <div class="row g-4 mb-1 justify-content-center">
         <!-- Total Devotees -->
         <div class="col-md-3">
-            <div class="card shadow border-0 h-100 bg-primary text-white rounded-4">
-                <div class="card-body text-center">
-                    <i class="fas fa-users fa-2x mb-2"></i>
-                    <h6 class="fw-semibold">Total Devotees</h6>
-                    <h2 class="fw-bold text-white">@Model.TotalDevoteesCount</h2>
-                </div>
+        <div class="card shadow border-0 bg-primary text-white rounded-4 stats-card">
+            <div class="card-body text-center">
+                <i class="fas fa-users"></i>
+                <h6 class="fw-semibold">Total Devotees</h6>
+                <h2 class="fw-bold">@Model.TotalDevoteesCount</h2>
             </div>
         </div>
+    </div>
+        
 
         <!-- Active Devotees -->
         <div class="col-md-3">
-            <div class="card shadow border-0 h-100 bg-success text-white rounded-4">
+            <div class="card shadow border-0 bg-success text-white rounded-4 stats-card">
                 <div class="card-body text-center">
-                    <i class="fas fa-user-check fa-2x mb-2"></i>
+                    <i class="fas fa-user-check"></i>
                     <h6 class="fw-semibold">Active Devotees</h6>
-                    <h2 class="fw-bold text-white">@Model.TotalActiveDevotees</h2>
+                    <h2 class="fw-bold">@Model.TotalActiveDevotees</h2>
                 </div>
             </div>
         </div>
-
+         
         <!-- Total Room Capacity -->
         <div class="col-md-3">
-            <div class="card shadow border-0 h-100 bg-warning text-dark rounded-4">
+            <div class="card shadow border-0 bg-warning text-white rounded-4 stats-card">
                 <div class="card-body text-center">
-                    <i class="fas fa-hotel fa-2x mb-2"></i>
+                    <i class="fas fa-hotel"></i>
                     <h6 class="fw-semibold">Total Capacity</h6>
-                    <h2 class="fw-bold text-dark">@Model.TotalRoomCapacity</h2>
+                    <h2 class="fw-bold">@Model.TotalRoomCapacity</h2>
                 </div>
             </div>
         </div>
 
         <!-- Available Room Capacity -->
         <div class="col-md-3">
-            <div class="card shadow border-0 h-100 bg-info text-white rounded-4">
+            <div class="card shadow border-0 bg-info text-white rounded-4 stats-card">
                 <div class="card-body text-center">
-                    <i class="fas fa-door-open fa-2x mb-2"></i>
+                    <i class="fas fa-door-open"></i>
                     <h6 class="fw-semibold">Available Capacity</h6>
-                    <h2 class="fw-bold text-white">@Model.TotalRoomCapacityAvailable</h2>
+                    <h2 class="fw-bold">@Model.TotalRoomCapacityAvailable</h2>
                 </div>
             </div>
         </div>
     </div>
-
 
     <!-- ========== Chart =========== -->
     <div class="card shadow-sm border-0">
         <div class="card-header fw-bold bg-light">
             This Month — Check-In / Check-Out Trend
         </div>
-        <div class="card-body position-relative" style="height: 350px;">
+        <div class="card-body position-relative" style="height: 220px;">
             <canvas id="trendChart"></canvas>
         </div>
     </div>
@@ -128,46 +128,41 @@
     </div>
 
 </div>
-
 <style>
-    .hover-card {
-        transition: transform .25s ease, box-shadow .25s ease;
-    }
-        .hover-card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 6px 16px rgba(0,0,0,0.15);
-        }
+/* Reduce spacing globally for dashboard */
+.dashboard-wrapper {
+    padding-top: 10px;
+}
 
-    .stats-card {
-        background: #f7fff7; /* light green tint */
-        border-left: 4px solid #198754; /* bootstrap success green */
-        border-radius: 8px;
-    }
-    .dashboard-card {
-        height: 220px; /* set card height */
-        display: flex;
-        align-items: center;
-        justify-content: center;
-    }
-        .dashboard-card .card-body {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-        }
-        .dashboard-card img {
-            max-height: 90px; /* keeps image proportional */
-            object-fit: contain;
-        }
-    #trendChart {
-        height: 250px !important;
-    }
-    .card {
-        border-radius: 14px;
-    }
-    .card-header {
-        font-size: 1.1rem;
-    }
+/* Reduce space in heading */
+.dashboard-header h1 {
+    font-size: 1.8rem;
+    margin-bottom: 0.2rem;
+}
+.dashboard-header p {
+    margin-bottom: 0.5rem;
+}
+
+/* Compact statistics cards */
+.stats-card {
+    padding: 0.5rem 0 !important;
+}
+.stats-card i {
+    font-size: 1.4rem !important;
+    margin-bottom: 0.2rem !important;
+}
+.stats-card h6 {
+    margin-bottom: 0.2rem !important;
+}
+.stats-card h2 {
+    font-size: 1.6rem !important;
+    margin-bottom: 0 !important;
+}
+
+/* Reduce the chart height */
+#trendChart {
+    height: 180px !important;
+}
 </style>
 @section Scripts {
     <script src="~/lib/chart.js/chart.umd.js"></script>
