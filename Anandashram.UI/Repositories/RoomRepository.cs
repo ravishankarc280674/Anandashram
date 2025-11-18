@@ -249,6 +249,9 @@ namespace Anandashram.Repositories
                 .Select(r => new RoomDTO
                 {
                     RoomName = r.Name,
+                    BuildingId = r.BuildingId,
+                    BlockId = r.BlockId,
+                    FloorId = r.FloorId,
                     BuildingName = r.Building != null ? r.Building.Name : string.Empty,
                     BlockName = r.Block != null ? r.Block.Name : string.Empty,
                     FloorName = r.Floor != null ? r.Floor.Name : string.Empty,

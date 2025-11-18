@@ -1,0 +1,66 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Report ScriptLanguage="CSharp" ReportInfo.Created="11/18/2025 04:09:41" ReportInfo.Modified="11/18/2025 04:48:56" ReportInfo.CreatorVersion="2026.1.0.0">
+  <Dictionary>
+    <BusinessObjectDataSource Name="Company" ReferenceName="Company" DataType="null" Enabled="True">
+      <Column Name="Name" DataType="System.String"/>
+      <Column Name="Established" DataType="System.Int32"/>
+      <Column Name="AddressLine1" DataType="System.String"/>
+      <Column Name="AddressLine2" DataType="System.String"/>
+      <Column Name="State" DataType="System.String"/>
+      <Column Name="Country" DataType="System.String"/>
+      <Column Name="PinCode" DataType="System.String"/>
+      <Column Name="Mobile" DataType="System.String"/>
+      <Column Name="Email" DataType="System.String"/>
+      <Column Name="Website" DataType="System.String"/>
+    </BusinessObjectDataSource>
+    <BusinessObjectDataSource Name="Rooms" ReferenceName="Rooms" Enabled="true" TableName="Rooms">
+        <Column Name="RoomName" DataType="System.String"/>
+        <Column Name="BlockId" DataType="System.Int32"/>
+        <Column Name="BuildingId" DataType="System.Int32"/>
+        <Column Name="FloorId" DataType="System.Int32"/>
+        <Column Name="Capacity" DataType="System.Int32"/>
+        <Column Name="BuildingName" DataType="System.String"/>
+        <Column Name="BlockName" DataType="System.String"/>
+        <Column Name="FloorName" DataType="System.String"/>
+    </BusinessObjectDataSource>
+  </Dictionary>
+  <ReportPage Name="Page1" PaperWidth="210" PaperHeight="150"
+            LeftMargin="5" RightMargin="5" TopMargin="5" BottomMargin="5">
+
+    <ReportTitleBand Name="ReportTitle1" Width="718.2" Height="110">
+      <TextObject Name="Text10" Top="9.45" Width="718.2" Height="18.9" Text="[Company.Name]" HorzAlign="Center" Font="Arial, 14.25pt, style=Bold"/>
+      <TextObject Name="Text17" Top="28.35" Width="718.2" Height="18.9" Text="Est: [Company.Established]" HorzAlign="Center" Font="Arial, 11.25pt"/>
+      <TextObject Name="Text19" Top="47.25" Width="718.2" Height="18" Text="[Company.AddressLine1] [Company.AddressLine2]" HorzAlign="Center" Font="Arial, 11.25pt"/>
+      <TextObject Name="Text20" Top="66.15" Width="718.2" Height="18" Text="[Company.State], [Company.Country] - [Company.PinCode]" HorzAlign="Center" Font="Arial, 11.25pt"/>
+      <TextObject Name="Text24" Top="84" Width="718.2" Height="18" Text="Mobile: [Company.Mobile], Email: [Company.Email]" HorzAlign="Center" Font="Arial, 11.25pt"/>
+      <TextObject Name="Text25" Top="102" Width="718.2" Height="18" Text="Website: [Company.Website]" HorzAlign="Center" Font="Arial, 11.25pt"/>
+    </ReportTitleBand>
+
+    <PageHeaderBand Name="PageHeader1" Width="718.2" Height="20">
+      <TextObject Name="Text2" Width="132.3" Height="20" Text="Building" HorzAlign="Center" VertAlign="Center" Font="Arial, 10pt, style=Bold"/>
+      <TextObject Name="Text3" Left="198.45" Width="189" Height="20" Text="Block" HorzAlign="Center" VertAlign="Center" Font="Arial, 10pt, style=Bold"/>
+      <TextObject Name="Text4" Left="387.45" Width="113.4" Height="20" Text="Floor" HorzAlign="Center" VertAlign="Center" Font="Arial, 10pt, style=Bold"/>
+      <TextObject Name="Text1" Left="500.85" Width="113.4" Height="20" Text="Room" HorzAlign="Center" VertAlign="Center" Font="Arial, 10pt, style=Bold"/>
+      <TextObject Name="Text5" Left="614.25" Width="94.5" Height="20" Text="Capacity" HorzAlign="Center" VertAlign="Center" Font="Arial, 10pt, style=Bold"/>
+    </PageHeaderBand>
+
+    <GroupHeaderBand Name="GroupHeader1" Height="18" Condition="[Rooms.BuildingId]">
+      <TextObject Name="Text27" Width="198.45" Height="18" Border.Lines="All" Fill.Color="LightSalmon" Text="[Rooms.BuildingName]" VertAlign="Center" Font="Arial, 9pt"/>
+    </GroupHeaderBand>
+
+    <GroupHeaderBand Name="GroupHeader2" Height="18" Condition="[Rooms.BlockId]">
+      <TextObject Name="Text28" Left="198.45" Width="189" Height="18" Border.Lines="All" Fill.Color="Wheat" Text="[Rooms.BlockName]" VertAlign="Center" Font="Arial, 9pt"/>
+    </GroupHeaderBand>
+
+    <GroupHeaderBand Name="GroupHeader3" Height="18" Condition="[Rooms.FloorId]">
+      <TextObject Name="Text29" Left="387.45" Width="113.4" Height="18" Border.Lines="All" Fill.Color="YellowGreen" Text="[Rooms.FloorName]" VertAlign="Center" Font="Arial, 9pt"/>
+    </GroupHeaderBand>
+
+    <DataBand Name="Data1" Width="718.2" Height="18" DataSource="Rooms">
+      <TextObject Name="Text26" Left="500.85" Width="113.4" Height="18" Border.Lines="All" Text="[Rooms.RoomName]" VertAlign="Center" Font="Arial, 9pt"/>
+      <TextObject Name="Text30" Left="614.25" Width="94.5" Height="18" Border.Lines="All" Text="[Rooms.Capacity]" HorzAlign="Right" VertAlign="Center" Font="Arial, 9pt, style=Bold"/>
+    </DataBand>
+
+    <PageFooterBand Name="PageFooter1" Width="718.2" Height="10"/>
+  </ReportPage>
+</Report>

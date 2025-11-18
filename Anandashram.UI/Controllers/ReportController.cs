@@ -220,7 +220,7 @@ namespace Anandashram.Controllers
                     }
                 case "Room":
                     {
-                        wr.Report.Load(Path.Combine(_env.ContentRootPath, "Reports", "Rooms.frx"));
+                        wr.Report.Load(Path.Combine(_env.ContentRootPath, "Reports", "RoomList.frx"));
                         wr.Report.RegisterData(companies, "Company");
                         wr.Report.RegisterData(await _roomRepo.GetRoomsAsync(), "Rooms");
                         //wr.Report.SetParameterValue("Title", "Rooms");
