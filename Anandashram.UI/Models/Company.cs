@@ -1,5 +1,4 @@
 ﻿namespace Anandashram.Models;
-
 public class Company
 {
     [Key]

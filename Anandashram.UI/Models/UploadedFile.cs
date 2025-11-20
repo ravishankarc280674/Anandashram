@@ -1,10 +1,8 @@
-﻿namespace Anandashram.Models
+﻿namespace Anandashram.Models;
+public class UploadedFile
 {
-    public class UploadedFile
-    {
-        public int DevoteeId { get; set; }
-        public string FileName { get; set; }
+    public int DevoteeId { get; set; }
+    public string FileName { get; set; }
 
-        public string FilePath { get; set; }
-    }
+    public string FilePath { get; set; }
 }

@@ -1,9 +1,7 @@
-﻿namespace Anandashram.DTO
+﻿namespace Anandashram.DTO;
+public class DashboardChartDTO
 {
-    public class DashboardChartDTO
-    {
-        public List<string> Dates { get; set; }
-        public List<int> DailyCheckIns { get; set; }
-        public List<int> DailyCheckOuts { get; set; }
-    }
+    public List<string> Dates { get; set; }
+    public List<int> DailyCheckIns { get; set; }
+    public List<int> DailyCheckOuts { get; set; }
 }

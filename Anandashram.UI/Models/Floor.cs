@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-
-namespace Anandashram.Models;
-
+﻿namespace Anandashram.Models;
 public class Floor
 {
     public int Id { get; set; }

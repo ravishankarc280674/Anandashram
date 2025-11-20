@@ -1,8 +1,6 @@
-﻿namespace Anandashram.Interfaces
+﻿namespace Anandashram.Interfaces;
+public interface IHome
 {
-    public interface IHome
-    {
-        HomeDTO GetHomeData();
-        DashboardChartDTO GetDashBoardChartForCheckInCheckOut();
-    }
+    HomeDTO GetHomeData();
+    DashboardChartDTO GetDashBoardChartForCheckInCheckOut();
 }

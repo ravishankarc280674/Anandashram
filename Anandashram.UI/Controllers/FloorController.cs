@@ -1,161 +1,155 @@
-﻿
-using System.Drawing.Printing;
-using System.Threading.Tasks;
-
-namespace Anandashram.Controllers
+﻿namespace Anandashram.Controllers;
+[Authorize]
+public class FloorController : Controller
 {
-    [Authorize]
-    public class FloorController : Controller
+    //  private readonly ApplicationDbContext _context;
+    private readonly IFloor _floorRepo;
+
+    public FloorController(IFloor floorRepo)
     {
-        //  private readonly ApplicationDbContext _context;
-        private readonly IFloor _floorRepo;
+        // _context = context;
+        _floorRepo = floorRepo;
+    }
 
-        public FloorController(IFloor floorRepo)
+    // GET: Floor
+    public async Task<IActionResult> Index(string sortExpression = "", string SearchText = "", int pg = 1, int PageSize = 5)
+    {
+        if (pg < 1) pg = 1;
+
+        SortModel sortModel = new SortModel();//ApplySort(sortExpression);
+        sortModel.AddColumn("name");
+        sortModel.AddColumn("description");
+        sortModel.ApplySort(sortExpression);
+        ViewData["SortModel"] = sortModel;
+        ViewBag.PageSize = PageSize;
+        ViewBag.SearchText = SearchText;
+        TempData["CurrentPage"] = pg;
+        var FloorList =await _floorRepo.GetItems(sortModel.SortedProperty, sortModel.SortedOrder, SearchText, pg, PageSize);
+        //int recSkip = (pg - 1) * PageSize;
+        //List<Floor> retFloorList = FloorList.Skip(recSkip).Take(PageSize).ToList();
+
+        var pager = new PageModel(FloorList.TotalRecords, pg, PageSize) { Action = "Index", Controller = "Floor", SearchText = SearchText };
+        pager.SortExpression = sortExpression;
+        this.ViewBag.Pager = pager;
+        this.ViewBag.PageSizes = GetPageSizes(PageSize);
+        ViewBag.ReportType = "Floor";
+
+        return View(FloorList);
+    }
+
+    private List<SelectListItem> GetPageSizes(int selectedPageSize = 5)
+    {
+        var pagesSizes = new List<SelectListItem>();
+
+        if (selectedPageSize == 5)
+            pagesSizes.Add(new SelectListItem("5", "5", true));
+        else
+            pagesSizes.Add(new SelectListItem("5", "5"));
+
+        for (int lp = 10; lp <= 100; lp += 10)
         {
-            // _context = context;
-            _floorRepo = floorRepo;
-        }
-
-        // GET: Floor
-        public async Task<IActionResult> Index(string sortExpression = "", string SearchText = "", int pg = 1, int PageSize = 5)
-        {
-            if (pg < 1) pg = 1;
-
-            SortModel sortModel = new SortModel();//ApplySort(sortExpression);
-            sortModel.AddColumn("name");
-            sortModel.AddColumn("description");
-            sortModel.ApplySort(sortExpression);
-            ViewData["SortModel"] = sortModel;
-            ViewBag.PageSize = PageSize;
-            ViewBag.SearchText = SearchText;
-            TempData["CurrentPage"] = pg;
-            var FloorList =await _floorRepo.GetItems(sortModel.SortedProperty, sortModel.SortedOrder, SearchText, pg, PageSize);
-            //int recSkip = (pg - 1) * PageSize;
-            //List<Floor> retFloorList = FloorList.Skip(recSkip).Take(PageSize).ToList();
-
-            var pager = new PageModel(FloorList.TotalRecords, pg, PageSize) { Action = "Index", Controller = "Floor", SearchText = SearchText };
-            pager.SortExpression = sortExpression;
-            this.ViewBag.Pager = pager;
-            this.ViewBag.PageSizes = GetPageSizes(PageSize);
-            ViewBag.ReportType = "Floor";
-
-            return View(FloorList);
-        }
-
-        private List<SelectListItem> GetPageSizes(int selectedPageSize = 5)
-        {
-            var pagesSizes = new List<SelectListItem>();
-
-            if (selectedPageSize == 5)
-                pagesSizes.Add(new SelectListItem("5", "5", true));
+            if (lp == selectedPageSize)
+            { pagesSizes.Add(new SelectListItem(lp.ToString(), lp.ToString(), true)); }
             else
-                pagesSizes.Add(new SelectListItem("5", "5"));
-
-            for (int lp = 10; lp <= 100; lp += 10)
-            {
-                if (lp == selectedPageSize)
-                { pagesSizes.Add(new SelectListItem(lp.ToString(), lp.ToString(), true)); }
-                else
-                    pagesSizes.Add(new SelectListItem(lp.ToString(), lp.ToString()));
-            }
-
-            return pagesSizes;
+                pagesSizes.Add(new SelectListItem(lp.ToString(), lp.ToString()));
         }
 
-        // GET: Floor/Details/5
-        public async Task<IActionResult> Details(int id)
+        return pagesSizes;
+    }
+
+    // GET: Floor/Details/5
+    public async Task<IActionResult> Details(int id)
+    {
+        var floor =await _floorRepo.GetFloor(id);
+        if (floor == null)
         {
-            var floor =await _floorRepo.GetFloor(id);
+            return NotFound();
+        }
+
+        return View(floor);
+    }
+
+    public async Task<IActionResult> AddOrEdit(int id = 0)
+    {
+        Floor floor = new Floor();
+        if (id == 0)
+        {
+            floor.CreatedBy = this.User.FindFirstValue(ClaimTypes.NameIdentifier);
+            floor.CreatedDate = DateTime.Now;
+            return View(floor);
+        }
+        else
+        {
+            floor = await _floorRepo.GetFloor(id);
+            TempData.Keep();
             if (floor == null)
             {
                 return NotFound();
             }
-
-            return View(floor);
+            floor.ModifiedBy = this.User.FindFirstValue(ClaimTypes.NameIdentifier);
+            floor.ModifiedDate = DateTime.Now;
         }
 
-        public async Task<IActionResult> AddOrEdit(int id = 0)
+        return View(floor);
+    }
+
+
+    [HttpPost]
+    
+    
+    //  [NoDirectAccess]
+    public async Task<IActionResult> AddOrEdit(int id, Floor floor, int pg = 0, int pageSize = 5, string sortExpression = "", string searchText = "")
+    {
+        BuildData(pg, pageSize, sortExpression, searchText);
+
+        if (ModelState.IsValid)
         {
-            Floor floor = new Floor();
             if (id == 0)
             {
-                floor.CreatedBy = this.User.FindFirstValue(ClaimTypes.NameIdentifier);
-                floor.CreatedDate = DateTime.Now;
-                return View(floor);
+                floor = await _floorRepo.Create(floor);
             }
             else
             {
-                floor = await _floorRepo.GetFloor(id);
-                TempData.Keep();
-                if (floor == null)
+                try
                 {
-                    return NotFound();
+
+                    floor = await _floorRepo.Edit(floor);
                 }
-                floor.ModifiedBy = this.User.FindFirstValue(ClaimTypes.NameIdentifier);
-                floor.ModifiedDate = DateTime.Now;
-            }
-
-            return View(floor);
-        }
-
-
-        [HttpPost]
-        
-        
-        //  [NoDirectAccess]
-        public async Task<IActionResult> AddOrEdit(int id, Floor floor, int pg = 0, int pageSize = 5, string sortExpression = "", string searchText = "")
-        {
-            BuildData(pg, pageSize, sortExpression, searchText);
-
-            if (ModelState.IsValid)
-            {
-                if (id == 0)
+                catch (DbUpdateConcurrencyException)
                 {
-                    floor = await _floorRepo.Create(floor);
-                }
-                else
-                {
-                    try
+                    if (_floorRepo.GetFloor(floor.Id) == null)
                     {
-
-                        floor = await _floorRepo.Edit(floor);
+                        return NotFound();
                     }
-                    catch (DbUpdateConcurrencyException)
+                    else
                     {
-                        if (_floorRepo.GetFloor(floor.Id) == null)
-                        {
-                            return NotFound();
-                        }
-                        else
-                        {
-                            throw;
-                        }
+                        throw;
                     }
                 }
-                return Json(new { isValid = true, html = Helper.RenderRazorViewToString(this, "_ViewAll", _floorRepo.GetFloors()) });
             }
-            return Json(new { isValid = false, html = Helper.RenderRazorViewToString(this, "AddOrEdit", floor) });
+            return Json(new { isValid = true, html = Helper.RenderRazorViewToString(this, "_ViewAll", _floorRepo.GetFloors()) });
         }
+        return Json(new { isValid = false, html = Helper.RenderRazorViewToString(this, "AddOrEdit", floor) });
+    }
 
-        [HttpPost]
-        //[NoDirectAccess]
-        public async Task<IActionResult> Delete(Floor floor, int pg = 0, int pageSize = 5, string sortExpression = "", string searchText = "")
-        {
-            BuildData(pg, pageSize, sortExpression, searchText);
+    [HttpPost]
+    //[NoDirectAccess]
+    public async Task<IActionResult> Delete(Floor floor, int pg = 0, int pageSize = 5, string sortExpression = "", string searchText = "")
+    {
+        BuildData(pg, pageSize, sortExpression, searchText);
 
-            floor = await _floorRepo.Delete(floor);
-            return Json(new { html = Helper.RenderRazorViewToString(this, "_ViewAll", _floorRepo.GetFloors()) });
-        }
-        private void BuildData(int pg, int pageSize, string sortExpression, string searchText)
-        {
-            SortModel sortModel = new SortModel();
-            sortModel.AddColumn("name");
-            sortModel.AddColumn("description");
-            sortModel.ApplySort(sortExpression);
-            ViewData["SortModel"] = sortModel;
-            ViewBag.PageSize = pageSize;
-            ViewBag.SearchText = searchText;
-            TempData["CurrentPage"] = pg;
-        }
+        floor = await _floorRepo.Delete(floor);
+        return Json(new { html = Helper.RenderRazorViewToString(this, "_ViewAll", _floorRepo.GetFloors()) });
+    }
+    private void BuildData(int pg, int pageSize, string sortExpression, string searchText)
+    {
+        SortModel sortModel = new SortModel();
+        sortModel.AddColumn("name");
+        sortModel.AddColumn("description");
+        sortModel.ApplySort(sortExpression);
+        ViewData["SortModel"] = sortModel;
+        ViewBag.PageSize = pageSize;
+        ViewBag.SearchText = searchText;
+        TempData["CurrentPage"] = pg;
     }
 }

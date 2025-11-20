@@ -1,9 +1,7 @@
-﻿namespace Anandashram.Interfaces
+﻿namespace Anandashram.Interfaces;
+public interface ICompany
 {
-    public interface ICompany
-    {
-        Company CompanyDetails();
+    Company CompanyDetails();
 
-        Company SaveCompany(Company company);
-    }
+    Company SaveCompany(Company company);
 }

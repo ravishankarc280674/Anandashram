@@ -1,10 +1,6 @@
-﻿
-
-namespace Anandashram.Models
+﻿namespace Anandashram.Models;
+public class ApplicationUser
 {
-    public class ApplicationUser
-    {
-        [Key]
-        public int Id { get; set; }
-    }
+    [Key]
+    public int Id { get; set; }
 }
