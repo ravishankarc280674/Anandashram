@@ -3,6 +3,7 @@ using DocumentFormat.OpenXml;
 using Microsoft.EntityFrameworkCore.Internal;
 using System.Net;
 using System.Security.Cryptography.Xml;
+using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace Anandashram.Repositories
 {
@@ -240,26 +241,49 @@ namespace Anandashram.Repositories
             return rooms;
         }
 
-        public async Task<List<RoomDTO>> GetRoomsAsync()
+        public List<RoomDTO> GetRooms()
         {
-            var rooms = await _context.Rooms
+            var rooms = _context.Rooms
                 .Include(r => r.Building)
                 .Include(r => r.Block)
                 .Include(r => r.Floor)
+                .OrderBy(r => r.Building.Name)
+                .ThenBy(r => r.Block.Name)
+                .ThenBy(r => r.Floor.Name)
+                .ThenBy(r => r.Name)
                 .Select(r => new RoomDTO
                 {
+                    RoomId = r.Id,
                     RoomName = r.Name,
-                    BuildingId = r.BuildingId,
-                    BlockId = r.BlockId,
-                    FloorId = r.FloorId,
                     BuildingName = r.Building != null ? r.Building.Name : string.Empty,
                     BlockName = r.Block != null ? r.Block.Name : string.Empty,
                     FloorName = r.Floor != null ? r.Floor.Name : string.Empty,
-                    Capacity = r.Capacity
+                    Capacity = r.Capacity,
+                    BuildingId = r.BuildingId,
+                    BlockId=r.BlockId,
+                    FloorId = r.FloorId
                 })
-                .ToListAsync();
+                .ToList();
 
             return rooms;
+        }
+
+        public async Task<List<ReservationReportDTO>> GetCheckInDetailsReportAsync(DateTime dateValue)
+        {
+            var endOfDay = dateValue.Date.AddDays(1);
+            var startOfDate = dateValue.Date;
+
+            return await _context.Reservations.Include(rv => rv.Devotee)
+                .Where(r => r.FromDate.Date >= startOfDate && r.FromDate.Date<endOfDay) // ignore time!
+                .Select(r => new ReservationReportDTO
+                {
+                    DevoteeCode = r.Devotee.Code,
+                    DevoteeName = r.Devotee.Name,
+                    FromDate = r.FromDate,
+                    ToDate = r.ToDate,
+                    RoomName = r.Room.Name,
+                    Allocated = r.Allocated
+                }).ToListAsync();
         }
     }
 }

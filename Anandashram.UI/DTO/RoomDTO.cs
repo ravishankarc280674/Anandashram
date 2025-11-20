@@ -1,7 +1,7 @@
 ﻿using System.ComponentModel;
 using System.ComponentModel.DataAnnotations.Schema;
 
-namespace Anandashram.Models {
+namespace Anandashram.Models;
     public partial class RoomDTO
     {
 
@@ -9,7 +9,8 @@ namespace Anandashram.Models {
         {
             //Reservations = new List<Reservation>();
         }
-
+        public int Id { get; set; }
+        public int RoomId { get; set; }
         public string RoomName { get; set; } = null!;
         public int BuildingId { get; set; }
         public int BlockId { get; set; }
@@ -19,4 +20,3 @@ namespace Anandashram.Models {
         public string BlockName { get; set; }
         public string FloorName { get; set; }
     }
-}

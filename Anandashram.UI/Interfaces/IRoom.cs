@@ -20,6 +20,7 @@
          Task<List<RoomReportDTO>> GetRoomsWithReservationsUpToDateAsync(DateTime dateValue);
         Task<List<RoomReportDTO>> GetRoomsWithReservationsReportAsync();
 
-        Task<List<RoomDTO>> GetRoomsAsync();
+        List<RoomDTO> GetRooms();
+        Task<List<ReservationReportDTO>> GetCheckInDetailsReportAsync(DateTime dateValue);
     }
 }

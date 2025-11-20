@@ -10,6 +10,7 @@ using Microsoft.AspNetCore.Components.Forms;
 using Microsoft.AspNetCore.Diagnostics;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.CodeAnalysis.VisualBasic.Syntax;
+using SpreadsheetLight.Charts;
 using System;
 using System.Collections.Generic;
 using System.Composition;
@@ -44,7 +45,7 @@ namespace Anandashram.Controllers
 
 
         [HttpPost]
-        public async Task<IActionResult> ReportViewer(DateTime dateValue, string typeofreport = "")
+        public async Task<IActionResult> CheckOutViewer(DateTime dateValue, string typeofreport = "")
         {
             if (typeofreport == "" || dateValue == DateTime.MinValue)
                 return View();
@@ -86,34 +87,28 @@ namespace Anandashram.Controllers
                 }
             }
         }
-
-        [HttpPost]
-        public async Task<IActionResult> RoomViewer(DateTime dateValue, string typeofreport = "", string reportformat = "list")
+        public async Task<IActionResult> AllocationViewer()
         {
-            if (typeofreport == "" || dateValue == DateTime.MinValue)
-                return View();
+            return await AllocationViewer(DateTime.MinValue, "screen");
+        }
+        [HttpPost]
+        public async Task<IActionResult> AllocationViewer(DateTime dateValue, string typeofreport = "")
+        {
 
             WebReport wr = new WebReport();
-            string reportPath = Path.Combine(_env.ContentRootPath, "Reports",
-                reportformat == "list" ? "RoomAllocation.frx" : "RoomAllocationDetail.frx");
-
-            wr.Report.Load(reportPath);
+            wr.Report.Load(Path.Combine(_env.ContentRootPath, "Reports", "RoomAllocation.frx"));
 
             // Register Company
             var company = _companyrepo.CompanyDetails();
             wr.Report.RegisterData(new List<Company> { company }, "Company");
             wr.Report.GetDataSource("Company").Enabled = true;
 
-            // Register Rooms (master) — each Room has List<ReservationReportDTO> Reservations
             List<RoomReportDTO> roomList = await _roomRepo.GetRoomsWithReservationsUpToDateAsync(dateValue);
             wr.Report.RegisterData(roomList, "Rooms");
             wr.Report.GetDataSource("Rooms").Enabled = true;
 
-            // IMPORTANT: enable the child collection datasource (OpenSource expects this)
-            // Use this *exact* name because the FRX below references Rooms.Reservations
             wr.Report.GetDataSource("Rooms.Reservations").Enabled = true;
 
-            // Always set DatePassed (FRX references it)
             wr.Report.SetParameterValue("DatePassed", dateValue.ToString("dd-MMM-yyyy"));
 
             if (typeofreport == "screen")
@@ -130,15 +125,11 @@ namespace Anandashram.Controllers
             return File(ms.ToArray(), "application/pdf", "Room Allocation - Detail.pdf");
         }
 
-        public async Task<IActionResult> ReportViewer()
+        public async Task<IActionResult> CheckOutViewer()
         {
-            return await ReportViewer(DateTime.MinValue, "screen");
+            return await CheckOutViewer(DateTime.MinValue, "screen");
         }
-        public async Task<IActionResult> RoomViewer()
-        {
-            return await RoomViewer(DateTime.MinValue, "screen");
-        }
-
+      
         public IActionResult DevoteeReportViewer()
         {
             return View();
@@ -220,10 +211,12 @@ namespace Anandashram.Controllers
                     }
                 case "Room":
                     {
-                        wr.Report.Load(Path.Combine(_env.ContentRootPath, "Reports", "RoomList.frx"));
+                        wr.Report.Load(Path.Combine(_env.ContentRootPath, "Reports", "RoomListDetails.frx"));
+                        wr.Report.RegisterData(_roomRepo.GetRooms(), "Rooms");
+                        wr.Report.GetDataSource("Rooms").Enabled = true;
+
                         wr.Report.RegisterData(companies, "Company");
-                        wr.Report.RegisterData(await _roomRepo.GetRoomsAsync(), "Rooms");
-                        //wr.Report.SetParameterValue("Title", "Rooms");
+                        wr.Report.GetDataSource("Company").Enabled = true;
                         ReportName = "Rooms";
                         return PrintScreenOrPdf(actionButton, wr, ReportName);
                     }
@@ -298,6 +291,46 @@ namespace Anandashram.Controllers
                 pDFSimpleExport.Dispose();
                 ms.Position = 0;
                 return File(ms, "application/pdf", "DevoteeDetail.pdf");
+            }
+        }
+
+        public async Task<IActionResult> CheckInViewer()
+        {
+            return await CheckInViewer(DateTime.MinValue, "screen");
+        }
+        [HttpPost]
+        public async Task<IActionResult> CheckInViewer(DateTime dateValue, string typeofreport = "")
+        {
+            if (string.IsNullOrEmpty(typeofreport) || dateValue == DateTime.MinValue)
+            {
+                return View();
+            }
+
+            WebReport wr = new WebReport();
+            string reportPath = Path.Combine(_env.ContentRootPath, "Reports", "DevoteeCheckInDetails.frx");
+            wr.Report.Load(reportPath);
+            List<ReservationReportDTO> reservations = await _roomRepo.GetCheckInDetailsReportAsync(dateValue);
+            List<Company> companies = new() { _companyrepo.CompanyDetails() };
+            wr.Report.Dictionary.RegisterBusinessObject(companies, "Company", 1, true);
+            wr.Report.Dictionary.RegisterBusinessObject(reservations, "Reservations", 1, true);
+            wr.Report.SetParameterValue("FromDateParam", dateValue.Date.ToString("dd - MMM- yyyy"));
+            try
+            {
+                wr.Report.Prepare();
+                if (typeofreport == "screen")
+                {
+                    
+                    return View(wr); // ⚠️ Possible error point
+                }
+                var export = new FastReport.Export.PdfSimple.PDFSimpleExport();
+                MemoryStream ms = new MemoryStream();
+                wr.Report.Export(export, ms);
+                ms.Position = 0;
+                return File(ms, "application/pdf", "Checkin.pdf");
+            }
+            catch (Exception ex)
+            {
+                return View("Error", ex);
             }
         }
     }
