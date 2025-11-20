@@ -77,35 +77,35 @@ public class ReportController : Controller
     [HttpPost]
     public async Task<IActionResult> AllocationViewer(DateTime dateValue, string typeofreport = "")
     {
-
-        WebReport wr = new WebReport();
-        wr.Report.Load(Path.Combine(_env.ContentRootPath, "Reports", "RoomAllocation.frx"));
-
-        // Register Company
-        var company = _companyrepo.CompanyDetails();
-        wr.Report.RegisterData(new List<Company> { company }, "Company");
-        wr.Report.GetDataSource("Company").Enabled = true;
-
-        List<RoomReportDTO> roomList = await _roomRepo.GetRoomsWithReservationsUpToDateAsync(dateValue);
-        wr.Report.RegisterData(roomList, "Rooms");
-        wr.Report.GetDataSource("Rooms").Enabled = true;
-
-        wr.Report.GetDataSource("Rooms.Reservations").Enabled = true;
-
-        wr.Report.SetParameterValue("DatePassed", dateValue.ToString("dd-MMM-yyyy"));
-
-        if (typeofreport == "screen")
+        if (typeofreport == "" || dateValue == DateTime.MinValue)
+            return View();
+        else
         {
-            return View(wr);
-        }
+            WebReport wr = new WebReport();
+            wr.Report.Load(Path.Combine(_env.ContentRootPath, "Reports", "RoomAllocation.frx"));
+            // Register Company
+            var company = _companyrepo.CompanyDetails();
+            wr.Report.RegisterData(new List<Company> { company }, "Company");
+            wr.Report.GetDataSource("Company").Enabled = true;
+            List<RoomReportDTO> roomList = await _roomRepo.GetRoomsWithReservationsUpToDateAsync(dateValue);
+            wr.Report.RegisterData(roomList, "Rooms");
+            wr.Report.GetDataSource("Rooms").Enabled = true;
+            wr.Report.GetDataSource("Rooms.Reservations").Enabled = true;
+            wr.Report.SetParameterValue("DatePassed", dateValue.ToString("dd-MMM-yyyy"));
 
-        // Prepare only for export
-        wr.Report.Prepare();
-        using var pdfExport = new FastReport.Export.PdfSimple.PDFSimpleExport();
-        using var ms = new MemoryStream();
-        wr.Report.Export(pdfExport, ms);
-        ms.Position = 0;
-        return File(ms.ToArray(), "application/pdf", "Room Allocation - Detail.pdf");
+            if (typeofreport == "screen")
+            {
+                return View(wr);
+            }
+
+            // Prepare only for export
+            wr.Report.Prepare();
+            using var pdfExport = new FastReport.Export.PdfSimple.PDFSimpleExport();
+            using var ms = new MemoryStream();
+            wr.Report.Export(pdfExport, ms);
+            ms.Position = 0;
+            return File(ms.ToArray(), "application/pdf", "Room Allocation - Detail.pdf");
+        }
     }
 
     public async Task<IActionResult> CheckOutViewer()
