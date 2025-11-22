@@ -72,7 +72,10 @@ public class RoomAllocationDetailDateWise : IDocument
                 .Text("Rooms List").FontSize(12).Bold().FontColor(Colors.Green.Darken3);
         });
     }
-
+    // Constants for column widths
+    const float TableWidth = 440; // reduce total width
+    const float RoomColumnWidth = 200;
+    const float CapacityColumnWidth = 80;
     void Content(QuestPDF.Infrastructure.IContainer content)
     {
 
@@ -101,12 +104,37 @@ public class RoomAllocationDetailDateWise : IDocument
 
                 // Inline floor total
                 var floorTotal = group.Sum(r => r.Capacity);
-                col.Item().Width(TableWidth)
-                    .PaddingVertical(5)
-                    .AlignRight().PaddingRight(6)
-                    .Text($"Subtotal: {floorTotal}")
-                    .FontSize(10).Bold();
+                var floorAllocatedTotal = group.Sum(r => r.TotalAllocated);
+                var floorremainingTotal = group.Sum(r => r.TotalRemaining);
+                col.Item()
+                .Width(TableWidth)
+                .PaddingVertical(5)
+                .Background("#d5e8d4") // soft highlight (optional)
+                .Element(x =>
+                {
+                    x.Row(row =>
+                    {
+                        row.ConstantItem(RoomColumnWidth)
+                            .AlignLeft().PaddingLeft(6)
+                            .Text("Subtotal:")
+                            .Bold();
 
+                        row.ConstantItem(CapacityColumnWidth)
+                            .AlignRight().PaddingRight(6)
+                            .Text(floorTotal.ToString())
+                            .Bold();
+
+                        row.ConstantItem(CapacityColumnWidth)
+                            .AlignRight().PaddingRight(6)
+                            .Text(floorAllocatedTotal.ToString())
+                            .Bold();
+
+                        row.ConstantItem(CapacityColumnWidth)
+                            .AlignRight().PaddingRight(6)
+                            .Text(floorremainingTotal.ToString())
+                            .Bold();
+                    });
+                });
                 col.Item()
                .Width(TableWidth)
                .PaddingVertical(3)
@@ -115,22 +143,49 @@ public class RoomAllocationDetailDateWise : IDocument
             }
 
             // Final Total
-            var finalTotal = Rooms.Sum(r => r.Capacity);
-            col.Item().PaddingTop(12)
+            var grandCapacity = Rooms.Sum(r => r.Capacity);
+            var grandAllocated = Rooms.Sum(r => r.TotalAllocated);
+            var grandRemaining = Rooms.Sum(r => r.TotalRemaining);
+
+            col.Item()
                 .Width(TableWidth)
-                .AlignRight()
-                .BorderTop(2)
-                .PaddingTop(6)
-                .PaddingRight(6)
-                .Text($"Total Capacity: {finalTotal}")
-                .FontSize(11).Bold();
+                .PaddingVertical(6)
+                .Background("#cfe2f3")  // highlight (soft-blue)
+                .Element(x =>
+                {
+                    x.Row(row =>
+                    {
+                        row.ConstantItem(RoomColumnWidth)
+                            .AlignLeft().PaddingLeft(6)
+                            .Text("Grand Total:")
+                            .Bold().FontSize(11);
+
+                        row.ConstantItem(CapacityColumnWidth)
+                            .AlignRight().PaddingRight(6)
+                            .Text(grandCapacity.ToString())
+                            .Bold().FontSize(11);
+
+                        row.ConstantItem(CapacityColumnWidth)
+                            .AlignRight().PaddingRight(6)
+                            .Text(grandAllocated.ToString())
+                            .Bold().FontSize(11);
+
+                        row.ConstantItem(CapacityColumnWidth)
+                            .AlignRight().PaddingRight(6)
+                            .Text(grandRemaining.ToString())
+                            .Bold().FontSize(11);
+                    });
+                });
+            // line under grand total
+            col.Item()
+                .Width(TableWidth)
+                .PaddingBottom(8)
+                .BorderBottom(1)
+                .BorderColor(Colors.Grey.Darken1);
         });
     }
 
-    // Constants for column widths
-    const float TableWidth = 440; // reduce total width
-    const float RoomColumnWidth = 200;
-    const float CapacityColumnWidth = 80;
+   
 
     void TableHeader(QuestPDF.Infrastructure.IContainer container)
     {

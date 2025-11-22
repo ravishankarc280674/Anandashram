@@ -84,7 +84,7 @@ public class ReportController : Controller
         else
         {
             {
-                return await (typeofreport == "Screen" ? RoomsAllocationPdfPreview(reportformat, dateValue) : RoomsAllocationPdfDownload(reportformat, dateValue));
+                return await (typeofreport == "screen" ? RoomsAllocationPdfPreview(reportformat, dateValue) : RoomsAllocationPdfDownload(reportformat, dateValue));
             }
 
             //WebReport wr = new();
