@@ -28,6 +28,7 @@ public class ReservationController : Controller
         sortModel.ApplySort(sortExpression);
         ViewData["SortModel"] = sortModel;
         ViewBag.SearchText = SearchText;
+        ViewBag.ReportType = "Reservation";
         List<Room> ReservationList = await _roomRepo.GeRoomReservations(sortModel.SortedProperty, sortModel.SortedOrder, SearchText);
         return View(ReservationList);
     }

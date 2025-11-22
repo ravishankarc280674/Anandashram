@@ -2,7 +2,6 @@
 public class RoomReportDTO
 {
     public int Id { get; set; }
-    public string Name { get; set; } = string.Empty;
     public string RoomName { get; set; } = string.Empty;
     public string BuildingName { get; set; } = string.Empty;
     public string BlockName { get; set; } = string.Empty;

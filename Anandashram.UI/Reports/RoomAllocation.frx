@@ -2,7 +2,7 @@
 <Report ScriptLanguage="CSharp" ReportInfo.Created="10/22/2025 12:03:18" ReportInfo.Modified="11/10/2025 19:41:34" ReportInfo.CreatorVersion="2026.1.0.0">
   <Dictionary>
     <BusinessObjectDataSource Name="Rooms" ReferenceName="Rooms" DataType="System.Int32" Enabled="true">
-      <Column Name="Name" DataType="System.String"/>
+      <Column Name="RoomName" DataType="System.String"/>
       <Column Name="Capacity" DataType="System.Int32"/>
     </BusinessObjectDataSource>
     <BusinessObjectDataSource Name="Company" ReferenceName="Company" DataType="System.Int32" Enabled="true">
@@ -52,7 +52,7 @@
         <TableRow Name="Row5" Height="1"/>
         <TableRow Name="Row5" Height="1"/>
       </TableObject>
-      <TextObject Name="Text27" Left="9.45" Top="9.45" Width="80.5" Height="18.9" Text="[Rooms.Name]" HorzAlign="Center" Font="Arial, 10pt"/>
+      <TextObject Name="Text27" Left="9.45" Top="9.45" Width="80.5" Height="18.9" Text="[Rooms.RoomName]" HorzAlign="Center" Font="Arial, 10pt"/>
       <TextObject Name="Text31" Left="92.85" Top="9.45" Width="98.5" Height="18.9" Text="[Rooms.BuildingName]" HorzAlign="Center" Font="Arial, 10pt"/>
       <TextObject Name="Text32" Left="200.25" Top="9.45" Width="160.5" Height="18.9" Text="[Rooms.BlockName]" HorzAlign="Center" Font="Arial, 10pt"/>
       <TextObject Name="Text33" Left="360.2" Top="9.45" Width="94.5" Height="18.9" Text="[Rooms.FloorName]" HorzAlign="Center" Font="Arial, 10pt"/>

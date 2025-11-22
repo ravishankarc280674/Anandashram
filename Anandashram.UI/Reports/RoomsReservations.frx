@@ -1,82 +1,92 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<Report ScriptLanguage="CSharp" TextQuality="Regular" ReportInfo.Created="2025-11-10">
+<Report ScriptLanguage="CSharp" TextQuality="Regular" ReportInfo.Description="Demonstrates a master-detail report. To create it:&#13;&#10;- go to &quot;Report|Configure Bands...&quot; menu;&#13;&#10;- select the existing data band;&#13;&#10;- press the &quot;Add&quot; button and select the &quot;Data&quot; band - this will add a data band to the existing one;&#13;&#10;- return to the report page, doubleclick each data band and set its datasource.&#13;&#10;Note: if you have defined the relation between master and detail tables, FastReport will use it automatically." ReportInfo.Created="01/17/2008 03:55:42" ReportInfo.Modified="11/22/2025 13:40:36" ReportInfo.CreatorVersion="2026.1.0.0">
+  <Styles>
+    <Style Name="EvenRows" Font="Arial, 10pt"/>
+  </Styles>
   <Dictionary>
-    <BusinessObjectDataSource Name="Company" ReferenceName="Company" DataType="null" Enabled="True">
-      <Column Name="Name" DataType="System.String"/>
-      <Column Name="Established" DataType="System.Int32"/>
-      <Column Name="AddressLine1" DataType="System.String"/>
-      <Column Name="AddressLine2" DataType="System.String"/>
-      <Column Name="State" DataType="System.String"/>
-      <Column Name="Country" DataType="System.String"/>
-      <Column Name="PinCode" DataType="System.String"/>
-      <Column Name="Mobile" DataType="System.String"/>
-      <Column Name="Email" DataType="System.String"/>
-      <Column Name="Website" DataType="System.String"/>
-    </BusinessObjectDataSource>
-
-    <BusinessObjectDataSource Name="Rooms" ReferenceName="Rooms" DataType="System.Collections.Generic.List`1[[RoomReportDTO]]" Enabled="true">
-      <Column Name="Id" DataType="System.Int32"/>
-      <Column Name="RoomName" DataType="System.String"/>
-      <Column Name="BuildingName" DataType="System.String"/>
-      <Column Name="BlockName" DataType="System.String"/>
-      <Column Name="FloorName" DataType="System.String"/>
-      <Column Name="Capacity" DataType="System.Int32"/>
-      <Column Name="TotalAllocated" DataType="System.Int32"/>
-      <Column Name="TotalRemaining" DataType="System.Int32"/>
-
-      <BusinessObjectDataSource Name="Reservations" DataType="System.Collections.Generic.List`1[[ReservationReportDTO]]" Enabled="true">
+    <MsSqlDataConnection Name="Connection" ConnectionString="rijcmlqM7gJFg/iaLrqMhRfGy5lGlJawmXtp+t5vwuHKcrm+Tm12gq2tazI9kEDTct69s+MO+3mt/eNeFfha1/kkFKH5gcQWYQgJr/g5tTbuoSd6r/u5Fa2Ie0Ab3V5HSwzBoe4hPx608xu7FWfWuQwHw4sLCbsZzKys1e4nQoZ7hQrJQXehpedjcIouLL9Tr4L24HMsbizO3xhmwZQ0Vb67MfE7g==">
+      <TableDataSource Name="RoomReportDTO" DataType="System.Int32" Enabled="true" TableName="RoomReportDTO">
+        <Column Name="Id" DataType="System.Int32"/>
+        <Column Name="RoomId" DataType="System.Int32"/>
+        <Column Name="RoomName" DataType="System.String"/>
+        <Column Name="BuildingName" DataType="System.String"/>
+        <Column Name="BlockName" DataType="System.String"/>
+        <Column Name="FloorName" DataType="System.String"/>
+        <Column Name="Capacity" DataType="System.Int32"/>
+        <Column Name="RemainingCount" DataType="System.Int32"/>
+        <Column Name="TotalAllocated" DataType="System.Int32"/>
+        <Column Name="TotalRemaining" DataType="System.Int32"/>
+      </TableDataSource>
+      <TableDataSource Name="ReservationReportDTO" DataType="System.Int32" Enabled="true" TableName="ReservationReportDTO">
+        <Column Name="Id" DataType="System.Int32"/>
+        <Column Name="TransactionId" DataType="System.Int32"/>
+        <Column Name="RoomId" DataType="System.Int32"/>
+        <Column Name="DevoteeId" DataType="System.Int32"/>
         <Column Name="DevoteeCode" DataType="System.String"/>
-        <Column Name="DevoteeName" DataType="System.String"/>
-        <Column Name="DevoteeCategoryName" DataType="System.String"/>
+        <Column Name="DovoteeName" DataType="System.String"/>
         <Column Name="FromDate" DataType="System.DateTime"/>
+        <Column Name="ToDate" DataType="System.DateTime"/>
         <Column Name="Allocated" DataType="System.Int32"/>
-        <Column Name="Closed" DataType="System.Boolean"/>
-      </BusinessObjectDataSource>
-    </BusinessObjectDataSource>
-
-    <Parameter Name="Title" DataType="System.String"/>
+      </TableDataSource>
+      <TableDataSource Name="Company" DataType="System.Int32" Enabled="true" TableName="Company">
+        <Column Name="Id" DataType="System.Int32"/>
+        <Column Name="Name" DataType="System.String"/>
+        <Column Name="Established" DataType="System.Int32"/>
+        <Column Name="AddressLine1" DataType="System.String"/>
+        <Column Name="AddressLine2" DataType="System.String"/>
+        <Column Name="State" DataType="System.String"/>
+        <Column Name="Country" DataType="System.String"/>
+        <Column Name="PinCode" DataType="System.String"/>
+        <Column Name="Mobile" DataType="System.String"/>
+        <Column Name="Email" DataType="System.String"/>
+        <Column Name="Website" DataType="System.String"/>
+      </TableDataSource>
+    </MsSqlDataConnection>
+    <Relation Name="RoomsReservations" ReferenceName="RoomReportDTO.ReservationReportDTO" ParentDataSource="RoomReportDTO" ChildDataSource="ReservationReportDTO" ParentColumns="RoomId" ChildColumns="RoomId" Enabled="true"/>
   </Dictionary>
-
-  <ReportPage Name="Page1" PaperWidth="210" PaperHeight="297" LeftMargin="10" RightMargin="10" TopMargin="10" BottomMargin="15">
-
-    <!-- Company Header -->
-    <ReportTitleBand Name="ReportTitle1" Width="718.2" Height="189">
-      <TextObject Name="Text10" Width="718.2" Height="18.9" Text="[Company.Name]" AutoWidth="true" HorzAlign="Center" VertAlign="Center" Font="Arial, 14.25pt, style=Bold"/>
-      <TextObject Name="Text17" Top="18.9" Width="718.2" Height="18.9" Text="Estd: [Company.Established]" HorzAlign="Center" Font="Arial, 11.25pt"/>
-      <TextObject Name="Text18" Top="122.85" Width="718.2" Height="37.8" Border.Lines="Top, Bottom" Border.TopLine.Style="Double" Border.BottomLine.Style="Double" Text="[Title]" HorzAlign="Center" VertAlign="Center" Font="Arial, 12pt, style=Bold"/>
-      <TextObject Name="Text19" Top="37.8" Width="718.2" Height="20.79" Text="[Company.AddressLine1] [Company.AddressLine2]" HorzAlign="Center" Font="Arial, 11.25pt"/>
-      <TextObject Name="Text20" Top="56.7" Width="718.2" Height="28.35" Text="[Company.State], [Company.Country] - [Company.PinCode]" HorzAlign="Center" Font="Arial, 11.25pt"/>
-      <TextObject Name="Text24" Top="75.6" Width="718.2" Height="18.9" Text="Mobile: [Company.Mobile], Email: [Company.Email]" HorzAlign="Center" Font="Arial, 11.25pt"/>
-      <TextObject Name="Text25" Top="94.5" Width="718.2" Height="18.9" Text="Website: [Company.Website]" HorzAlign="Center" Font="Arial, 11.25pt"/>
+  <ReportPage Name="Page1" Watermark.Font="Arial, 60pt">
+    <ReportTitleBand Name="ReportTitle1" Width="718.2" Height="160.65" CanGrow="true">
+      <TextObject Name="Text3" Left="-9.45" Top="113.4" Width="718.2" Height="37.8" Border.Lines="Top, Bottom" Border.TopLine.Style="Double" Border.BottomLine.Style="Double" Text="RESERVATION DETAILS" HorzAlign="Center" VertAlign="Center" Font="Tahoma, 14pt, style=Bold"/>
+      <TextObject Name="Text36" Left="0.45" Width="718.2" Height="18.9" Text="[Company.Name]" AutoWidth="true" HorzAlign="Center" VertAlign="Center" Font="Arial, 14.25pt, style=Bold"/>
+      <TextObject Name="Text20" Top="56.7" Width="718.2" Height="28.35" Text="[Company.State], [Company.Country] - [Company.PinCode]" AutoWidth="true" HorzAlign="Center" Font="Arial, 11.25pt"/>
+      <TextObject Name="Text37" Top="75.6" Width="718.2" Height="18.9" Text="Mobile: [Company.Mobile], Email: [Company.Email]" AutoWidth="true" HorzAlign="Center" Font="Arial, 11.25pt"/>
+      <TextObject Name="Text38" Top="94.5" Width="718.2" Height="18.9" Text="Website: [Company.Website]" AutoWidth="true" HorzAlign="Center" Font="Arial, 11.25pt"/>
+      <TextObject Name="Text17" Left="0.45" Top="18.9" Width="718.2" Height="18.9" Text="Est: [Company.Established]" AutoWidth="true" HorzAlign="Center" Font="Arial, 11.25pt"/>
+      <TextObject Name="Text19" Top="37.8" Width="718.2" Height="20.79" Text="[Company.AddressLine1] [Company.AddressLine2]" AutoWidth="true" HorzAlign="Center" Font="Arial, 11.25pt"/>
     </ReportTitleBand>
-
-    <!-- Group by Room -->
-    <GroupHeaderBand Name="RoomGroupHeader" Condition="[Rooms.Id]" Height="35">
-      <TextObject Name="RoomInfo" Width="1047" Height="18"
-                  Text="Room: [Rooms.RoomName]   Building: [Rooms.BuildingName]   Block: [Rooms.BlockName]   Floor: [Rooms.FloorName]"
-                  Font="Arial,10pt,style=Bold"
-                  Fill.Color="#E0E0E0"/>
-      <TextObject Name="RoomStats" Top="18" Width="1047" Height="17"
-                  Text="Capacity: [Rooms.Capacity]   Total Allocated: [Rooms.TotalAllocated]   Remaining: [Rooms.TotalRemaining]"
-                  Font="Arial,9pt,style=Bold"
-                  Fill.Color="#F2F2F2"/>
-    </GroupHeaderBand>
-
-    <!-- Reservation Details -->
-    <DataBand Name="ReservationData" DataSource="Rooms.Reservations" Height="18">
-      <TextObject Name="TextCode" Left="0" Width="80" Text="[Rooms.Reservations.DevoteeCode]" Font="Arial,9pt"/>
-      <TextObject Name="TextName" Left="90" Width="150" Text="[Rooms.Reservations.DevoteeName]" Font="Arial,9pt"/>
-      <TextObject Name="TextCat" Left="250" Width="120" Text="[Rooms.Reservations.DevoteeCategoryName]" Font="Arial,9pt"/>
-      <TextObject Name="TextFrom" Left="380" Width="90" Text="[Rooms.Reservations.FromDate]" Format="Date" Format.Format="dd/MM/yyyy" Font="Arial,9pt"/>
-      <TextObject Name="TextAlloc" Left="480" Width="60" Text="[Rooms.Reservations.Allocated]" HorzAlign="Right" Font="Arial,9pt"/>
+    <DataBand Name="Data1" Top="187.55" Width="718.2" Height="18.9" Border.Lines="All" Fill.Color="Bisque" DataSource="RoomReportDTO" KeepDetail="true">
+      <TextObject Name="Text27" Width="85.05" Height="18.9" Text="[RoomReportDTO.RoomName]" Font="Arial, 9pt, style=Bold"/>
+      <TextObject Name="Text28" Left="85.05" Width="151.2" Height="18.9" Text="[RoomReportDTO.BuildingName]" Font="Arial, 9pt, style=Bold"/>
+      <TextObject Name="Text29" Left="236.25" Width="141.75" Height="18.9" Text="[RoomReportDTO.BlockName]" Font="Arial, 9pt, style=Bold"/>
+      <TextObject Name="Text30" Left="378" Width="94.5" Height="18.9" Text="[RoomReportDTO.FloorName]" Font="Arial, 9pt, style=Bold"/>
+      <TextObject Name="Text32" Left="472.5" Width="75.6" Height="18.9" Text="[RoomReportDTO.Capacity]" HorzAlign="Right" Font="Arial, 9pt, style=Bold"/>
+      <TextObject Name="Text33" Left="552" Width="75.6" Height="18.9" Text="[RoomReportDTO.TotalAllocated]" HorzAlign="Right" Font="Arial, 9pt, style=Bold"/>
+      <TextObject Name="Text34" Left="614.25" Width="94.5" Height="18.9" Text="[RoomReportDTO.TotalRemaining]" HorzAlign="Right" Font="Arial, 9pt, style=Bold"/>
+      <DataHeaderBand Name="DataHeader2" Top="164.65" Width="718.2" Height="18.9" Border.Lines="All" Fill.Color="Gainsboro" Guides="9.45">
+        <TextObject Name="Text1" Width="66.15" Height="18.9" Text="Room" HorzAlign="Center" VertAlign="Center" Font="Tahoma, 10pt, style=Bold"/>
+        <TextObject Name="Text2" Left="75.6" Width="103.95" Height="18.9" Text="Building" HorzAlign="Center" VertAlign="Center" Font="Tahoma, 10pt, style=Bold"/>
+        <TextObject Name="Text5" Left="207.9" Width="141.75" Height="18.9" Text="Block" HorzAlign="Center" VertAlign="Center" Font="Tahoma, 10pt, style=Bold"/>
+        <TextObject Name="Text7" Left="378" Width="94.5" Height="18.9" Text="Floor" HorzAlign="Center" VertAlign="Center" Font="Tahoma, 10pt, style=Bold"/>
+        <TextObject Name="Text9" Left="472.5" Width="75.6" Height="18.9" Text="Capacity" HorzAlign="Right" VertAlign="Center" Font="Tahoma, 10pt, style=Bold"/>
+        <TextObject Name="Text11" Left="552" Width="75.6" Height="18.9" Text="Allocated" HorzAlign="Right" VertAlign="Center" Font="Tahoma, 10pt, style=Bold"/>
+        <TextObject Name="Text35" Left="623.7" Width="85.05" Height="18.9" Text="Remaining" HorzAlign="Right" VertAlign="Center" Font="Tahoma, 10pt, style=Bold"/>
+      </DataHeaderBand>
+      <DataBand Name="Data2" Top="233.35" Width="718.2" Height="18.9" Border.Lines="All" Fill.Color="WhiteSmoke" EvenStyle="EvenRows" DataSource="ReservationReportDTO" Filter="[ReservationReportDTO.RoomId]=[RoomReportDTO.RoomId]">
+        <TextObject Name="Text23" Left="66.15" Width="94.5" Height="18.9" Border.Lines="All" Text="[ReservationReportDTO.DevoteeCode]" Font="Tahoma, 9.75pt"/>
+        <TextObject Name="Text24" Left="160.65" Width="236.25" Height="18.9" Border.Lines="All" Text="[ReservationReportDTO.DovoteeName]" Font="Tahoma, 9.75pt"/>
+        <TextObject Name="Text25" Left="396.9" Width="122.85" Height="18.9" Border.Lines="All" Text="[ReservationReportDTO.FromDate]" Format="Date" Format.Format="d" HorzAlign="Center" Font="Tahoma, 9.75pt"/>
+        <TextObject Name="Text26" Left="519.75" Width="94.5" Height="18.9" Border.Lines="All" Text="[ReservationReportDTO.Allocated]" HorzAlign="Right" Font="Tahoma, 9.75pt"/>
+        <DataHeaderBand Name="DataHeader1" Top="210.45" Width="718.2" Height="18.9" Border.Lines="All" Fill.Color="PaleGreen">
+          <TextObject Name="Text6" Left="66.15" Width="94.5" Height="18.9" Border.Lines="All" Text="Devotee Code" HorzAlign="Center" VertAlign="Center" Font="Tahoma, 8pt, style=Bold"/>
+          <TextObject Name="Text10" Left="519.75" Width="94.5" Height="18.9" Border.Lines="All" Text="Allocated" HorzAlign="Center" VertAlign="Center" Font="Tahoma, 8pt, style=Bold"/>
+          <TextObject Name="Text8" Left="160.65" Width="236.25" Height="18.9" Border.Lines="All" Text="Devotee Name" HorzAlign="Center" VertAlign="Center" Font="Tahoma, 8pt, style=Bold"/>
+          <TextObject Name="Text31" Left="396.9" Width="122.85" Height="18.9" Border.Lines="All" Text="Check - In Date" HorzAlign="Center" VertAlign="Center" Font="Tahoma, 8pt, style=Bold"/>
+        </DataHeaderBand>
+        <DataFooterBand Name="DataFooter1" Top="256.25" Width="718.2" Height="16"/>
+      </DataBand>
     </DataBand>
-
-    <!-- Page Footer -->
-    <PageFooterBand Name="PageFooter1" Height="20">
-      <TextObject Name="TxtFooterRight" Left="550" Width="200" Height="18"
-                  HorzAlign="Right" Font="Arial,8pt"
-                  Text="Page [Page#] of [TotalPages#]"/>
+    <PageFooterBand Name="PageFooter1" Top="276.25" Width="718.2" Height="28.35" Fill.Color="WhiteSmoke">
+      <TextObject Name="Text4" Left="614.25" Width="94.5" Height="28.35" Text="[PageN]" HorzAlign="Right" VertAlign="Center" Font="Tahoma, 8pt"/>
     </PageFooterBand>
-
   </ReportPage>
 </Report>

@@ -12,8 +12,9 @@ public interface IRoom
     Room GetSelectedRoom(int id);
     Task<List<Room>> GeRoomReservations(string SortProperty, SortOrder sortOrder, string SearchText = "");
     Task<List<Room>> GetAllRoomReservations(string SearchText = "");
+    Task<List<RoomReportDTO>> GetRoomsUpToDateAsync(DateTime dateValue);
     Task<List<RoomReportDTO>> GetRoomsWithReservationsUpToDateAsync(DateTime dateValue);
-    Task<List<RoomReportDTO>> GetRoomsWithReservationsReportAsync();
     List<RoomDTO> GetRooms();
     Task<List<ReservationReportDTO>> GetCheckInDetailsReportAsync(DateTime dateValue);
+    Task<List<Room>> GetRoomsList(string SearchText);
 }

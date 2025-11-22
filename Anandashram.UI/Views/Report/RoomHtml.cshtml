@@ -1,0 +1,101 @@
+﻿@model IEnumerable<Room>
+
+@{
+}
+<style>
+
+    table {
+        page-break-inside: auto;
+    }
+    tr {
+        page-break-inside: avoid;
+        page-break-after: auto;
+    }
+}
+</style>
+<div class="container-fluid mt-3">
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <h3 class="fw-bold text-success">
+            <i class="fas fa-door-open me-2"></i>Room - List
+        </h3>
+    </div>
+<div class="table-responsive mt-3">
+            <table class="table table-hover align-middle shadow-sm green-table">
+                <thead class="table-success text-dark">
+                    <tr>
+                        <th>Building</th>
+                        <th>Block</th>
+                        <th>Floor</th>
+                        <th>Room</th>
+                        <th>Description</th>
+                        <th>Capacity</th>
+                        <th class="text-center">Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @if (Model != null && Model.Any())
+                    {
+                        var distinctBuildings = Model.DistinctBy(p => p.BuildingId).Select(g => new { g.BuildingId, g.BuildingName }).ToList();
+
+                        foreach (var distinctBuild in distinctBuildings)
+                        {
+                            var buildingRowsList = Model.Where(p => p.BuildingId == distinctBuild.BuildingId).ToList();
+                            var buildingCount = buildingRowsList.Count();
+
+                            @:<tr>
+                            <td rowspan="@buildingCount" class="align-middle fw-semibold text-success">@distinctBuild.BuildingName</td>
+
+                            var distinctBlocks = buildingRowsList.DistinctBy(p => p.BlockId).Select(g => new { g.BuildingId, g.BlockId, g.BlockName });
+                            foreach (var distinctBlock in distinctBlocks)
+                            {
+                                var blockRowsList = Model.Where(p => p.BlockId == distinctBlock.BlockId && p.BuildingId == distinctBlock.BuildingId).ToList();
+                                var blockCount = blockRowsList.Count();
+
+                                <td rowspan="@blockCount" class="align-middle">@distinctBlock.BlockName</td>
+
+                                var distinctFloors = blockRowsList.DistinctBy(p => p.FloorId).Select(g => new { g.BuildingId, g.BlockId, g.FloorId, g.FloorName });
+                                foreach (var distinctFloor in distinctFloors)
+                                {
+                                    var floorRowsList = Model.Where(p =>
+                                        p.BlockId == distinctBlock.BlockId &&
+                                        p.BuildingId == distinctBlock.BuildingId &&
+                                        p.FloorId == distinctFloor.FloorId).ToList();
+
+                                    var floorCount = floorRowsList.Count();
+                                    <td rowspan="@floorCount" class="align-middle">@distinctFloor.FloorName</td>
+
+                                    for (int iLoop = 0; iLoop < floorRowsList.Count; iLoop++)
+                                    {
+                                        if (iLoop != 0)
+                                            @Html.Raw("<tr>")
+
+                                        <td>@floorRowsList[iLoop].Name</td>
+                                        <td>@floorRowsList[iLoop].Description</td>
+                                        <td>@floorRowsList[iLoop].Capacity</td>
+                                        <td class="text-center">
+                                            <div class="btn-group">
+                                                <a asp-action="Edit" asp-route-id="@floorRowsList[iLoop].Id" class="btn btn-sm btn-outline-success">
+                                                    <i class="fa fa-edit" title="Edit"></i>
+                                                </a>
+                                                <a asp-action="Details" asp-route-id="@floorRowsList[iLoop].Id" class="btn btn-sm btn-outline-dark">
+                                                    <i class="fa fa-eye" title="Details"></i>
+                                                </a>
+                                                <a asp-action="Delete" asp-route-id="@floorRowsList[iLoop].Id" class="btn btn-sm btn-outline-danger">
+                                                    <i class="fa fa-trash" title="Delete"></i>
+                                                </a>
+                                            </div>
+                                        </td>
+                                        @Html.Raw("</tr>")
+                                    }
+                                }
+                            }
+                        }
+                    }
+                    else
+                    {
+                        <tr><td colspan="7" class="text-center text-muted">No records found</td></tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+        </div>

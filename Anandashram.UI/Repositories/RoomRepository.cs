@@ -1,4 +1,6 @@
-﻿namespace Anandashram.Repositories;
+﻿using DocumentFormat.OpenXml;
+
+namespace Anandashram.Repositories;
 public class RoomRepository : IRoom
 {
     private readonly ApplicationDbContext _context; // for connecting to efcore.
@@ -53,6 +55,16 @@ public class RoomRepository : IRoom
 
     public async Task<PaginatedList<Room>> GetItems(string SortProperty, SortOrder sortOrder, string SearchText = "", int pg = 1, int pageSize = 5)
     {
+        List<Room> rooms = await GetRoomsList(SearchText);
+
+        rooms = DoSort(rooms, SortProperty, sortOrder);
+
+        PaginatedList<Room> retRooms = new PaginatedList<Room>(rooms, pg, pageSize);
+        return retRooms;
+    }
+
+    public async Task<List<Room>> GetRoomsList(string SearchText)
+    {
         List<Room> rooms;
 
         if (!string.IsNullOrEmpty(SearchText))
@@ -70,11 +82,7 @@ public class RoomRepository : IRoom
             rooms = await _context.Rooms.Include(e => e.Building)
                 .Include(e => e.Block)
                 .Include(e => e.Floor).ToListAsync();
-
-        rooms = DoSort(rooms, SortProperty, sortOrder);
-
-        PaginatedList<Room> retRooms = new PaginatedList<Room>(rooms, pg, pageSize);
-        return retRooms;
+        return rooms;
     }
 
     public async Task<Room> GetRoom(int id)
@@ -165,71 +173,93 @@ public class RoomRepository : IRoom
 
         return roomList;
     }
+    public async Task<List<RoomReportDTO>> GetRoomsUpToDateAsync(DateTime dateValue)
+    {
+        var endOfDay = dateValue.Date.AddDays(1);
+        var rooms = await _context.Rooms
+    .Include(r => r.Building)
+    .Include(r => r.Block)
+    .Include(r => r.Floor)
+    .GroupJoin(
+        _context.Reservations
+            .Include(e => e.Devotee)
+            .Where(res => !res.Closed && res.FromDate < endOfDay),
+        room => room.Id,
+        res => res.RoomId,
+        (room, reservations) => new { room, reservations }
+    )
+    .Select(x => new RoomReportDTO
+    {
+        Id = x.room.Id,
+        RoomName = x.room.Name,
+
+        BuildingName = x.room.Building != null ? x.room.Building.Name : "",
+        BlockName = x.room.Block != null ? x.room.Block.Name : "",
+        FloorName = x.room.Floor != null ? x.room.Floor.Name : "",
+        Capacity = x.room.Capacity,
+
+        TotalAllocated = x.reservations.Sum(rv => (int?)rv.Allocated) ?? 0,
+        TotalRemaining = x.room.Capacity - (x.reservations.Sum(rv => (int?)rv.Allocated) ?? 0),
+        RemainingCount = x.room.Capacity - (x.reservations.Sum(rv => (int?)rv.Allocated) ?? 0),
+
+        Reservations = x.reservations
+            .Select(rv => new ReservationReportDTO
+            {
+                RoomId = rv.RoomId,
+                DevoteeCode = rv.Devotee.Code,
+                DevoteeName = rv.Devotee.Name,
+                FromDate = rv.FromDate,
+                Allocated = rv.Allocated,
+                Closed = rv.Closed
+            })
+            .ToList()
+    })
+    .ToListAsync();
+
+        return rooms;
+    }
     public async Task<List<RoomReportDTO>> GetRoomsWithReservationsUpToDateAsync(DateTime dateValue)
     {
         var endOfDay = dateValue.Date.AddDays(1);
-
         var rooms = await _context.Rooms
-            .Include(r => r.Building)
-            .Include(r => r.Block)
-            .Include(r => r.Floor)
-            .GroupJoin(
-                _context.Reservations
-                    .Where(res => !res.Closed && res.FromDate < endOfDay),
-                room => room.Id,
-                res => res.RoomId,
-                (room, reservations) => new { room, reservations }
-            )
-            .Select(x => new RoomReportDTO
-            {
-                Name = x.room.Name,
-                BuildingName = x.room.Building != null ? x.room.Building.Name : string.Empty,
-                BlockName = x.room.Block != null ? x.room.Block.Name : string.Empty,
-                FloorName = x.room.Floor != null ? x.room.Floor.Name : string.Empty,
-                Capacity = x.room.Capacity,
-                Occupied = x.reservations.Sum(r => (int?)r.Allocated) ?? 0,
-                RemainingCount = x.room.Capacity - (x.reservations.Sum(r => (int?)r.Allocated) ?? 0),
-                TotalRemaining = x.room.Capacity - (x.reservations.Sum(r => (int?)r.Allocated) ?? 0)
-            })
-            .ToListAsync();
-        return rooms;
-    }
-    public async Task<List<RoomReportDTO>> GetRoomsWithReservationsReportAsync()
+    .Include(r => r.Building)
+    .Include(r => r.Block)
+    .Include(r => r.Floor)
+    .GroupJoin(
+        _context.Reservations
+            .Include(e => e.Devotee)
+            .Where(res => !res.Closed && res.FromDate < endOfDay),
+        room => room.Id,
+        res => res.RoomId,
+        (room, reservations) => new { room, reservations }
+    )
+    .Select(x => new RoomReportDTO
     {
-        var rooms = await _context.Rooms
-            .Include(r => r.Building)
-            .Include(r => r.Block)
-            .Include(r => r.Floor)
-            .Include(r => r.Reservations)
-                .ThenInclude(rv => rv.Devotee)
-                    .ThenInclude(d => d.DevoteeCategory)
-            .Select(r => new RoomReportDTO
+        Id = x.room.Id,
+        RoomName = x.room.Name,
+
+        BuildingName = x.room.Building != null ? x.room.Building.Name : "",
+        BlockName = x.room.Block != null ? x.room.Block.Name : "",
+        FloorName = x.room.Floor != null ? x.room.Floor.Name : "",
+        Capacity = x.room.Capacity,
+
+        TotalAllocated = x.reservations.Sum(rv => (int?)rv.Allocated) ?? 0,
+        TotalRemaining = x.room.Capacity - (x.reservations.Sum(rv => (int?)rv.Allocated) ?? 0),
+        RemainingCount = x.room.Capacity - (x.reservations.Sum(rv => (int?)rv.Allocated) ?? 0),
+
+        Reservations = x.reservations
+            .Select(rv => new ReservationReportDTO
             {
-                Id = r.Id,
-                RoomName = r.Name,
-                BuildingName = r.Building != null ? r.Building.Name : string.Empty,
-                BlockName = r.Block != null ? r.Block.Name : string.Empty,
-                FloorName = r.Floor != null ? r.Floor.Name : string.Empty,
-                Capacity = r.Capacity,
-                TotalAllocated = r.Reservations.Sum(rv => (int?)rv.Allocated) ?? 0,
-                TotalRemaining = r.Capacity - (r.Reservations.Sum(rv => (int?)rv.Allocated) ?? 0),
-                RemainingCount = r.Capacity - (r.Reservations.Sum(rv => (int?)rv.Allocated) ?? 0),
-
-                Reservations = r.Reservations.Select(rv => new ReservationReportDTO
-                {
-                    RoomId = rv.RoomId,
-                    DevoteeCode = rv.Devotee.Code,
-                    DevoteeName = rv.Devotee.Name,
-                    DevoteeCategoryName = rv.Devotee.DevoteeCategory != null
-                        ? rv.Devotee.DevoteeCategory.Name
-                        : string.Empty,
-                    FromDate = rv.FromDate,
-                    Allocated = rv.Allocated,
-                    Closed = rv.Closed
-                }).ToList()
+                RoomId = rv.RoomId,
+                DevoteeCode = rv.Devotee.Code,
+                DevoteeName = rv.Devotee.Name,
+                FromDate = rv.FromDate,
+                Allocated = rv.Allocated,
+                Closed = rv.Closed
             })
-            .ToListAsync();
-
+            .ToList()
+    })
+    .ToListAsync();
         return rooms;
     }
 
@@ -252,7 +282,7 @@ public class RoomRepository : IRoom
                 FloorName = r.Floor != null ? r.Floor.Name : string.Empty,
                 Capacity = r.Capacity,
                 BuildingId = r.BuildingId,
-                BlockId=r.BlockId,
+                BlockId = r.BlockId,
                 FloorId = r.FloorId
             })
             .ToList();
@@ -266,7 +296,7 @@ public class RoomRepository : IRoom
         var startOfDate = dateValue.Date;
 
         return await _context.Reservations.Include(rv => rv.Devotee)
-            .Where(r => r.FromDate.Date >= startOfDate && r.FromDate.Date<endOfDay) // ignore time!
+            .Where(r => r.FromDate.Date >= startOfDate && r.FromDate.Date < endOfDay) // ignore time!
             .Select(r => new ReservationReportDTO
             {
                 DevoteeCode = r.Devotee.Code,
