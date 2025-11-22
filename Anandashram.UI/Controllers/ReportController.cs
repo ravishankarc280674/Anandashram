@@ -83,42 +83,70 @@ public class ReportController : Controller
             return View();
         else
         {
-            WebReport wr = new();
-            List<Company> companies = new();
-            companies.Add(_companyrepo.CompanyDetails());
-            string ReportName;
-           
-            List<RoomReportDTO> roomList = new();
-            if (reportformat == "list")
             {
-                wr.Report.Load(Path.Combine(_env.ContentRootPath, "Reports", "RoomAllocation.frx"));
-                wr.Report.RegisterData(companies, "Company");
-                wr.Report.GetDataSource("Company").Enabled = true;
-                roomList = await _roomRepo.GetRoomsUpToDateAsync(dateValue);
-                wr.Report.RegisterData(roomList, "Rooms");
-                ReportName = "Reservation List";
-                wr.Report.SetParameterValue("DatePassed", dateValue.ToString("dd-MMM-yyyy"));
-                return PrintScreenOrPdf(typeofreport, wr, ReportName);
+                return await (typeofreport == "Screen" ? RoomsAllocationPdfPreview(reportformat, dateValue) : RoomsAllocationPdfDownload(reportformat, dateValue));
             }
-            else
-            {
 
-                wr.Report.Load(Path.Combine(_env.ContentRootPath, "Reports", "RoomsReservations.frx"));
-                roomList = await _roomRepo.GetRoomsWithReservationsUpToDateAsync(dateValue);
-                wr.Report.RegisterData(companies, "Company");
-                foreach (var d in roomList)
-                {
-                    d.Reservations ??= new();
-                }
-                wr.Report.RegisterData(roomList, "Rooms");
-                wr.Report.GetDataSource("Rooms").Enabled = true;
-                wr.Report.GetDataSource("Rooms.Reservations").Enabled = true;
-                ReportName = "Reservation Details";
-                return PrintScreenOrPdf(typeofreport, wr, ReportName);
-            }
+            //WebReport wr = new();
+            //List<Company> companies = new();
+            //companies.Add(_companyrepo.CompanyDetails());
+            //string ReportName;
+
+            //List<RoomReportDTO> roomList = new();
+            //if (reportformat == "list")
+            //{
+            //    wr.Report.Load(Path.Combine(_env.ContentRootPath, "Reports", "RoomAllocation.frx"));
+            //    wr.Report.RegisterData(companies, "Company");
+            //    wr.Report.GetDataSource("Company").Enabled = true;
+            //    roomList = await _roomRepo.GetRoomsUpToDateAsync(dateValue);
+            //    wr.Report.RegisterData(roomList, "Rooms");
+            //    ReportName = "Reservation List";
+            //    wr.Report.SetParameterValue("DatePassed", dateValue.ToString("dd-MMM-yyyy"));
+            //    return PrintScreenOrPdf(typeofreport, wr, ReportName);
+            //}
+            //else
+            //{
+
+            //    wr.Report.Load(Path.Combine(_env.ContentRootPath, "Reports", "RoomsReservations.frx"));
+            //    roomList = await _roomRepo.GetRoomsWithReservationsUpToDateAsync(dateValue);
+            //    wr.Report.RegisterData(companies, "Company");
+            //    foreach (var d in roomList)
+            //    {
+            //        d.Reservations ??= new();
+            //    }
+            //    wr.Report.RegisterData(roomList, "Rooms");
+            //    wr.Report.GetDataSource("Rooms").Enabled = true;
+            //    wr.Report.GetDataSource("Rooms.Reservations").Enabled = true;
+            //    ReportName = "Reservation Details";
+            //    return PrintScreenOrPdf(typeofreport, wr, ReportName);
+            //}
         }
     }
 
+    private async Task<IActionResult> RoomsAllocationPdfDownload(string reportformat, DateTime dateValue)
+    {
+        var roomList = await _roomRepo.GetRoomsUpToDateAsync(dateValue);
+        var company = _companyrepo.CompanyDetails();
+        var doc = new RoomAllocationDetailDateWise(company, roomList ,dateValue);
+
+        // Render to byte[]
+        var pdfBytes = doc.GeneratePdf();
+        var fileName = $"RoomsAllocationListReport_{DateTime.Now:yyyyMMdd}.pdf";
+        return File(pdfBytes, "application/pdf", fileName);
+    }
+
+    private async Task<IActionResult> RoomsAllocationPdfPreview(string reportformat, DateTime dateValue)
+    {
+        var roomList = await _roomRepo.GetRoomsUpToDateAsync(dateValue);
+        var company = _companyrepo.CompanyDetails();
+        var doc = new RoomAllocationDetailDateWise(company, roomList, dateValue);
+
+        // Render to byte[]
+        var pdfBytes = doc.GeneratePdf();
+        return File(pdfBytes, "application/pdf");
+    }
+   
+     
     public async Task<IActionResult> CheckOutViewer()
     {
         return await CheckOutViewer(DateTime.MinValue, "screen");

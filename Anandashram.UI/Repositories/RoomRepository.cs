@@ -1,4 +1,5 @@
 ﻿using DocumentFormat.OpenXml;
+using FastReport.Utils;
 
 namespace Anandashram.Repositories;
 public class RoomRepository : IRoom
@@ -175,49 +176,65 @@ public class RoomRepository : IRoom
     }
     public async Task<List<RoomReportDTO>> GetRoomsUpToDateAsync(DateTime dateValue)
     {
-        var endOfDay = dateValue.Date.AddDays(1);
+        var targetDate = dateValue.Date.AddDays(1); // include full selected date
+
         var rooms = await _context.Rooms
-    .Include(r => r.Building)
-    .Include(r => r.Block)
-    .Include(r => r.Floor)
-    .GroupJoin(
-        _context.Reservations
-            .Include(e => e.Devotee)
-            .Where(res => !res.Closed && res.FromDate < endOfDay),
-        room => room.Id,
-        res => res.RoomId,
-        (room, reservations) => new { room, reservations }
-    )
-    .Select(x => new RoomReportDTO
-    {
-        Id = x.room.Id,
-        RoomName = x.room.Name,
-
-        BuildingName = x.room.Building != null ? x.room.Building.Name : "",
-        BlockName = x.room.Block != null ? x.room.Block.Name : "",
-        FloorName = x.room.Floor != null ? x.room.Floor.Name : "",
-        Capacity = x.room.Capacity,
-
-        TotalAllocated = x.reservations.Sum(rv => (int?)rv.Allocated) ?? 0,
-        TotalRemaining = x.room.Capacity - (x.reservations.Sum(rv => (int?)rv.Allocated) ?? 0),
-        RemainingCount = x.room.Capacity - (x.reservations.Sum(rv => (int?)rv.Allocated) ?? 0),
-
-        Reservations = x.reservations
-            .Select(rv => new ReservationReportDTO
+            .Include(r => r.Building)
+            .Include(r => r.Block)
+            .Include(r => r.Floor)
+            .GroupJoin(
+                _context.Reservations
+                    .Include(rv => rv.Devotee)
+                    .Where(rv =>
+                        !rv.Closed && // 🔥 ensures reservation is active
+                        rv.FromDate < targetDate  
+                    ),
+                room => room.Id,
+                rv => rv.RoomId,
+                (room, reservations) => new
+                {
+                    room,
+                    reservations,
+                    allocated = reservations.Sum(v => (int?)v.Allocated) ?? 0
+                }
+            )
+            .Select(x => new RoomReportDTO
             {
-                RoomId = rv.RoomId,
-                DevoteeCode = rv.Devotee.Code,
-                DevoteeName = rv.Devotee.Name,
-                FromDate = rv.FromDate,
-                Allocated = rv.Allocated,
-                Closed = rv.Closed
+                Id = x.room.Id,
+                RoomName = x.room.Name,
+
+                BuildingName = x.room.Building != null ? x.room.Building.Name : "",
+                BlockName = x.room.Block != null ? x.room.Block.Name : "",
+                FloorName = x.room.Floor != null ? x.room.Floor.Name : "",
+                Capacity = x.room.Capacity,
+
+                TotalAllocated = x.allocated,
+                TotalRemaining = x.room.Capacity - x.allocated,
+                RemainingCount = x.room.Capacity - x.allocated,
+
+                Reservations = x.reservations.Select(rv => new ReservationReportDTO
+                {
+                    Id = rv.Id,
+                    RoomId = rv.RoomId,
+                    DevoteeId = rv.DevoteeId,
+                    DevoteeCode = rv.Devotee != null ? rv.Devotee.Code : "",
+                    DevoteeName = rv.Devotee != null ? rv.Devotee.Name : "",
+
+                    FromDate = rv.FromDate,
+                    ToDate = rv.ToDate,
+                    Allocated = rv.Allocated,
+                    Closed = rv.Closed
+                }).ToList()
             })
-            .ToList()
-    })
-    .ToListAsync();
+            .OrderBy(x => x.BuildingName)
+            .ThenBy(x => x.BlockName)
+            .ThenBy(x => x.FloorName)
+            .ThenBy(x => x.RoomName)
+            .ToListAsync();
 
         return rooms;
     }
+
     public async Task<List<RoomReportDTO>> GetRoomsWithReservationsUpToDateAsync(DateTime dateValue)
     {
         var endOfDay = dateValue.Date.AddDays(1);
