@@ -5,12 +5,12 @@ using QuestPDF.Infrastructure;
 
 namespace Anandashram.Reports;
 
-public class RoomAllocationDetailDateWise : IDocument
+public class RoomAllocationDateWise : IDocument
 {
     public Company Company { get; }
     public List<RoomReportDTO> Rooms { get; }
     public DateTime SelectedDateTime { get; }
-    public RoomAllocationDetailDateWise(Company company, List<RoomReportDTO> rooms, DateTime selectedDateTime)
+    public RoomAllocationDateWise(Company company, List<RoomReportDTO> rooms, DateTime selectedDateTime)
     {
         Company = company ?? new Company();
         Rooms = rooms ?? new List<RoomReportDTO>();
@@ -69,121 +69,123 @@ public class RoomAllocationDetailDateWise : IDocument
                 .BorderTop(1).BorderBottom(2)
                 .BorderColor(Colors.Green.Darken2)
                 .AlignCenter()
-                .Text("Rooms Alloted as On : " + SelectedDateTime.ToString("dd - MMM - yyyy")).FontSize(12).Bold().FontColor(Colors.Green.Darken3);
+                .Text("Rooms Alloted as of : " + SelectedDateTime.ToString("dd - MMM - yyyy")).FontSize(12).Bold().FontColor(Colors.Green.Darken3);
         });
     }
     // Constants for column widths
     const float TableWidth = 440; // reduce total width
     const float RoomColumnWidth = 200;
     const float CapacityColumnWidth = 80;
-
     void Content(QuestPDF.Infrastructure.IContainer content)
     {
-        var rooms = Rooms.OrderBy(r => r.BuildingName)
-            .ThenBy(r => r.BlockName)
-            .ThenBy(r => r.FloorName)
-            .ThenBy(r => r.RoomName)
-            .ToList();
+
+        // Build grouped structure
+        var grouped = Rooms
+    .OrderBy(r => r.BuildingName)
+    .ThenBy(r => r.BlockName)
+    .ThenBy(r => r.FloorName)
+    .GroupBy(g => new { g.BuildingName, g.BlockName, g.FloorName });
 
         content.Column(col =>
         {
-            foreach (var room in rooms)
+            foreach (var group in grouped)
             {
-                // 🔹 Wrap entire room section in a card container
-                col.Item().PaddingBottom(10) // spacing between cards
-                    .Border(1)
-                    .BorderColor(Colors.Green.Darken2)
-                    .CornerRadius(6)
-                    .Padding(6)
-                    .Background(Colors.White)
-                    .Column(roomCol =>
+                col.Item().PaddingTop(10)
+                    .Element(c => DrawGroup(
+                        c,
+                        group.Key.BuildingName,
+                        group.Key.BlockName,
+                        group.Key.FloorName
+                    ));
+                col.Item().Element(TableHeader);
+                // room rows
+                foreach (var room in group)
+                    col.Item().Element(c => DrawRoomRow(c, room));
+
+                // Inline floor total
+                var floorTotal = group.Sum(r => r.Capacity);
+                var floorAllocatedTotal = group.Sum(r => r.TotalAllocated);
+                var floorremainingTotal = group.Sum(r => r.TotalRemaining);
+                col.Item()
+                .Width(TableWidth)
+                .PaddingVertical(5)
+                .Background("#d5e8d4") // soft highlight (optional)
+                .Element(x =>
+                {
+                    x.Row(row =>
                     {
-                        // Room Header Row
-                        roomCol.Item()
-                            .Background("#bcd8c1")
-                            .Padding(4)
-                            .Row(r =>
-                            {
-                                r.RelativeItem().PaddingLeft(6).Text("Room").Bold();
-                                r.RelativeItem().AlignCenter().Text("Building").Bold();
-                                r.RelativeItem().AlignCenter().Text("Block").Bold();
-                                r.RelativeItem().AlignCenter().Text("Floor").Bold();
-                            });
+                        row.ConstantItem(RoomColumnWidth)
+                            .AlignLeft().PaddingLeft(6)
+                            .Text("Subtotal:")
+                            .Bold();
 
-                        // Room Details Row
-                        roomCol.Item()
-                            .Background("#d1e7dd")
-                            .Padding(6)
-                            .Row(row =>
-                            {
-                                row.RelativeItem().AlignLeft().PaddingLeft(6).Text(room.RoomName).Bold();
-                                row.RelativeItem().AlignCenter().Text(!string.IsNullOrWhiteSpace(room.BuildingName) ? room.BuildingName : "-");
-                                row.RelativeItem().AlignCenter().Text(!string.IsNullOrWhiteSpace(room.BlockName) ? room.BlockName : "-");
-                                row.RelativeItem().AlignCenter().Text(!string.IsNullOrWhiteSpace(room.FloorName) ? room.FloorName : "-");
-                            });
+                        row.ConstantItem(CapacityColumnWidth)
+                            .AlignRight().PaddingRight(6)
+                            .Text(floorTotal.ToString())
+                            .Bold();
 
-                        // Room Stats
-                        roomCol.Item().PaddingVertical(5)
-                            .BorderBottom(1).BorderColor(Colors.Grey.Lighten2)
-                            .Row(r =>
-                            {
-                                r.RelativeItem().AlignCenter().Text($"Capacity: {room.Capacity}").Bold();
-                                r.RelativeItem().AlignCenter().Text($"Allocated: {room.TotalAllocated}").Bold();
-                                r.RelativeItem().AlignCenter().Text($"Remaining: {room.TotalRemaining}").Bold();
-                            });
+                        row.ConstantItem(CapacityColumnWidth)
+                            .AlignRight().PaddingRight(6)
+                            .Text(floorAllocatedTotal.ToString())
+                            .Bold();
 
-                        // Reservations Header
-                        roomCol.Item()
-                            .Background("#bcd8c1")
-                            .Padding(4)
-                            .Row(r =>
-                            {
-                                r.RelativeItem().PaddingLeft(6).Text("Devotee Code").Bold();
-                                r.RelativeItem().Text("Devotee Name").Bold();
-                                r.RelativeItem().Text("From Date").Bold();
-                                r.ConstantItem(60).AlignRight().Text("Alloc.").Bold();
-                            });
-
-                        // Reservations List
-                        if (room.Reservations.Any())
-                        {
-                            foreach (var res in room.Reservations)
-                            {
-                                roomCol.Item().Padding(4)
-                                    .Row(r =>
-                                    {
-                                        r.RelativeItem().PaddingLeft(6).Text(res.DevoteeCode);
-                                        r.RelativeItem().Text(res.DevoteeName);
-                                        r.RelativeItem().Text(res.FromDate.ToString("dd-MMM-yyyy"));
-                                        r.ConstantItem(60).AlignRight().Text(res.Allocated.ToString());
-                                    });
-                            }
-                        }
-                        else
-                        {
-                            roomCol.Item().Padding(5)
-                                .Text("No active reservations")
-                                .Italic()
-                                .FontColor(Colors.Grey.Darken1);
-                        }
-                    }); // End of room card
+                        row.ConstantItem(CapacityColumnWidth)
+                            .AlignRight().PaddingRight(6)
+                            .Text(floorremainingTotal.ToString())
+                            .Bold();
+                    });
+                });
+                col.Item()
+               .Width(TableWidth)
+               .PaddingVertical(3)
+               .BorderBottom(1)
+               .BorderColor(Colors.Grey.Lighten2);
             }
 
-            // Final Totals
-            var totalCapacity = rooms.Sum(r => r.Capacity);
-            var totalAllocated = rooms.Sum(r => r.TotalAllocated);
-            var totalRemaining = rooms.Sum(r => r.TotalRemaining);
+            // Final Total
+            var grandCapacity = Rooms.Sum(r => r.Capacity);
+            var grandAllocated = Rooms.Sum(r => r.TotalAllocated);
+            var grandRemaining = Rooms.Sum(r => r.TotalRemaining);
 
-            col.Item().PaddingTop(10)
-                .BorderTop(3).BorderColor(Colors.Green.Darken3)
-                .Row(r =>
+            col.Item()
+                .Width(TableWidth)
+                .PaddingVertical(6)
+                .Background("#cfe2f3")  // highlight (soft-blue)
+                .Element(x =>
                 {
-                    r.RelativeItem().AlignCenter().Text($"Total Capacity: {totalCapacity}").Bold().FontSize(11);
-                    r.RelativeItem().AlignCenter().Text($"Total Allocated: {totalAllocated}").Bold().FontSize(11);
-                    r.RelativeItem().AlignCenter().Text($"Total Remaining: {totalRemaining}").Bold().FontSize(11);
+                    x.Row(row =>
+                    {
+                        row.ConstantItem(RoomColumnWidth)
+                            .AlignLeft().PaddingLeft(6)
+                            .Text("Grand Total:")
+                            .Bold().FontSize(11);
+
+                        row.ConstantItem(CapacityColumnWidth)
+                            .AlignRight().PaddingRight(6)
+                            .Text(grandCapacity.ToString())
+                            .Bold().FontSize(11);
+
+                        row.ConstantItem(CapacityColumnWidth)
+                            .AlignRight().PaddingRight(6)
+                            .Text(grandAllocated.ToString())
+                            .Bold().FontSize(11);
+
+                        row.ConstantItem(CapacityColumnWidth)
+                            .AlignRight().PaddingRight(6)
+                            .Text(grandRemaining.ToString())
+                            .Bold().FontSize(11);
+                    });
                 });
+            // line under grand total
+            col.Item()
+                .Width(TableWidth)
+                .PaddingBottom(8)
+                .BorderBottom(1)
+                .BorderColor(Colors.Grey.Darken1);
         });
     }
+
+   
 
     void TableHeader(QuestPDF.Infrastructure.IContainer container)
     {

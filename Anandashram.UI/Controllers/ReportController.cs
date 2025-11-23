@@ -1,7 +1,10 @@
 ﻿using Anandashram.Reports;
+using ClosedXML.Excel;
+using DocumentFormat.OpenXml.Spreadsheet;
 using FastReport.Export.PdfSimple;
 using FastReport.Web;
 using QuestPDF.Fluent;
+using QuestPDF.Helpers;
 
 namespace Anandashram.Controllers;
 public class ReportController : Controller
@@ -83,51 +86,123 @@ public class ReportController : Controller
             return View();
         else
         {
+            if(reportformat == "detail")
+            {
+                return await (typeofreport == "screen" ? RoomsAllocationDetailPdfPreview(reportformat, dateValue) : RoomsAllocationDetailPdfDownload(reportformat, dateValue));
+            }
+            else
             {
                 return await (typeofreport == "screen" ? RoomsAllocationPdfPreview(reportformat, dateValue) : RoomsAllocationPdfDownload(reportformat, dateValue));
             }
 
-            //WebReport wr = new();
-            //List<Company> companies = new();
-            //companies.Add(_companyrepo.CompanyDetails());
-            //string ReportName;
+        }
+    }
+    public List<GenericItemDTO> LoadGenericTableData(string type)
+    {
+        return type switch
+        {
+            "Category" => _devotecategoryrepo.GetDevoteeCategories()
+                                .Select(x => new GenericItemDTO { Id = x.Id, Name = x.Name, Description = x.Description })
+                                .ToList(),
 
-            //List<RoomReportDTO> roomList = new();
-            //if (reportformat == "list")
-            //{
-            //    wr.Report.Load(Path.Combine(_env.ContentRootPath, "Reports", "RoomAllocation.frx"));
-            //    wr.Report.RegisterData(companies, "Company");
-            //    wr.Report.GetDataSource("Company").Enabled = true;
-            //    roomList = await _roomRepo.GetRoomsUpToDateAsync(dateValue);
-            //    wr.Report.RegisterData(roomList, "Rooms");
-            //    ReportName = "Reservation List";
-            //    wr.Report.SetParameterValue("DatePassed", dateValue.ToString("dd-MMM-yyyy"));
-            //    return PrintScreenOrPdf(typeofreport, wr, ReportName);
-            //}
-            //else
-            //{
+            "Building" => _buildingrepo.GetBuildings()
+                                .Select(x => new GenericItemDTO { Id = x.Id, Name = x.Name, Description = x.Description })
+                                .ToList(),
 
-            //    wr.Report.Load(Path.Combine(_env.ContentRootPath, "Reports", "RoomsReservations.frx"));
-            //    roomList = await _roomRepo.GetRoomsWithReservationsUpToDateAsync(dateValue);
-            //    wr.Report.RegisterData(companies, "Company");
-            //    foreach (var d in roomList)
-            //    {
-            //        d.Reservations ??= new();
-            //    }
-            //    wr.Report.RegisterData(roomList, "Rooms");
-            //    wr.Report.GetDataSource("Rooms").Enabled = true;
-            //    wr.Report.GetDataSource("Rooms.Reservations").Enabled = true;
-            //    ReportName = "Reservation Details";
-            //    return PrintScreenOrPdf(typeofreport, wr, ReportName);
-            //}
+            "Block" => _blockrepo.GetBlocks()
+                                .Select(x => new GenericItemDTO { Id = x.Id, Name = x.Name, Description = x.Description })
+                                .ToList(),
+
+            "Floor" => _floorrepo.GetFloors()
+                                .Select(x => new GenericItemDTO { Id = x.Id, Name = x.Name, Description = x.Description })
+                                .ToList(),
+            _ => new(),
+        };
+}
+
+    // Excel Export
+    public IActionResult ExportGenericReportToExcel(string type)
+    {
+        try
+        {
+            var items = LoadGenericTableData(type) ?? new List<GenericItemDTO>();
+
+            using var workbook = new XLWorkbook();
+            var ws = workbook.Worksheets.Add(type + " List");
+
+            // --- Header Row ---
+            ws.Cell(1, 1).Value = "Name";
+            ws.Cell(1, 2).Value = "Description";
+            ws.Row(1).Style.Font.Bold = true;
+            ws.Row(1).Style.Fill.BackgroundColor = XLColor.FromHtml("#1f6f43"); // dark green
+            ws.Row(1).Style.Font.FontColor = XLColor.White;
+            ws.Row(1).Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Center;
+
+            // --- Data Rows ---
+            for (int i = 0; i < items.Count; i++)
+            {
+                var row = i + 2; // because header is row 1
+                ws.Cell(row, 1).Value = items[i].Name;
+                ws.Cell(row, 2).Value = items[i].Description;
+
+                // Alternating row colors
+                var bgColor = i % 2 == 0 ? XLColor.FromHtml("#e9f5ea") : XLColor.White;
+                ws.Row(row).Style.Fill.BackgroundColor = bgColor;
+
+                // Borders
+                ws.Row(row).Style.Border.OutsideBorder = XLBorderStyleValues.Thin;
+                ws.Row(row).Style.Border.InsideBorder = XLBorderStyleValues.Thin;
+            }
+
+            // --- Table Borders for Header ---
+            ws.Range(1, 1, 1, 2).Style.Border.OutsideBorder = XLBorderStyleValues.Thin;
+            ws.Range(1, 1, 1, 2).Style.Border.InsideBorder = XLBorderStyleValues.Thin;
+
+            // Auto-fit columns
+            ws.Columns().AdjustToContents();
+
+            // Export to MemoryStream
+            using var stream = new MemoryStream();
+            workbook.SaveAs(stream);
+            stream.Position = 0;
+
+            return File(
+                stream,
+                "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+                $"{type}_List.xlsx"
+            );
+        }
+        catch (Exception ex)
+        {
+            return BadRequest("Error generating Excel: " + ex.Message);
         }
     }
 
+
+    // PDF Export using QuestPDF
+    public IActionResult ExportGenericReportToPdf(string type)
+    {
+        var items = LoadGenericTableData(type); // List<GenericItemDTO>
+        var company = _companyrepo.CompanyDetails(); // your company details
+        type = type == "Category" ? "Devotee Category" : type;
+        var pdfBytes = new PrintGenericTable(company, type + " List", items).GeneratePdf();
+        return File(pdfBytes, "application/pdf", $"{type}_List.pdf");
+    }
+
+    // PrintGenericReport view (browser)
+    public IActionResult PrintGenericReport(string type)
+    {
+        var items = LoadGenericTableData(type); // List<GenericItemDTO>
+        var company = _companyrepo.CompanyDetails(); // your company details
+        type = type == "Category" ? "Devotee Category" : type;
+        var pdfBytes = new PrintGenericTable(company, type + " List", items).GeneratePdf();
+        return File(pdfBytes, "application/pdf");
+    }
     private async Task<IActionResult> RoomsAllocationPdfDownload(string reportformat, DateTime dateValue)
     {
         var roomList = await _roomRepo.GetRoomsUpToDateAsync(dateValue);
         var company = _companyrepo.CompanyDetails();
-        var doc = new RoomAllocationDetailDateWise(company, roomList ,dateValue);
+        var doc = new RoomAllocationDateWise(company, roomList ,dateValue);
 
         // Render to byte[]
         var pdfBytes = doc.GeneratePdf();
@@ -139,14 +214,35 @@ public class ReportController : Controller
     {
         var roomList = await _roomRepo.GetRoomsUpToDateAsync(dateValue);
         var company = _companyrepo.CompanyDetails();
+        var doc = new RoomAllocationDateWise(company, roomList, dateValue);
+
+        // Render to byte[]
+        var pdfBytes = doc.GeneratePdf();
+        return File(pdfBytes, "application/pdf");
+    }
+    private async Task<IActionResult> RoomsAllocationDetailPdfDownload(string reportformat, DateTime dateValue)
+    {
+        var roomList = await _roomRepo.GetRoomsUpToDateAsync(dateValue);
+        var company = _companyrepo.CompanyDetails();
+        var doc = new RoomAllocationDetailDateWise(company, roomList, dateValue);
+
+        // Render to byte[]
+        var pdfBytes = doc.GeneratePdf();
+        var fileName = $"RoomsAllocationListReport_{DateTime.Now:yyyyMMdd}.pdf";
+        return File(pdfBytes, "application/pdf", fileName);
+    }
+
+    private async Task<IActionResult> RoomsAllocationDetailPdfPreview(string reportformat, DateTime dateValue)
+    {
+        var roomList = await _roomRepo.GetRoomsUpToDateAsync(dateValue);
+        var company = _companyrepo.CompanyDetails();
         var doc = new RoomAllocationDetailDateWise(company, roomList, dateValue);
 
         // Render to byte[]
         var pdfBytes = doc.GeneratePdf();
         return File(pdfBytes, "application/pdf");
     }
-   
-     
+
     public async Task<IActionResult> CheckOutViewer()
     {
         return await CheckOutViewer(DateTime.MinValue, "screen");
@@ -190,42 +286,46 @@ public class ReportController : Controller
                     ReportName = "Devotee Detail";
                     return PrintScreenOrPdf(actionButton, wr, ReportName);
                 }
-            case "DevoteeCategory":
-                {
-                    wr.Report.Load(Path.Combine(_env.ContentRootPath, "Reports", "General.frx"));
-                    wr.Report.RegisterData(companies, "CompanyRef");
-                    wr.Report.RegisterData(_devotecategoryrepo.GetDevoteeCategories(), "GeneralRef");
-                    wr.Report.SetParameterValue("Title", "Devotee Categories");
-                    ReportName = "Devotee Categories";
-                    return PrintScreenOrPdf(actionButton, wr, ReportName);
-                }
+            case "Category":
             case "Building":
-                {
-                    wr.Report.Load(Path.Combine(_env.ContentRootPath, "Reports", "General.frx"));
-                    wr.Report.RegisterData(companies, "CompanyRef");
-                    wr.Report.RegisterData(_buildingrepo.GetBuildings(), "GeneralRef");
-                    wr.Report.SetParameterValue("Title", "Buildings");
-                    ReportName = "Buildings";
-                    return PrintScreenOrPdf(actionButton, wr, ReportName);
-                }
             case "Block":
-                {
-                    wr.Report.Load(Path.Combine(_env.ContentRootPath, "Reports", "General.frx"));
-                    wr.Report.RegisterData(companies, "CompanyRef");
-                    wr.Report.RegisterData(_blockrepo.GetBlocks(), "GeneralRef");
-                    wr.Report.SetParameterValue("Title", "Blocks");
-                    ReportName = "Blocks";
-                    return PrintScreenOrPdf(actionButton, wr, ReportName);
-                }
             case "Floor":
                 {
-                    wr.Report.Load(Path.Combine(_env.ContentRootPath, "Reports", "General.frx"));
-                    wr.Report.RegisterData(companies, "CompanyRef");
-                    wr.Report.RegisterData(_floorrepo.GetFloors(), "GeneralRef");
-                    wr.Report.SetParameterValue("Title", "Floors");
-                    ReportName = "Floors";
-                    return PrintScreenOrPdf(actionButton, wr, ReportName);
+                    if (actionButton=="Screen")
+                     return PrintGenericReport(reportType);
+                    else if(actionButton=="Pdf")
+                        return ExportGenericReportToPdf(reportType);
+                    else
+                        return ExportGenericReportToExcel(reportType);
+                    
                 }
+            //case "Building":
+            //    {
+            //        wr.Report.Load(Path.Combine(_env.ContentRootPath, "Reports", "General.frx"));
+            //        wr.Report.RegisterData(companies, "CompanyRef");
+            //        wr.Report.RegisterData(_buildingrepo.GetBuildings(), "GeneralRef");
+            //        wr.Report.SetParameterValue("Title", "Buildings");
+            //        ReportName = "Buildings";
+            //        return PrintScreenOrPdf(actionButton, wr, ReportName);
+            //    }
+            //case "Block":
+            //    {
+            //        wr.Report.Load(Path.Combine(_env.ContentRootPath, "Reports", "General.frx"));
+            //        wr.Report.RegisterData(companies, "CompanyRef");
+            //        wr.Report.RegisterData(_blockrepo.GetBlocks(), "GeneralRef");
+            //        wr.Report.SetParameterValue("Title", "Blocks");
+            //        ReportName = "Blocks";
+            //        return PrintScreenOrPdf(actionButton, wr, ReportName);
+            //    }
+            //case "Floor":
+            //    {
+            //        wr.Report.Load(Path.Combine(_env.ContentRootPath, "Reports", "General.frx"));
+            //        wr.Report.RegisterData(companies, "CompanyRef");
+            //        wr.Report.RegisterData(_floorrepo.GetFloors(), "GeneralRef");
+            //        wr.Report.SetParameterValue("Title", "Floors");
+            //        ReportName = "Floors";
+            //        return PrintScreenOrPdf(actionButton, wr, ReportName);
+            //    }
             case "Room":
                 {
                   return await (actionButton == "Screen" ?  RoomsPdfPreview() :  RoomsPdfDownload());

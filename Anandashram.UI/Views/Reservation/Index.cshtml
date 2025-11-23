@@ -249,5 +249,10 @@
         }).on('hidden.bs.collapse', function () {
             $(this).prev('.clickable-row').find('i').removeClass('fa-chevron-up').addClass('fa-chevron-down');
         });
+         function setReportAction(action) {
+        // Set the hidden input value
+        document.getElementById('actionButton').value = action;
+        // Submit the form
+        document.querySelector('form').submit();
     </script>
 }

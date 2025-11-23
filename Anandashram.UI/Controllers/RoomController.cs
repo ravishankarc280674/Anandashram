@@ -38,6 +38,7 @@ public class RoomController : Controller
         var pager = new PageModel(RoomList.TotalRecords, pg, PageSize) { Action = "Index", Controller = "Room", SearchText = SearchText };
         pager.SortExpression = sortExpression;
         pager.ViewType = view;
+        pager.ControllerName = "Room";
         this.ViewBag.Pager = pager;
         return View(RoomList);
     }

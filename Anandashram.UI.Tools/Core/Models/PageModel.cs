@@ -19,6 +19,7 @@ public class PageModel
 
     public bool Closed { get; set; }
     public string ViewType { get; set; }
+    public string ControllerName { get; set; }
     public PageModel(int totalItems,int currentPage, int pageSize=5)
     {
         this.TotalItems = totalItems;

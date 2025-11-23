@@ -10,6 +10,7 @@
     <SatelliteResourceLanguages>en-US</SatelliteResourceLanguages>
   </PropertyGroup>
   <ItemGroup>
+   
     <Compile Remove="Repositories\Floor.cs" />
   </ItemGroup>
 
@@ -31,6 +32,7 @@
 </ItemGroup>
   <ItemGroup>
     <PackageReference Include="BuildBundlerMinifier2022" Version="2.9.11" />
+    <PackageReference Include="ClosedXML" Version="0.105.0" />
     <PackageReference Include="EPPlus" Version="8.3.0" />
     <PackageReference Include="FastReport.Data.Excel" Version="2026.1.2" />
     <PackageReference Include="FastReport.OpenSource" Version="2026.1.2" />

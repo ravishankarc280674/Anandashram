@@ -80,6 +80,8 @@
         <!-- REPORT BUTTONS -->
         @if (Model != null)
         {
+            if(Model.ControllerName=="Room")
+            {
             <form asp-controller="Report"
                   asp-route-reportType="@ViewBag.ReportType"
                   asp-action="ShowReport"
@@ -99,7 +101,66 @@
                         title="Download PDF">
                     <i class="fa fa-file-pdf" style="color:#dc3545;"></i>
                 </button>
-            </form>
+                </form>
+            }
+            else
+            {
+                <form asp-controller="Report"
+                      asp-route-reportType="@ViewBag.ReportType"
+                      asp-action="ShowReport"
+                      method="post" target="_blank"
+                      class="d-flex align-items-center gap-2 m-0">
+
+                    <input type="hidden" name="actionButton" id="actionButton" value="ScreenList" />
+
+                    <!-- Screen Button Dropdown -->
+                    <div class="btn-group">
+                        <button type="button" class="btn btn-sm btn-outline-secondary dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
+                            <i class="fa fa-print text-success"></i>
+                        </button>
+                        <ul class="dropdown-menu">
+                            <li>
+                                <a class="dropdown-item d-flex align-items-center gap-2" href="#"
+                                   style="background-color:#d4edda; color:#155724;"
+                                   onclick="setReportAction('ScreenList')">
+                                    <i class="fa fa-list"></i> List
+                                </a>
+                            </li>
+                            <li>
+                                <a class="dropdown-item d-flex align-items-center gap-2" href="#"
+                                   style="background-color:#cce5ff; color:#004085;"
+                                   onclick="setReportAction('ScreenDetail')">
+                                    <i class="fa fa-file-alt"></i> Detail
+                                </a>
+                            </li>
+                        </ul>
+                    </div>
+
+                    <!-- PDF Button Dropdown -->
+                    <div class="btn-group">
+                        <button type="button" class="btn btn-sm btn-outline-secondary dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
+                            <i class="fa fa-file-pdf text-danger"></i>
+                        </button>
+                        <ul class="dropdown-menu">
+                            <li>
+                                <a class="dropdown-item d-flex align-items-center gap-2" href="#"
+                                   style="background-color:#f8d7da; color:#721c24;"
+                                   onclick="setReportAction('PdfList')">
+                                    <i class="fa fa-list"></i> List
+                                </a>
+                            </li>
+                            <li>
+                                <a class="dropdown-item d-flex align-items-center gap-2" href="#"
+                                   style="background-color:#fff3cd; color:#856404;"
+                                   onclick="setReportAction('PdfDetail')">
+                                    <i class="fa fa-file-alt"></i> Detail
+                                </a>
+                            </li>
+                        </ul>
+                    </div>
+                </form>
+
+            }
         }
 
         <!-- TILE / GRID TOGGLE -->

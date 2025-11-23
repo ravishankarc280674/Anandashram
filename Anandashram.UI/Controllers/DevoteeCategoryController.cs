@@ -29,7 +29,7 @@ public class DevoteeCategoryController : Controller
         pager.SortExpression = sortExpression;
         this.ViewBag.Pager = pager;
         this.ViewBag.PageSizes = GetPageSizes(PageSize);
-        ViewBag.ReportType = "DevoteeCategory";
+        ViewBag.ReportType = "Category";
         return View(DevoteeCategoryList);
     }
 

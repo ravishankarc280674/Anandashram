@@ -200,5 +200,15 @@
 </div>
 
 @section Scripts {
-    @{ await Html.RenderPartialAsync("_ValidationScriptsPartial"); }
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+<script>
+    function setReportAction(action) {
+        // Set the hidden input value
+        document.getElementById('actionButton').value = action;
+        // Submit the form
+        document.querySelector('form').submit();
+    }
+</script>
 }

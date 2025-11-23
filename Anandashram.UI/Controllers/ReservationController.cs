@@ -29,7 +29,12 @@ public class ReservationController : Controller
         ViewData["SortModel"] = sortModel;
         ViewBag.SearchText = SearchText;
         ViewBag.ReportType = "Reservation";
+       
         List<Room> ReservationList = await _roomRepo.GeRoomReservations(sortModel.SortedProperty, sortModel.SortedOrder, SearchText);
+        var pager = new PageModel(ReservationList.Count, pg, PageSize) { Action = "Index", Controller = "Reservation", SearchText = SearchText };
+        pager.SortExpression = sortExpression;
+        pager.ControllerName = "Reservation";
+        this.ViewBag.Pager = pager;
         return View(ReservationList);
     }
 }
