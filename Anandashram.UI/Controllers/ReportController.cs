@@ -340,19 +340,14 @@ public class ReportController : Controller
                 };
             case "DevoteeDetail":
                 {
-                    wr.Report.Load(Path.Combine(_env.ContentRootPath, "Reports", "DevoteeDetail.frx"));
-                    wr.Report.RegisterData(companies, "CompanyRef");
-                    List<Devotee> devoteeList = new List<Devotee>();
-                    devoteeList.Add(await _devoteerepo.GetDevoteeWithReservations(Id));
-                    foreach (var d in devoteeList)
+                    var detail = new DevoteeDetailReport(_companyrepo.CompanyDetails(), await _devoteerepo.GetDevoteeWithReservations(Id), "Devotee Detail");
+                    var pbytes = detail.GeneratePdf();
+                    return actionButton switch
                     {
-                        d.Reservations ??= new List<Reservation>();
-                    }
-                    wr.Report.RegisterData(devoteeList, "Devotees");
-                    wr.Report.GetDataSource("Devotees").Enabled = true;
-                    wr.Report.GetDataSource("Devotees.Reservations").Enabled = true;
-                    ReportName = "Devotee Detail";
-                    return PrintScreenOrPdf(actionButton, wr, ReportName);
+                        "Screen" => File(pbytes, "application/pdf"),
+                        "Pdf" => File(pbytes, "application/pdf", "DevoteeDetail_"+ Id + ".pdf"),
+                        _ => RedirectToAction("Index", "Home")
+                    };
                 }
             case "Category":
             case "Building":
