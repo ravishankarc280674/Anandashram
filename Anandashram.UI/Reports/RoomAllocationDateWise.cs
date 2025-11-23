@@ -9,12 +9,12 @@ public class RoomAllocationDateWise : IDocument
 {
     public Company Company { get; }
     public List<RoomReportDTO> Rooms { get; }
-    public DateTime SelectedDateTime { get; }
-    public RoomAllocationDateWise(Company company, List<RoomReportDTO> rooms, DateTime selectedDateTime)
+    public string Subject { get; }
+    public RoomAllocationDateWise(Company company, List<RoomReportDTO> rooms, string subject)
     {
         Company = company ?? new Company();
         Rooms = rooms ?? new List<RoomReportDTO>();
-        SelectedDateTime = selectedDateTime;
+        Subject = subject;
     }
 
     public void Compose(IDocumentContainer container)
@@ -69,7 +69,7 @@ public class RoomAllocationDateWise : IDocument
                 .BorderTop(1).BorderBottom(2)
                 .BorderColor(Colors.Green.Darken2)
                 .AlignCenter()
-                .Text("Rooms Alloted as of : " + SelectedDateTime.ToString("dd - MMM - yyyy")).FontSize(12).Bold().FontColor(Colors.Green.Darken3);
+                .Text(Subject).FontSize(12).Bold().FontColor(Colors.Green.Darken3);
         });
     }
     // Constants for column widths

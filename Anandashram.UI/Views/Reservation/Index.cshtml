@@ -249,10 +249,23 @@
         }).on('hidden.bs.collapse', function () {
             $(this).prev('.clickable-row').find('i').removeClass('fa-chevron-up').addClass('fa-chevron-down');
         });
-         function setReportAction(action) {
-        // Set the hidden input value
-        document.getElementById('actionButton').value = action;
-        // Submit the form
-        document.querySelector('form').submit();
+        
+               function submitReport(action) {
+            document.getElementById('actionButton').value = action;
+            document.getElementById('reportForm').submit();
+        }
+
+        // Add hover effect: slightly darken background on hover
+        document.querySelectorAll('.dropdown-item').forEach(item => {
+            const bg = item.style.backgroundColor;
+            const color = item.style.color;
+
+            item.addEventListener('mouseenter', () => {
+                item.style.filter = 'brightness(85%)'; // darken
+            });
+            item.addEventListener('mouseleave', () => {
+                item.style.filter = 'none';
+            });
+        });
     </script>
 }

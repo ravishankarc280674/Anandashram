@@ -5,8 +5,11 @@ using FastReport.Export.PdfSimple;
 using FastReport.Web;
 using QuestPDF.Fluent;
 using QuestPDF.Helpers;
+using System.Threading.Tasks;
 
 namespace Anandashram.Controllers;
+[Authorize]
+
 public class ReportController : Controller
 {
     private readonly IWebHostEnvironment _env;
@@ -39,40 +42,7 @@ public class ReportController : Controller
             return View();
         else
         {
-            string ReportName = string.Empty;
-            WebReport wr = new WebReport();
-            List<DevoteeReportDTO> devotees = await _devoteerepo.GetDevoteeSummaryByDateAsync(dateValue);
-            wr.Report.Load(Path.Combine(_env.ContentRootPath, "Reports", "DevoteeCheckOut.frx"));
-            List<Company> companies = new List<Company>();
-            companies.Add(_companyrepo.CompanyDetails());
-            wr.Report.RegisterData(companies, "CompanyRef");
-            wr.Report.RegisterData(devotees, "Devotees");
-            wr.Report.SetParameterValue("Title", "Devotee Checkout List");
-            wr.Report.SetParameterValue("ToDate", dateValue.Date.ToString("dd - MMM - yyyy"));
-            ReportName = "Devotee Checkout List";
-            if (typeofreport == "screen")
-            {
-                return View(wr);
-            }
-            else
-            {
-                if (wr.Report.Prepare())
-                {
-                    FastReport.Export.PdfSimple.PDFSimpleExport pDFSimpleExport = new FastReport.Export.PdfSimple.PDFSimpleExport();
-                    pDFSimpleExport.ShowProgress = false;
-                    pDFSimpleExport.Subject = ReportName;
-                    MemoryStream ms = new MemoryStream();
-                    wr.Report.Export(pDFSimpleExport, ms);
-                    wr.Report.Dispose();
-                    pDFSimpleExport.Dispose();
-                    ms.Position = 0;
-                    return File(ms, "application/pdf", ReportName + ".pdf");
-                }
-                else
-                {
-                    return null;
-                }
-            }
+            return await DevoteeCheckOutReportList(dateValue, typeofreport, "Check-Out" + dateValue.Date.ToString("ddMMyyyy"));
         }
     }
     public async Task<IActionResult> AllocationViewer()
@@ -97,7 +67,7 @@ public class ReportController : Controller
 
         }
     }
-    public List<GenericItemDTO> LoadGenericTableData(string type)
+    private List<GenericItemDTO> LoadGenericTableData(string type)
     {
         return type switch
         {
@@ -119,64 +89,140 @@ public class ReportController : Controller
             _ => new(),
         };
 }
+    private async Task<IActionResult> DevoteeCheckOutReportList(DateTime dateValue, string typeofreport, string reportname)
+    {
+        string Subject = "Devotee Check-Out List as On: " + dateValue.Date.ToString("dd - MMM - yyyy");
+        var document = new DevoteeCheckOutReport(_companyrepo.CompanyDetails(),await _devoteerepo.GetDevoteeSummaryByDateAsync(dateValue), Subject);
+        var pdfBytes = document.GeneratePdf();
+        return typeofreport switch
+        {
+            "screen" => File(pdfBytes, "application/pdf"),
+            "pdf" => File(pdfBytes, "application/pdf", $"{reportname}.pdf"),
+            _ => RedirectToAction("Index", "Home")
+        };
+    }
+    private async Task<IActionResult> DevoteeCheckInReportList(DateTime dateValue, string typeofreport, string reportname)
+    {
+        string Subject = "Devotee Check-In List On: " + dateValue.Date.ToString("dd - MMM - yyyy");
+        var document = new DevoteeCheckInReport(_companyrepo.CompanyDetails(), await _roomRepo.GetCheckInDetailsReportAsync(dateValue), Subject);
+        var pdfBytes = document.GeneratePdf();
+        return typeofreport switch
+        {
+            "screen" => File(pdfBytes, "application/pdf"),
+            "pdf" => File(pdfBytes, "application/pdf", $"{reportname}.pdf"),
+            _ => RedirectToAction("Index", "Home")
+        };
+    }
+    //private IActionResult ExportPdfDetail(List<GenericItemDTO> model, string type)
+    //{
+    //    var document = new GenericDetailPdfDocument(model, type);
+    //    var pdfBytes = document.GeneratePdf();
+    //    return File(pdfBytes, "application/pdf", $"{type}_Detail.pdf");
+    //}
+
+    //private IActionResult ExportExcelList(List<GenericItemDTO> model, string type)
+    //{
+    //    using var workbook = new XLWorkbook();
+    //    var ws = workbook.Worksheets.Add(type + " List");
+
+    //    ws.Cell(1, 1).Value = "Name";
+    //    ws.Cell(1, 2).Value = "Description";
+
+    //    for (int i = 0; i < model.Count; i++)
+    //    {
+    //        ws.Cell(i + 2, 1).Value = model[i].Name;
+    //        ws.Cell(i + 2, 2).Value = model[i].Description;
+    //    }
+
+    //    using var stream = new MemoryStream();
+    //    workbook.SaveAs(stream);
+    //    stream.Position = 0;
+
+    //    return File(stream.ToArray(),
+    //        "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+    //        $"{type}_List.xlsx");
+    //}
+
+    //private IActionResult ExportExcelDetail(List<GenericItemDTO> model, string type)
+    //{
+    //    using var workbook = new XLWorkbook();
+    //    var ws = workbook.Worksheets.Add(type + " Detail");
+
+    //    ws.Cell(1, 1).Value = "Name";
+    //    ws.Cell(1, 2).Value = "Description";
+
+    //    for (int i = 0; i < model.Count; i++)
+    //    {
+    //        ws.Cell(i + 2, 1).Value = model[i].Name;
+    //        ws.Cell(i + 2, 2).Value = model[i].Description;
+    //    }
+
+    //    using var stream = new MemoryStream();
+    //    workbook.SaveAs(stream);
+    //    stream.Position = 0;
+
+    //    return File(stream.ToArray(),
+    //        "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+    //        $"{type}_Detail.xlsx");
+    //}
 
     // Excel Export
-    public IActionResult ExportGenericReportToExcel(string type)
-    {
-        try
-        {
-            var items = LoadGenericTableData(type) ?? new List<GenericItemDTO>();
+    //private IActionResult ExportGenericReportToExcel(string type)
+    //{
+    //    try
+    //    {
+    //        var items = LoadGenericTableData(type) ?? new List<GenericItemDTO>();
 
-            using var workbook = new XLWorkbook();
-            var ws = workbook.Worksheets.Add(type + " List");
+    //        using var workbook = new XLWorkbook();
+    //        var ws = workbook.Worksheets.Add(type + " List");
 
-            // --- Header Row ---
-            ws.Cell(1, 1).Value = "Name";
-            ws.Cell(1, 2).Value = "Description";
-            ws.Row(1).Style.Font.Bold = true;
-            ws.Row(1).Style.Fill.BackgroundColor = XLColor.FromHtml("#1f6f43"); // dark green
-            ws.Row(1).Style.Font.FontColor = XLColor.White;
-            ws.Row(1).Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Center;
+    //        // --- Header Row ---
+    //        ws.Cell(1, 1).Value = "Name";
+    //        ws.Cell(1, 2).Value = "Description";
+    //        ws.Row(1).Style.Font.Bold = true;
+    //        ws.Row(1).Style.Fill.BackgroundColor = XLColor.FromHtml("#1f6f43"); // dark green
+    //        ws.Row(1).Style.Font.FontColor = XLColor.White;
+    //        ws.Row(1).Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Center;
 
-            // --- Data Rows ---
-            for (int i = 0; i < items.Count; i++)
-            {
-                var row = i + 2; // because header is row 1
-                ws.Cell(row, 1).Value = items[i].Name;
-                ws.Cell(row, 2).Value = items[i].Description;
+    //        // --- Data Rows ---
+    //        for (int i = 0; i < items.Count; i++)
+    //        {
+    //            var row = i + 2; // because header is row 1
+    //            ws.Cell(row, 1).Value = items[i].Name;
+    //            ws.Cell(row, 2).Value = items[i].Description;
 
-                // Alternating row colors
-                var bgColor = i % 2 == 0 ? XLColor.FromHtml("#e9f5ea") : XLColor.White;
-                ws.Row(row).Style.Fill.BackgroundColor = bgColor;
+    //            // Alternating row colors
+    //            var bgColor = i % 2 == 0 ? XLColor.FromHtml("#e9f5ea") : XLColor.White;
+    //            ws.Row(row).Style.Fill.BackgroundColor = bgColor;
 
-                // Borders
-                ws.Row(row).Style.Border.OutsideBorder = XLBorderStyleValues.Thin;
-                ws.Row(row).Style.Border.InsideBorder = XLBorderStyleValues.Thin;
-            }
+    //            // Borders
+    //            ws.Row(row).Style.Border.OutsideBorder = XLBorderStyleValues.Thin;
+    //            ws.Row(row).Style.Border.InsideBorder = XLBorderStyleValues.Thin;
+    //        }
 
-            // --- Table Borders for Header ---
-            ws.Range(1, 1, 1, 2).Style.Border.OutsideBorder = XLBorderStyleValues.Thin;
-            ws.Range(1, 1, 1, 2).Style.Border.InsideBorder = XLBorderStyleValues.Thin;
+    //        // --- Table Borders for Header ---
+    //        ws.Range(1, 1, 1, 2).Style.Border.OutsideBorder = XLBorderStyleValues.Thin;
+    //        ws.Range(1, 1, 1, 2).Style.Border.InsideBorder = XLBorderStyleValues.Thin;
 
-            // Auto-fit columns
-            ws.Columns().AdjustToContents();
+    //        // Auto-fit columns
+    //        ws.Columns().AdjustToContents();
 
-            // Export to MemoryStream
-            using var stream = new MemoryStream();
-            workbook.SaveAs(stream);
-            stream.Position = 0;
+    //        // Export to MemoryStream
+    //        using var stream = new MemoryStream();
+    //        workbook.SaveAs(stream);
+    //        stream.Position = 0;
 
-            return File(
-                stream,
-                "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
-                $"{type}_List.xlsx"
-            );
-        }
-        catch (Exception ex)
-        {
-            return BadRequest("Error generating Excel: " + ex.Message);
-        }
-    }
+    //        return File(
+    //            stream,
+    //            "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+    //            $"{type}_List.xlsx"
+    //        );
+    //    }
+    //    catch (Exception ex)
+    //    {
+    //        return BadRequest("Error generating Excel: " + ex.Message);
+    //    }
+    //}
 
 
     // PDF Export using QuestPDF
@@ -193,7 +239,7 @@ public class ReportController : Controller
     public IActionResult PrintGenericReport(string type)
     {
         var items = LoadGenericTableData(type); // List<GenericItemDTO>
-        var company = _companyrepo.CompanyDetails(); // your company details
+        var company = _companyrepo.CompanyDetails(); // company details
         type = type == "Category" ? "Devotee Category" : type;
         var pdfBytes = new PrintGenericTable(company, type + " List", items).GeneratePdf();
         return File(pdfBytes, "application/pdf");
@@ -202,7 +248,12 @@ public class ReportController : Controller
     {
         var roomList = await _roomRepo.GetRoomsUpToDateAsync(dateValue);
         var company = _companyrepo.CompanyDetails();
-        var doc = new RoomAllocationDateWise(company, roomList ,dateValue);
+        string Subject = string.Empty;
+        if (dateValue == DateTime.MinValue)
+            Subject = "Rooms Allocation List Report (All Dates)";
+        else
+            Subject = $"Rooms Allocation List Report (Up to {dateValue:dd - MMM - yyyy})";
+        var doc = new RoomAllocationDateWise(company, roomList , Subject);
 
         // Render to byte[]
         var pdfBytes = doc.GeneratePdf();
@@ -214,7 +265,12 @@ public class ReportController : Controller
     {
         var roomList = await _roomRepo.GetRoomsUpToDateAsync(dateValue);
         var company = _companyrepo.CompanyDetails();
-        var doc = new RoomAllocationDateWise(company, roomList, dateValue);
+        string Subject = string.Empty;
+        if (dateValue == DateTime.MinValue)
+            Subject = "Rooms Allocation List Report (All Dates)";
+        else
+            Subject = $"Rooms Allocation List Report (Up to {dateValue:dd - MMM - yyyy})";
+        var doc = new RoomAllocationDateWise(company, roomList, Subject);
 
         // Render to byte[]
         var pdfBytes = doc.GeneratePdf();
@@ -224,7 +280,12 @@ public class ReportController : Controller
     {
         var roomList = await _roomRepo.GetRoomsUpToDateAsync(dateValue);
         var company = _companyrepo.CompanyDetails();
-        var doc = new RoomAllocationDetailDateWise(company, roomList, dateValue);
+        string Subject = string.Empty;
+        if (dateValue == DateTime.MinValue)
+            Subject = "Rooms Allocation Detail Report (All Dates)";
+        else
+            Subject = $"Rooms Allocation Detail Report (Up to {dateValue:dd - MMM - yyyy})";
+        var doc = new RoomAllocationDetailDateWise(company, roomList, Subject);
 
         // Render to byte[]
         var pdfBytes = doc.GeneratePdf();
@@ -236,7 +297,12 @@ public class ReportController : Controller
     {
         var roomList = await _roomRepo.GetRoomsUpToDateAsync(dateValue);
         var company = _companyrepo.CompanyDetails();
-        var doc = new RoomAllocationDetailDateWise(company, roomList, dateValue);
+        string Subject = string.Empty;
+        if (dateValue == DateTime.MinValue)
+            Subject = "Rooms Allocation Detail Report (All Dates)";
+        else
+            Subject = $"Rooms Allocation Detail Report (Up to {dateValue:dd - MMM - yyyy})";
+        var doc = new RoomAllocationDetailDateWise(company, roomList, Subject);
 
         // Render to byte[]
         var pdfBytes = doc.GeneratePdf();
@@ -264,12 +330,14 @@ public class ReportController : Controller
 
                 // 🧩 Step 2: Deserialize back to list
                 var devotees = System.Text.Json.JsonSerializer.Deserialize<List<DevoteeReportDTO>>(jsonData);
-                wr.Report.Load(Path.Combine(_env.ContentRootPath, "Reports", "DevoteeList.frx"));
-
-                wr.Report.RegisterData(companies, "CompanyRef");
-                wr.Report.RegisterData(devotees, "Devotees");
-                ReportName = "Devotee List";
-                return PrintScreenOrPdf(actionButton, wr, ReportName);
+                var doc = new DevoteeListReport(_companyrepo.CompanyDetails(), devotees, "Devotee List - Filtered");
+                var pdfBytes = doc.GeneratePdf();
+                return actionButton switch
+                {
+                    "Screen" => File(pdfBytes, "application/pdf"),
+                    "Pdf" => File(pdfBytes, "application/pdf", "DevoteeList_Filter.pdf"),
+                    _ => RedirectToAction("Index", "Home")
+                };
             case "DevoteeDetail":
                 {
                     wr.Report.Load(Path.Combine(_env.ContentRootPath, "Reports", "DevoteeDetail.frx"));
@@ -291,45 +359,43 @@ public class ReportController : Controller
             case "Block":
             case "Floor":
                 {
-                    if (actionButton=="Screen")
-                     return PrintGenericReport(reportType);
-                    else if(actionButton=="Pdf")
-                        return ExportGenericReportToPdf(reportType);
-                    else
-                        return ExportGenericReportToExcel(reportType);
-                    
+                    return actionButton switch
+                    {
+                        "Screen" => PrintGenericReport(reportType),
+                        "Pdf" => ExportGenericReportToPdf(reportType),
+                        _ => RedirectToAction("Index", "Home")
+                    };
                 }
-            //case "Building":
-            //    {
-            //        wr.Report.Load(Path.Combine(_env.ContentRootPath, "Reports", "General.frx"));
-            //        wr.Report.RegisterData(companies, "CompanyRef");
-            //        wr.Report.RegisterData(_buildingrepo.GetBuildings(), "GeneralRef");
-            //        wr.Report.SetParameterValue("Title", "Buildings");
-            //        ReportName = "Buildings";
-            //        return PrintScreenOrPdf(actionButton, wr, ReportName);
-            //    }
-            //case "Block":
-            //    {
-            //        wr.Report.Load(Path.Combine(_env.ContentRootPath, "Reports", "General.frx"));
-            //        wr.Report.RegisterData(companies, "CompanyRef");
-            //        wr.Report.RegisterData(_blockrepo.GetBlocks(), "GeneralRef");
-            //        wr.Report.SetParameterValue("Title", "Blocks");
-            //        ReportName = "Blocks";
-            //        return PrintScreenOrPdf(actionButton, wr, ReportName);
-            //    }
-            //case "Floor":
-            //    {
-            //        wr.Report.Load(Path.Combine(_env.ContentRootPath, "Reports", "General.frx"));
-            //        wr.Report.RegisterData(companies, "CompanyRef");
-            //        wr.Report.RegisterData(_floorrepo.GetFloors(), "GeneralRef");
-            //        wr.Report.SetParameterValue("Title", "Floors");
-            //        ReportName = "Floors";
-            //        return PrintScreenOrPdf(actionButton, wr, ReportName);
-            //    }
-            case "Room":
+            case "Reservation":
                 {
-                  return await (actionButton == "Screen" ?  RoomsPdfPreview() :  RoomsPdfDownload());
+                    //var model = LoadGenericTableData(reportType);
+                    //return actionButton switch
+                    //{
+                    //    "ScreenList" => View("ScreenListReport", model),
+                    //    "ScreenDetail" => View("ScreenDetailReport", model),
+
+                    //    "PdfList" => ExportPdfList(model, reportType),
+                    //    "PdfDetail" => ExportPdfDetail(model, reportType),
+
+                    //    "ExcelList" => ExportExcelList(model, reportType),
+                    //    "ExcelDetail" => ExportExcelDetail(model, reportType),
+
+                    //    _ => RedirectToAction("Index", "Home")
+                    //};
+
+                    if (actionButton =="ScreenList")
+                        return await RoomsAllocationPdfPreview("List", DateTime.MinValue);
+                    else if(actionButton == "PdfList")
+                        return await RoomsAllocationPdfDownload("List", DateTime.MinValue);
+                    if (actionButton == "ScreenDetail")
+                        return await RoomsAllocationDetailPdfPreview("Detail", DateTime.MinValue);
+                    else if (actionButton == "PdfDetail")
+                        return await RoomsAllocationDetailPdfDownload("Detail", DateTime.MinValue);
+                    else
+                        return await RoomsAllocationPdfPreview("List", DateTime.MinValue);
                 }
+            case "Room":
+                  return await (actionButton == "Screen" ?  RoomsPdfPreview() :  RoomsPdfDownload());
             default:
                 return View(wr);
         }
@@ -348,7 +414,7 @@ public class ReportController : Controller
 
     // Force download
     [HttpGet]
-    public async Task<IActionResult> RoomsPdfDownload(DateTime? date = null)
+    public async Task<IActionResult> RoomsPdfDownload()
     {
         var roomList = _roomRepo.GetRooms();
         var company = _companyrepo.CompanyDetails();
@@ -402,32 +468,37 @@ public class ReportController : Controller
         {
             return View();
         }
+        if (typeofreport == "" || dateValue == DateTime.MinValue)
+            return View();
+        else
+        {
+            return await DevoteeCheckInReportList(dateValue, typeofreport, "Check-In" + dateValue.Date.ToString("ddMMyyyy"));
+        }
+        //WebReport wr = new WebReport();
+        //string reportPath = Path.Combine(_env.ContentRootPath, "Reports", "DevoteeCheckInDetails.frx");
+        //wr.Report.Load(reportPath);
+        //List<ReservationReportDTO> reservations = await _roomRepo.GetCheckInDetailsReportAsync(dateValue);
+        //List<Company> companies = new() { _companyrepo.CompanyDetails() };
+        //wr.Report.Dictionary.RegisterBusinessObject(companies, "Company", 1, true);
+        //wr.Report.Dictionary.RegisterBusinessObject(reservations, "Reservations", 1, true);
+        //wr.Report.SetParameterValue("FromDateParam", dateValue.Date.ToString("dd - MMM- yyyy"));
+        //try
+        //{
+        //    wr.Report.Prepare();
+        //    if (typeofreport == "screen")
+        //    {
 
-        WebReport wr = new WebReport();
-        string reportPath = Path.Combine(_env.ContentRootPath, "Reports", "DevoteeCheckInDetails.frx");
-        wr.Report.Load(reportPath);
-        List<ReservationReportDTO> reservations = await _roomRepo.GetCheckInDetailsReportAsync(dateValue);
-        List<Company> companies = new() { _companyrepo.CompanyDetails() };
-        wr.Report.Dictionary.RegisterBusinessObject(companies, "Company", 1, true);
-        wr.Report.Dictionary.RegisterBusinessObject(reservations, "Reservations", 1, true);
-        wr.Report.SetParameterValue("FromDateParam", dateValue.Date.ToString("dd - MMM- yyyy"));
-        try
-        {
-            wr.Report.Prepare();
-            if (typeofreport == "screen")
-            {
-                
-                return View(wr); // ⚠️ Possible error point
-            }
-            var export = new FastReport.Export.PdfSimple.PDFSimpleExport();
-            MemoryStream ms = new MemoryStream();
-            wr.Report.Export(export, ms);
-            ms.Position = 0;
-            return File(ms, "application/pdf", "Checkin.pdf");
-        }
-        catch (Exception ex)
-        {
-            return View("Error", ex);
-        }
+        //        return View(wr); // ⚠️ Possible error point
+        //    }
+        //    var export = new FastReport.Export.PdfSimple.PDFSimpleExport();
+        //    MemoryStream ms = new MemoryStream();
+        //    wr.Report.Export(export, ms);
+        //    ms.Position = 0;
+        //    return File(ms, "application/pdf", "Checkin.pdf");
+        //}
+        //catch (Exception ex)
+        //{
+        //    return View("Error", ex);
+        //}
     }
 }

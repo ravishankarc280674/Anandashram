@@ -82,82 +82,130 @@
         {
             if(Model.ControllerName=="Room")
             {
-            <form asp-controller="Report"
-                  asp-route-reportType="@ViewBag.ReportType"
-                  asp-action="ShowReport"
-                  method="post" target="_blank"
-                  class="d-flex align-items-center gap-1 m-0">
-
-                <button type="submit" 
-                        class="btn btn-sm btn-outline-secondary"
-                        name="actionButton" value="Screen"
-                        title="View on Screen">
-                    <i class="fa fa-print" style="color:#28a745;"></i>
-                </button>
-
-                <button type="submit"
-                        class="btn btn-sm btn-outline-secondary"
-                        name="actionButton" value="Pdf"
-                        title="Download PDF">
-                    <i class="fa fa-file-pdf" style="color:#dc3545;"></i>
-                </button>
-                </form>
-            }
-            else
-            {
                 <form asp-controller="Report"
                       asp-route-reportType="@ViewBag.ReportType"
                       asp-action="ShowReport"
                       method="post" target="_blank"
+                      class="d-flex align-items-center gap-1 m-0">
+
+                    <!-- Screen Button (List) -->
+                    <button type="submit"
+                            class="btn btn-sm btn-outline-secondary"
+                            name="actionButton" value="Screen"
+                            title="View on Screen">
+                        <i class="fa fa-print" style="color:#28a745;"></i>
+                    </button>
+
+                    <!-- PDF Button (List/Detail) -->
+                    <button type="submit"
+                            class="btn btn-sm btn-outline-secondary"
+                            name="actionButton" value="Pdf"
+                            title="Download PDF">
+                        <i class="fa fa-file-pdf" style="color:#dc3545;"></i>
+                    </button>
+
+                    <!-- Excel Button (List only) -->
+                    <button type="submit"
+                            class="btn btn-sm btn-outline-secondary"
+                            name="actionButton" value="Excel"
+                            title="Export to Excel">
+                        <i class="fa fa-file-excel" style="color:#28a745;"></i>
+                    </button>
+                </form>
+
+            }
+            else
+            {
+                <form id="reportForm"
+                      asp-controller="Report"
+                      asp-route-reportType="@ViewBag.ReportType"
+                      asp-action="ShowReport"
+                      method="post"
+                      target="_blank"
                       class="d-flex align-items-center gap-2 m-0">
 
-                    <input type="hidden" name="actionButton" id="actionButton" value="ScreenList" />
+                    @* @Html.AntiForgeryToken() *@
 
-                    <!-- Screen Button Dropdown -->
+                    <!-- Will be changed dynamically before Submit -->
+                    <input type="hidden" id="actionButton" name="actionButton" />
+
+                    <!-- SCREEN DROPDOWN -->
                     <div class="btn-group">
-                        <button type="button" class="btn btn-sm btn-outline-secondary dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
+                        <button type="button"
+                                class="btn btn-sm btn-outline-secondary dropdown-toggle"
+                                data-bs-toggle="dropdown">
                             <i class="fa fa-print text-success"></i>
                         </button>
                         <ul class="dropdown-menu">
                             <li>
-                                <a class="dropdown-item d-flex align-items-center gap-2" href="#"
-                                   style="background-color:#d4edda; color:#155724;"
-                                   onclick="setReportAction('ScreenList')">
+                                <a class="dropdown-item bg-success bg-opacity-25 text-success"
+                                   href="#"
+                                   onclick="submitReport('ScreenList')">
                                     <i class="fa fa-list"></i> List
                                 </a>
                             </li>
                             <li>
-                                <a class="dropdown-item d-flex align-items-center gap-2" href="#"
-                                   style="background-color:#cce5ff; color:#004085;"
-                                   onclick="setReportAction('ScreenDetail')">
+                                <a class="dropdown-item bg-primary bg-opacity-25 text-primary"
+                                   href="#"
+                                   onclick="submitReport('ScreenDetail')">
                                     <i class="fa fa-file-alt"></i> Detail
                                 </a>
                             </li>
                         </ul>
                     </div>
 
-                    <!-- PDF Button Dropdown -->
+                    <!-- PDF DROPDOWN -->
                     <div class="btn-group">
-                        <button type="button" class="btn btn-sm btn-outline-secondary dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
+                        <button type="button"
+                                class="btn btn-sm btn-outline-secondary dropdown-toggle"
+                                data-bs-toggle="dropdown"
+                                title="Download PDF">
                             <i class="fa fa-file-pdf text-danger"></i>
                         </button>
                         <ul class="dropdown-menu">
                             <li>
-                                <a class="dropdown-item d-flex align-items-center gap-2" href="#"
-                                   style="background-color:#f8d7da; color:#721c24;"
-                                   onclick="setReportAction('PdfList')">
+                                <a class="dropdown-item bg-danger bg-opacity-25 text-danger"
+                                   href="#"
+                                   onclick="submitReport('PdfList')">
                                     <i class="fa fa-list"></i> List
                                 </a>
                             </li>
                             <li>
-                                <a class="dropdown-item d-flex align-items-center gap-2" href="#"
-                                   style="background-color:#fff3cd; color:#856404;"
-                                   onclick="setReportAction('PdfDetail')">
+                                <a class="dropdown-item bg-warning bg-opacity-25 text-warning"
+                                   href="#"
+                                   onclick="submitReport('PdfDetail')">
                                     <i class="fa fa-file-alt"></i> Detail
                                 </a>
                             </li>
                         </ul>
                     </div>
+
+                    <!-- EXCEL DROPDOWN -->
+                    <div class="btn-group">
+                        <button type="button"
+                                class="btn btn-sm btn-outline-secondary dropdown-toggle"
+                                data-bs-toggle="dropdown"
+                                title="Export to Excel">
+                            <i class="fa fa-file-excel text-success"></i>
+                        </button>
+                        <ul class="dropdown-menu">
+                            <li>
+                                <a class="dropdown-item bg-success bg-opacity-25 text-success"
+                                   href="#"
+                                   onclick="submitReport('ExcelList')">
+                                    <i class="fa fa-list"></i> List
+                                </a>
+                            </li>
+                            <li>
+                                <a class="dropdown-item bg-info bg-opacity-25 text-info"
+                                   href="#"
+                                   onclick="submitReport('ExcelDetail')">
+                                    <i class="fa fa-table"></i> Detail
+                                </a>
+                            </li>
+                        </ul>
+                    </div>
+
                 </form>
 
             }

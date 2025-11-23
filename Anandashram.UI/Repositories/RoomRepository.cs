@@ -176,9 +176,10 @@ public class RoomRepository : IRoom
     }
     public async Task<List<RoomReportDTO>> GetRoomsUpToDateAsync(DateTime dateValue)
     {
-        var targetDate = dateValue.Date.AddDays(1); // include full selected date
-
-        var rooms = await _context.Rooms
+        List<RoomReportDTO> rooms;
+        if (dateValue == DateTime.MinValue)
+        {
+            rooms = await _context.Rooms
             .Include(r => r.Building)
             .Include(r => r.Block)
             .Include(r => r.Floor)
@@ -186,8 +187,7 @@ public class RoomRepository : IRoom
                 _context.Reservations
                     .Include(rv => rv.Devotee)
                     .Where(rv =>
-                        !rv.Closed && // 🔥 ensures reservation is active
-                        rv.FromDate < targetDate  
+                        !rv.Closed
                     ),
                 room => room.Id,
                 rv => rv.RoomId,
@@ -231,7 +231,65 @@ public class RoomRepository : IRoom
             .ThenBy(x => x.FloorName)
             .ThenBy(x => x.RoomName)
             .ToListAsync();
+        }
+        else
+        {
+            var targetDate = dateValue.Date.AddDays(1); // include full selected date
 
+             rooms = await _context.Rooms
+                .Include(r => r.Building)
+                .Include(r => r.Block)
+                .Include(r => r.Floor)
+                .GroupJoin(
+                    _context.Reservations
+                        .Include(rv => rv.Devotee)
+                        .Where(rv =>
+                            !rv.Closed && // 🔥 ensures reservation is active
+                            rv.FromDate < targetDate
+                        ),
+                    room => room.Id,
+                    rv => rv.RoomId,
+                    (room, reservations) => new
+                    {
+                        room,
+                        reservations,
+                        allocated = reservations.Sum(v => (int?)v.Allocated) ?? 0
+                    }
+                )
+                .Select(x => new RoomReportDTO
+                {
+                    Id = x.room.Id,
+                    RoomName = x.room.Name,
+
+                    BuildingName = x.room.Building != null ? x.room.Building.Name : "",
+                    BlockName = x.room.Block != null ? x.room.Block.Name : "",
+                    FloorName = x.room.Floor != null ? x.room.Floor.Name : "",
+                    Capacity = x.room.Capacity,
+
+                    TotalAllocated = x.allocated,
+                    TotalRemaining = x.room.Capacity - x.allocated,
+                    RemainingCount = x.room.Capacity - x.allocated,
+
+                    Reservations = x.reservations.Select(rv => new ReservationReportDTO
+                    {
+                        Id = rv.Id,
+                        RoomId = rv.RoomId,
+                        DevoteeId = rv.DevoteeId,
+                        DevoteeCode = rv.Devotee != null ? rv.Devotee.Code : "",
+                        DevoteeName = rv.Devotee != null ? rv.Devotee.Name : "",
+
+                        FromDate = rv.FromDate,
+                        ToDate = rv.ToDate,
+                        Allocated = rv.Allocated,
+                        Closed = rv.Closed
+                    }).ToList()
+                })
+                .OrderBy(x => x.BuildingName)
+                .ThenBy(x => x.BlockName)
+                .ThenBy(x => x.FloorName)
+                .ThenBy(x => x.RoomName)
+                .ToListAsync();
+        }
         return rooms;
     }
 

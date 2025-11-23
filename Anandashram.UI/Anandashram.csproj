@@ -11,6 +11,7 @@
   </PropertyGroup>
   <ItemGroup>
    
+   
     <Compile Remove="Repositories\Floor.cs" />
   </ItemGroup>
 
@@ -18,9 +19,6 @@
     <Content Remove="Views\Devotee\Create.cshtml" />
     <Content Remove="Views\Report\DevoteeReportViewer.cshtml" />
     <Content Remove="Views\Report\ReportViewer.cshtml" />
-  </ItemGroup>
-  <ItemGroup>
-    <Content Include="Reports\**" CopyToPublishDirectory="Always" />
   </ItemGroup>
   <ItemGroup>
     <None Remove="Views\Devotee\vcmi5ofo.ym5~" />
