@@ -886,7 +886,6 @@ public IActionResult ExportDevoteeCheckOutToExcel(Company company, List<DevoteeR
             case "Block":
             case "Floor":
                 {
-                    
                     return actionButton switch
                     {
                         "Screen" => PrintGenericReport(reportType),
@@ -895,34 +894,48 @@ public IActionResult ExportDevoteeCheckOutToExcel(Company company, List<DevoteeR
                         _ => RedirectToAction("Index", "Home")
                     };
                 }
-            //case "Reservation":
+            case "Reservation":
+                {
+                    var roomAllocationList= await _roomRepo.GetRoomsUpToDateAsync(DateTime.MinValue);
+                    string Subject = $"Rooms Allocation List / Detail Report (All Dates)";
+                    return actionButton switch
+                    {
+                        "ScreenList" => RoomsAllocationPdfPreview(company, roomAllocationList, DateTime.MinValue),
+                        "PdfList" => RoomsAllocationPdfDownload(company, roomAllocationList, DateTime.MinValue),
+                        "ExcelList" => ExportRoomAllocationDateWiseToExcel(company, roomAllocationList, Subject),
+                        "ScreenDetail" => await RoomsAllocationDetailPdfPreview(company, roomAllocationList, DateTime.MinValue),
+                        "PdfDetail" => await RoomsAllocationDetailPdfDownload(company, roomAllocationList, DateTime.MinValue),
+                        "ExcelDetail" => ExportRoomAllocationDetailDateWiseToExcel(company, roomAllocationList, Subject),
+                        _ => RedirectToAction("Index", "Home")
+                    };
+                }
             //    {
-                    //var model = LoadGenericTableData(reportType);
-                    //return actionButton switch
-                    //{
-                    //    "ScreenList" => View("ScreenListReport", model),
-                    //    "ScreenDetail" => View("ScreenDetailReport", model),
+            //var model = LoadGenericTableData(reportType);
+            //return actionButton switch
+            //{
+            //    "ScreenList" => View("ScreenListReport", model),
+            //    "ScreenDetail" => View("ScreenDetailReport", model),
 
-                    //    "PdfList" => ExportPdfList(model, reportType),
-                    //    "PdfDetail" => ExportPdfDetail(model, reportType),
+        //    "PdfList" => ExportPdfList(model, reportType),
+        //    "PdfDetail" => ExportPdfDetail(model, reportType),
 
-                    //    "ExcelList" => ExportExcelList(model, reportType),
-                    //    "ExcelDetail" => ExportExcelDetail(model, reportType),
+        //    "ExcelList" => ExportExcelList(model, reportType),
+        //    "ExcelDetail" => ExportExcelDetail(model, reportType),
 
-                    //    _ => RedirectToAction("Index", "Home")
-                    //};
-                    
-                    //if (actionButton == "ScreenList")
-                    //    return await RoomsAllocationPdfPreview( "List", DateTime.MinValue);
-                    //else if (actionButton == "PdfList")
-                    //    return await RoomsAllocationPdfDownload("List", DateTime.MinValue);
-                    //if (actionButton == "ScreenDetail")
-                    //    return await RoomsAllocationDetailPdfPreview("Detail", DateTime.MinValue);
-                    //else if (actionButton == "PdfDetail")
-                    //    return await RoomsAllocationDetailPdfDownload("Detail", DateTime.MinValue);
-                    //else
-                    //    return await RoomsAllocationPdfPreview("List", DateTime.MinValue);
-                //}
+        //    _ => RedirectToAction("Index", "Home")
+        //};
+
+        //if (actionButton == "ScreenList")
+        //    return await RoomsAllocationPdfPreview( "List", DateTime.MinValue);
+        //else if (actionButton == "PdfList")
+        //    return await RoomsAllocationPdfDownload("List", DateTime.MinValue);
+        //if (actionButton == "ScreenDetail")
+        //    return await RoomsAllocationDetailPdfPreview("Detail", DateTime.MinValue);
+        //else if (actionButton == "PdfDetail")
+        //    return await RoomsAllocationDetailPdfDownload("Detail", DateTime.MinValue);
+        //else
+        //    return await RoomsAllocationPdfPreview("List", DateTime.MinValue);
+        //}
             case "Room":
                 var roomList = _roomRepo.GetRooms();
                 var roomsReport = new RoomsReportDocument(company, roomList);
