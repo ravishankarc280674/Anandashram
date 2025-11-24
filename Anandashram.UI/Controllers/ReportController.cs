@@ -318,9 +318,7 @@ public class ReportController : Controller
     public async Task<IActionResult> ShowReport(string reportType, string actionButton, int Id = 0)
     {
         WebReport wr = new WebReport();
-        List<Company> companies = new List<Company>();
-        companies.Add(_companyrepo.CompanyDetails());
-        string ReportName;
+        Company company = _companyrepo.CompanyDetails();
         switch (reportType)
         {
             case "DevoteeList":
@@ -330,7 +328,7 @@ public class ReportController : Controller
 
                 // 🧩 Step 2: Deserialize back to list
                 var devotees = System.Text.Json.JsonSerializer.Deserialize<List<DevoteeReportDTO>>(jsonData);
-                var doc = new DevoteeListReport(_companyrepo.CompanyDetails(), devotees, "Devotee List - Filtered");
+                var doc = new DevoteeListReport(company, devotees, "Devotee List - Filtered");
                 var pdfBytes = doc.GeneratePdf();
                 return actionButton switch
                 {
@@ -340,7 +338,7 @@ public class ReportController : Controller
                 };
             case "DevoteeDetail":
                 {
-                    var detail = new DevoteeDetailReport(_companyrepo.CompanyDetails(), await _devoteerepo.GetDevoteeWithReservations(Id), "Devotee Detail");
+                    var detail = new DevoteeDetailReport(company, await _devoteerepo.GetDevoteeWithReservations(Id), "Devotee Detail");
                     var pbytes = detail.GeneratePdf();
                     return actionButton switch
                     {
@@ -390,68 +388,20 @@ public class ReportController : Controller
                         return await RoomsAllocationPdfPreview("List", DateTime.MinValue);
                 }
             case "Room":
-                  return await (actionButton == "Screen" ?  RoomsPdfPreview() :  RoomsPdfDownload());
+                var roomList = _roomRepo.GetRooms();
+                var roomsReport = new RoomsReportDocument(company, roomList);
+                var pdBytes = roomsReport.GeneratePdf();
+                return actionButton switch
+                {
+                    "Screen" => File(pdBytes, "application/pdf"),
+                    "Pdf" => File(pdBytes, "application/pdf", $"RoomsReport_{DateTime.Now:yyyyMMdd}.pdf"),
+                    _ => RedirectToAction("Index", "Home")
+                };
             default:
                 return View(wr);
         }
     }
-    [HttpGet]
-    public async Task<IActionResult> RoomsPdfPreview()
-    {
-        var roomList = _roomRepo.GetRooms();
-        var company = _companyrepo.CompanyDetails();
-        var doc = new RoomsReportDocument(company, roomList);
-
-        // Render to byte[]
-        var pdfBytes = doc.GeneratePdf();
-        return File(pdfBytes, "application/pdf");
-    }
-
-    // Force download
-    [HttpGet]
-    public async Task<IActionResult> RoomsPdfDownload()
-    {
-        var roomList = _roomRepo.GetRooms();
-        var company = _companyrepo.CompanyDetails();
-        var doc = new RoomsReportDocument(company, roomList);
-
-        var pdfBytes = doc.GeneratePdf();
-        var fileName = $"RoomsReport_{DateTime.Now:yyyyMMdd}.pdf";
-        return File(pdfBytes, "application/pdf", fileName);
-    }
-    private IActionResult PrintScreenOrPdf(string actionButton, WebReport wr, string ReportName)
-    {
-        try
-        {
-            switch (actionButton)
-            {
-                case "Screen":
-                    {
-                        return View(wr);
-                    }
-                case "Pdf":
-                    {
-                        wr.Report.Prepare();
-                        using var stream = new MemoryStream();
-                        var pdfExport = new PDFSimpleExport();
-                        wr.Report.Export(pdfExport, stream);
-                        pdfExport.ShowProgress = false;
-                        pdfExport.Subject = ReportName;
-                        wr.Report.Dispose();
-                        pdfExport.Dispose();
-                        return File(stream.ToArray(), "application/pdf", ReportName + ".pdf");
-                    }
-                default:
-                    return View(wr);
-
-            }
-        }
-        catch (Exception ex)
-        {
-            return View(wr);
-        }
-    }
-
+  
     public async Task<IActionResult> CheckInViewer()
     {
         return await CheckInViewer(DateTime.MinValue, "screen");

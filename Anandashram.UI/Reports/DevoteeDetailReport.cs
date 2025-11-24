@@ -1,9 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using QuestPDF.Fluent;
+﻿using QuestPDF.Fluent;
 using QuestPDF.Helpers;
 using QuestPDF.Infrastructure;
-using Anandashram.Models; // Your Devotee model namespace
 
 namespace Anandashram.Reports
 {
@@ -24,7 +21,7 @@ namespace Anandashram.Reports
         {
             container.Page(page =>
             {
-                page.Size(PageSizes.A4.Landscape()); // Landscape
+                page.Size(PageSizes.A4.Landscape());
                 page.Margin(20);
                 page.DefaultTextStyle(x => x.FontSize(10).FontFamily("Arial Narrow"));
                 page.PageColor(Colors.White);
@@ -72,25 +69,50 @@ namespace Anandashram.Reports
         {
             container.Column(col =>
             {
-                // Name + Code Box
+                // Name + Code Box, smaller height
                 col.Item().Background(Colors.Green.Lighten4)
-                    .Padding(6)
+                    .PaddingVertical(4)
+                    .PaddingHorizontal(6)
                     .Text($"{Devotee.Name} ({Devotee.Code})")
-                    .FontSize(14)
+                    .FontSize(12)
                     .SemiBold()
                     .FontColor(Colors.Green.Darken3)
                     .AlignCenter();
 
-                col.Item().PaddingTop(4).Text($"Category: {Devotee.DevoteeCategoryName}").Bold();
-                col.Item().Text($"Mobile: {Devotee.Mobile}").Bold();
-                col.Item().Text($"Document: {Devotee.Document}").Bold();
-                col.Item().Text($"No. of People: {Devotee.NoOfPeople}").Bold();
+                // Other info with wrap
+                col.Item().PaddingTop(2).Text(txt =>
+                {
+                    txt.Span("Category: ").Bold().FontColor(Colors.Black);
+                    txt.Span(Devotee.DevoteeCategoryName ?? "").FontColor(Colors.Black);
+                });
+
+                col.Item().Text(txt =>
+                {
+                    txt.Span("Mobile: ").Bold();
+                    txt.Span(Devotee.Mobile ?? "").FontColor(Colors.Black);
+                });
+
+                col.Item().Text(txt =>
+                {
+                    txt.Span("Document: ").Bold();
+                    txt.Span(Devotee.Document ?? "").FontColor(Colors.Black);
+                });
+
+                col.Item().Text(txt =>
+                {
+                    txt.Span("No. of People: ").Bold();
+                    txt.Span(Devotee.NoOfPeople.ToString()).FontColor(Colors.Black);
+                });
 
                 var address = $"{Devotee.AddressLine1} {Devotee.AddressLine2} {Devotee.State} {Devotee.Country} {Devotee.PinCode}".Trim();
-                col.Item().Text($"Address: {address}").Bold();
+                col.Item().Text(txt =>
+                {
+                    txt.Span("Address: ").Bold();
+                    txt.Span(address).FontColor(Colors.Black);
+                });
 
                 // Reservations Heading
-                col.Item().PaddingTop(10)
+                col.Item().PaddingTop(8)
                     .Text("Rooms Reservation List")
                     .FontSize(12)
                     .Bold()
@@ -113,12 +135,12 @@ namespace Anandashram.Reports
 
                 table.ColumnsDefinition(cols =>
                 {
-                    cols.ConstantColumn(80);  // Room
-                    cols.ConstantColumn(80);  // Building
-                    cols.ConstantColumn(70);  // Block
-                    cols.ConstantColumn(60);  // Floor
-                    cols.RelativeColumn(1);   // From Date
-                    cols.RelativeColumn(1);   // To Date
+                    cols.ConstantColumn(90);  // Room
+                    cols.RelativeColumn(2);  // Building
+                    cols.RelativeColumn(2);  // Block
+                    cols.RelativeColumn(2);  // Floor
+                    cols.ConstantColumn(70);   // From Date
+                    cols.ConstantColumn(70);   // To Date
                     cols.ConstantColumn(60);  // Allocated
                     cols.ConstantColumn(50);  // Closed
                 });
