@@ -1,5 +1,4 @@
-﻿@model FastReport.Web.WebReport
-
+﻿
 @{
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
@@ -65,6 +64,12 @@
                             <i class="fas fa-file-pdf text-danger me-1"></i> PDF
                         </label>
                     </div>
+                    <div class="form-check form-check-inline">
+                        <input class="form-check-input" type="radio" id="reportExcel" name="typeofreport" value="excel" />
+                        <label class="form-check-label fw-bold" for="reportExcel">
+                            <i class="fas fa-file-excel text-success me-1"></i> Excel
+                        </label>
+                    </div>
                 </div>
 
                 <!-- Submit Button -->
@@ -79,7 +84,7 @@
             <div class="report-container border border-3 border-success rounded p-3">
                 @if (Model != null)
                 {
-                    @await Model.Render()
+                    @RenderBody()
                 }
                 else
                 {

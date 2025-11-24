@@ -1,5 +1,4 @@
-﻿@model FastReport.Web.WebReport
-@{
+﻿@{
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
@@ -18,7 +17,7 @@
             @if (Model != null)
             {
                 <div class="report-container">
-                    @await Model.Render()
+                    @RenderBody()
                 </div>
             }
             else

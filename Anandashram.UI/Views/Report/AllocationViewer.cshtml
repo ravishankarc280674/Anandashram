@@ -1,5 +1,4 @@
-﻿@model FastReport.Web.WebReport
-
+﻿
 @{
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
@@ -33,7 +32,7 @@
 
                     <div class="form-check form-check-inline">
                         <input class="form-check-input" type="radio" id="reportList"
-                               name="reportformat" value="list" checked />
+                               name="reportformat" value="List" checked />
                         <label class="form-check-label fw-bold" for="reportList">
                             <i class="fas fa-bars me-1 text-success"></i> List
                         </label>
@@ -41,7 +40,7 @@
 
                     <div class="form-check form-check-inline" >
                         <input class="form-check-input" type="radio" id="reportDetail"
-                               name="reportformat" value="detail" />
+                               name="reportformat" value="Detail" />
                         <label class="form-check-label fw-bold" for="reportDetail">
                             <i class="fas fa-list-ul me-1 text-primary"></i> Detail
                         </label>
@@ -65,6 +64,12 @@
                             <i class="fas fa-file-pdf text-danger me-1"></i> PDF
                         </label>
                     </div>
+                    <div class="form-check form-check-inline">
+                        <input class="form-check-input" type="radio" id="reportExcel" name="typeofreport" value="excel" />
+                        <label class="form-check-label fw-bold" for="reportExcel">
+                            <i class="fas fa-file-excel text-success me-1"></i> Excel
+                        </label>
+                    </div>
                 </div>
 
                 <!-- Submit Button -->
@@ -79,7 +84,7 @@
             <div class="report-container border border-3 border-success rounded p-3">
                 @if (Model != null)
                 {
-                    @await Model.Render()
+                    @RenderBody()
                 }
                 else
                 {

@@ -1,7 +1,4 @@
-﻿using DocumentFormat.OpenXml;
-using FastReport.Utils;
-
-namespace Anandashram.Repositories;
+﻿namespace Anandashram.Repositories;
 public class RoomRepository : IRoom
 {
     private readonly ApplicationDbContext _context; // for connecting to efcore.

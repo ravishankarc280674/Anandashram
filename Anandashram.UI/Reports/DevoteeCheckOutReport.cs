@@ -1,6 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using QuestPDF.Fluent;
+﻿using QuestPDF.Fluent;
 using QuestPDF.Helpers;
 using QuestPDF.Infrastructure;
 namespace Anandashram.Reports;
