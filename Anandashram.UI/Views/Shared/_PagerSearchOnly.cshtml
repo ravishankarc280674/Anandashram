@@ -85,7 +85,7 @@
                 <form asp-controller="Report"
                       asp-route-reportType="@ViewBag.ReportType"
                       asp-action="ShowReport"
-                      method="post" target="_blank"
+                      method="post"
                       class="d-flex align-items-center gap-1 m-0">
 
                     <!-- Screen Button (List) -->
@@ -121,11 +121,7 @@
                       asp-route-reportType="@ViewBag.ReportType"
                       asp-action="ShowReport"
                       method="post"
-                      target="_blank"
                       class="d-flex align-items-center gap-2 m-0">
-
-                    @* @Html.AntiForgeryToken() *@
-
                     <!-- Will be changed dynamically before Submit -->
                     <input type="hidden" id="actionButton" name="actionButton" />
 

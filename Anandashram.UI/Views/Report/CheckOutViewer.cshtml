@@ -7,7 +7,7 @@
     <div class="card shadow-lg border-0">
         <div class="card-header bg-success text-white d-flex justify-content-between align-items-center rounded-top">
             <h4 class="mb-0 fw-bold">
-                <i class="fas fa-bed me-2"></i> Room Reports
+                <i class="fas fa-bed me-2"></i> Room check-Out Report
             </h4>
         </div>
 
@@ -74,26 +74,18 @@
 
                 <!-- Submit Button -->
                 <div class="col-md-2 text-center">
-                    <button type="submit" class="btn btn-success fw-bold px-4 shadow-sm">
+                    <button type="button" id="btnGenerate" class="btn btn-success fw-bold px-4 shadow-sm">
                         <i class="fas fa-play-circle me-2"></i> Generate
                     </button>
                 </div>
             </form>
-
+           
             <!-- Report Display -->
             <div class="report-container border border-3 border-success rounded p-3">
-                @if (Model != null)
-                {
-                    @RenderBody()
-                }
-                else
-                {
-                    <div class="alert alert-warning text-center fw-semibold" role="alert">
-                        <i class="fas fa-info-circle me-2"></i> No report to display. Please generate a report.
-                    </div>
-                }
+                <div id="pdfViewer" style="height: 750px; display:none;">
+                    <iframe id="frmPdf" width="100%" height="100%"></iframe>
+                </div>
             </div>
-        </div>
     </div>
 </div>
 
@@ -101,6 +93,57 @@
     @{
         await Html.RenderPartialAsync("_ValidationScriptsPartial");
     }
+        <script>
+                   $("#btnGenerate").click(function () {
+
+            var dateValue = $("#dateValue").val();
+            var reportType = $("input[name='typeofreport']:checked").val();
+
+            if (!dateValue) return;
+
+            var formData = new FormData();
+            formData.append("dateValue", dateValue);
+            formData.append("typeofreport", reportType);
+                formData.append("reportname", "Check-out Report");
+
+            $.ajax({
+                url: "/Report/CheckOutViewer",
+                type: "POST",
+                data: formData,
+                contentType: false,
+                processData: false,
+                xhrFields: {
+                    responseType: 'blob'
+                },
+                success: function (data, status, xhr) {
+
+                    var blob = new Blob([data],
+                        { type: xhr.getResponseHeader("Content-Type") });
+
+                    if (reportType === "screen") {
+                        var url = URL.createObjectURL(blob);
+                        $("#frmPdf").attr("src", url);
+                        $("#pdfViewer").show();
+                    }
+                    else {
+                        // Force file download
+                        var downloadUrl = URL.createObjectURL(blob);
+                        var a = document.createElement("a");
+                        a.href = downloadUrl;
+                        a.download = xhr.getResponseHeader("FileName") || "Report";
+                        document.body.appendChild(a);
+                        a.click();
+                        a.remove();
+                        URL.revokeObjectURL(downloadUrl);
+                    }
+                },
+                error: function () {
+                    alert("Failed to generate report. Try again.");
+                }
+            });
+        });
+
+    </script>
 }
 
 <style>

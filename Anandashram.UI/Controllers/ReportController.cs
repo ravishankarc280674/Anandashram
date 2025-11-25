@@ -78,172 +78,7 @@ public class ReportController : Controller
         }
         ;
     }
-    public IActionResult ExportRoomAllocationDateWiseToExcel(Company company, List<RoomReportDTO> rooms, string subject)
-    {
-        using var workbook = new XLWorkbook();
-        var ws = workbook.Worksheets.Add("Room Allocation");
-
-        int currentRow = 1;
-        int totalColumns = 4; // RoomName, Capacity, Allocated, Remaining
-
-        // ===== COMPANY HEADER =====
-        ws.Range(currentRow, 1, currentRow, totalColumns).Merge().Value = company.Name;
-        ws.Column(1).Width = 150;
-        ws.Column(2).Width = 150;
-        ws.Column(3).Width = 150;
-        ws.Column(4).Width = 150;
-        ws.Range(currentRow, 1, currentRow, totalColumns).Style
-            .Font.SetBold().Font.SetFontSize(14)
-            .Alignment.SetHorizontal(XLAlignmentHorizontalValues.Center);
-        currentRow++;
-
-        ws.Range(currentRow, 1, currentRow, totalColumns).Merge()
-            .Value = $"{company.AddressLine1} {company.AddressLine2}".Trim();
-        ws.Range(currentRow, 1, currentRow, totalColumns).Style
-            .Alignment.SetHorizontal(XLAlignmentHorizontalValues.Center);
-        currentRow++;
-
-        ws.Range(currentRow, 1, currentRow, totalColumns).Merge()
-            .Value = $"{company.State}, {company.Country} - {company.PinCode}".Trim();
-        ws.Range(currentRow, 1, currentRow, totalColumns).Style
-            .Alignment.SetHorizontal(XLAlignmentHorizontalValues.Center);
-        currentRow++;
-
-        ws.Range(currentRow, 1, currentRow, totalColumns).Merge()
-            .Value = $"Mobile: {company.Mobile} | Email: {company.Email}";
-        ws.Range(currentRow, 1, currentRow, totalColumns).Style
-            .Alignment.SetHorizontal(XLAlignmentHorizontalValues.Center);
-        currentRow++;
-
-        if (!string.IsNullOrWhiteSpace(company.Website))
-        {
-            ws.Range(currentRow, 1, currentRow, totalColumns).Merge().Value = company.Website;
-            ws.Range(currentRow, 1, currentRow, totalColumns).Style
-                .Font.SetUnderline()
-                .Font.SetFontColor(XLColor.Blue)
-                .Alignment.SetHorizontal(XLAlignmentHorizontalValues.Center);
-            currentRow++;
-        }
-
-        currentRow++;
-
-        // ===== SUBJECT =====
-        ws.Range(currentRow, 1, currentRow, totalColumns).Merge().Value = subject;
-        ws.Range(currentRow, 1, currentRow, totalColumns).Style
-            .Font.SetBold().Font.SetFontSize(12)
-            .Fill.SetBackgroundColor(XLColor.FromArgb(34, 139, 34))
-            .Font.SetFontColor(XLColor.White)
-            .Alignment.SetHorizontal(XLAlignmentHorizontalValues.Center);
-        currentRow++;
-        currentRow++;
-
-        var grouped = rooms
-            .OrderBy(r => r.BuildingName)
-            .ThenBy(r => r.BlockName)
-            .ThenBy(r => r.FloorName)
-            .GroupBy(g => new { g.BuildingName, g.BlockName, g.FloorName });
-
-        int headerRow = 0;
-
-        foreach (var group in grouped)
-        {
-            // Group Header
-            ws.Range(currentRow, 1, currentRow, totalColumns).Merge()
-                .Value = $"Building: {group.Key.BuildingName} | Block: {group.Key.BlockName} | Floor: {group.Key.FloorName}";
-            ws.Range(currentRow, 1, currentRow, totalColumns).Style
-                .Font.SetBold()
-                .Fill.SetBackgroundColor(XLColor.LightGray)
-                .Alignment.SetHorizontal(XLAlignmentHorizontalValues.Left);
-            currentRow++;
-
-            // ===== TABLE HEADER =====
-            ws.Cell(currentRow, 1).Value = "Room Name";
-            ws.Cell(currentRow, 2).Value = "Capacity";
-            ws.Cell(currentRow, 3).Value = "Allocated";
-            ws.Cell(currentRow, 4).Value = "Remaining";
-
-            ws.Range(currentRow, 1, currentRow, totalColumns).Style
-                .Font.SetBold()
-                .Fill.SetBackgroundColor(XLColor.DarkGreen)
-                .Font.SetFontColor(XLColor.White)
-                .Alignment.SetHorizontal(XLAlignmentHorizontalValues.Center)
-                .Alignment.SetVertical(XLAlignmentVerticalValues.Center)
-                .Border.SetOutsideBorder(XLBorderStyleValues.Thin);
-
-            if (headerRow == 0)
-                headerRow = currentRow;
-
-            currentRow++;
-
-            // ===== DATA ROWS =====
-            bool isEven = true;
-            foreach (var room in group)
-            {
-                var bg = isEven ? XLColor.White : XLColor.LightGray;
-                isEven = !isEven;
-
-                ws.Cell(currentRow, 1).Value = room.RoomName;
-                ws.Cell(currentRow, 2).Value = room.Capacity;
-                ws.Cell(currentRow, 3).Value = room.TotalAllocated;
-                ws.Cell(currentRow, 4).Value = room.TotalRemaining;
-
-                ws.Range(currentRow, 1, currentRow, totalColumns).Style
-                    .Fill.SetBackgroundColor(bg)
-                    .Border.SetOutsideBorder(XLBorderStyleValues.Thin)
-                    .Alignment.SetWrapText(true);
-
-                currentRow++;
-            }
-
-            // ===== SUBTOTAL =====
-            ws.Cell(currentRow, 1).Value = "Subtotal :";
-            ws.Cell(currentRow, 1).Style.Font.SetBold();
-
-            ws.Cell(currentRow, 2).Value = group.Sum(r => r.Capacity);
-            ws.Cell(currentRow, 3).Value = group.Sum(r => r.TotalAllocated);
-            ws.Cell(currentRow, 4).Value = group.Sum(r => r.TotalRemaining);
-
-            ws.Range(currentRow, 1, currentRow, totalColumns).Style
-                .Fill.SetBackgroundColor(XLColor.LightGreen)
-                .Border.SetOutsideBorder(XLBorderStyleValues.Thin);
-            currentRow += 2;
-        }
-
-        // ===== GRAND TOTAL =====
-        ws.Cell(currentRow, 1).Value = "Grand Total :";
-        ws.Cell(currentRow, 1).Style.Font.SetBold();
-
-        ws.Cell(currentRow, 2).Value = rooms.Sum(r => r.Capacity);
-        ws.Cell(currentRow, 3).Value = rooms.Sum(r => r.TotalAllocated);
-        ws.Cell(currentRow, 4).Value = rooms.Sum(r => r.TotalRemaining);
-
-        ws.Range(currentRow, 1, currentRow, totalColumns).Style
-            .Fill.SetBackgroundColor(XLColor.LightBlue)
-            .Border.SetOutsideBorder(XLBorderStyleValues.Thin);
-        currentRow++;
-
-        // ===== FOOTER =====
-        currentRow++;
-        ws.Range(currentRow, 1, currentRow, totalColumns).Merge()
-            .Value = $"Printed On: {DateTime.Now:dd-MMM-yyyy hh:mm tt}";
-        ws.Range(currentRow, 1, currentRow, totalColumns).Style
-            .Font.SetItalic()
-            .Alignment.SetHorizontal(XLAlignmentHorizontalValues.Left);
-
-        // ===== FORMATTING =====
-        ws.Range(headerRow, 1, currentRow, totalColumns).SetAutoFilter();
-        ws.SheetView.FreezeRows(headerRow);
-        ws.Columns().AdjustToContents();
-
-        var stream = new MemoryStream();
-        workbook.SaveAs(stream);
-        stream.Position = 0;
-
-        return File(stream,
-            "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
-            "RoomAllocationDateWise.xlsx");
-    }
-
+   
     private List<GenericItemDTO> LoadGenericTableData(string type)
     {
         return type switch
@@ -271,6 +106,8 @@ public class ReportController : Controller
         string Subject = "Devotee Check-Out List as On: " + dateValue.Date.ToString("dd - MMM - yyyy");
         var company = _companyrepo.CompanyDetails();
         var devoteeList = await _devoteerepo.GetDevoteeSummaryByDateAsync(dateValue);
+        if (devoteeList == null || !devoteeList.Any())
+            return Content("No data available for report.");
         var document = new DevoteeCheckOutReport(company, devoteeList, Subject);
         var pdfBytes = document.GeneratePdf();
         return typeofreport switch
@@ -285,6 +122,8 @@ public class ReportController : Controller
     {
         string Subject = "Devotee Check-In List On: " + dateValue.Date.ToString("dd - MMM - yyyy");
         var data = await _roomRepo.GetCheckInDetailsReportAsync(dateValue);
+        if (data == null || !data.Any())
+            return Content("No data available for report.");
         var company = _companyrepo.CompanyDetails();
         var document = new DevoteeCheckInReport(company, data, Subject);
         var pdfBytes = document.GeneratePdf();
@@ -297,7 +136,6 @@ public class ReportController : Controller
         };
     }
 
-    // PDF Export using QuestPDF
     public IActionResult ExportGenericReportToPdf(string type)
     {
         var items = LoadGenericTableData(type); // List<GenericItemDTO>
@@ -314,279 +152,6 @@ public class ReportController : Controller
         type = type == "Category" ? "Devotee Category" : type;
         var pdfBytes = new PrintGenericTable(company, type + " List", items).GeneratePdf();
         return File(pdfBytes, "application/pdf");
-    }
-
-    public IActionResult ExportDevoteeCheckOutToExcel(Company company, List<DevoteeReportDTO> items, string subject)
-    {
-        using var workbook = new XLWorkbook();
-        var ws = workbook.Worksheets.Add("Check-Out Report");
-
-        int currentRow = 1;
-        int totalColumns = 4;
-
-        // ===== COMPANY HEADER =====
-        ws.Range(currentRow, 1, currentRow, totalColumns)
-            .Merge()
-            .Value = company.Name;
-        ws.Range(currentRow, 1, currentRow, totalColumns)
-            .Style.Font.SetBold().Font.SetFontSize(14)
-            .Alignment.SetHorizontal(XLAlignmentHorizontalValues.Center);
-        currentRow++;
-
-        ws.Range(currentRow, 1, currentRow, totalColumns)
-            .Merge()
-            .Value = $"{company.AddressLine1} {company.AddressLine2}".Trim();
-        ws.Range(currentRow, 1, currentRow, totalColumns)
-            .Style.Alignment.SetHorizontal(XLAlignmentHorizontalValues.Center);
-        currentRow++;
-
-        ws.Range(currentRow, 1, currentRow, totalColumns)
-            .Merge()
-            .Value = $"{company.State}, {company.Country} - {company.PinCode}".Trim();
-        ws.Range(currentRow, 1, currentRow, totalColumns)
-            .Style.Alignment.SetHorizontal(XLAlignmentHorizontalValues.Center);
-        currentRow++;
-
-        ws.Range(currentRow, 1, currentRow, totalColumns)
-            .Merge()
-            .Value = $"Mobile: {company.Mobile} | Email: {company.Email}";
-        ws.Range(currentRow, 1, currentRow, totalColumns)
-            .Style.Alignment.SetHorizontal(XLAlignmentHorizontalValues.Center);
-        currentRow++;
-
-        if (!string.IsNullOrWhiteSpace(company.Website))
-        {
-            ws.Range(currentRow, 1, currentRow, totalColumns)
-                .Merge()
-                .Value = company.Website;
-            ws.Range(currentRow, 1, currentRow, totalColumns)
-                .Style.Font.SetUnderline()
-                .Font.SetFontColor(XLColor.Blue)
-                .Alignment.SetHorizontal(XLAlignmentHorizontalValues.Center);
-            currentRow++;
-        }
-
-        currentRow++; // blank line
-
-        // ===== SUBJECT =====
-        ws.Range(currentRow, 1, currentRow, totalColumns)
-            .Merge()
-            .Value = subject;
-        ws.Range(currentRow, 1, currentRow, totalColumns)
-            .Style.Font.SetBold().Font.SetFontSize(12)
-            .Fill.SetBackgroundColor(XLColor.FromArgb(34, 139, 34))
-            .Font.SetFontColor(XLColor.White)
-            .Alignment.SetHorizontal(XLAlignmentHorizontalValues.Center);
-        currentRow++;
-
-        currentRow++; // blank line
-
-        // ===== TABLE HEADER (filter only here) =====
-        ws.Cell(currentRow, 1).Value = "Code";
-        ws.Cell(currentRow, 2).Value = "Name";
-        ws.Cell(currentRow, 3).Value = "Category";
-        ws.Cell(currentRow, 4).Value = "Allocated";
-
-        ws.Range(currentRow, 1, currentRow, totalColumns).Style
-            .Font.SetBold()
-            .Fill.SetBackgroundColor(XLColor.DarkGreen)
-            .Font.SetFontColor(XLColor.White)
-            .Alignment.SetHorizontal(XLAlignmentHorizontalValues.Center)
-            .Alignment.SetVertical(XLAlignmentVerticalValues.Center)
-            .Border.SetOutsideBorder(XLBorderStyleValues.Thin);
-
-        int headerRowNumber = currentRow;
-        currentRow++;
-
-        // ===== DATA ROWS =====
-        bool isEven = true;
-        foreach (var item in items)
-        {
-            var bgColor = isEven ? XLColor.White : XLColor.LightGray;
-            isEven = !isEven;
-
-            ws.Cell(currentRow, 1).Value = item.Code;
-            ws.Cell(currentRow, 2).Value = item.Name;
-            ws.Cell(currentRow, 3).Value = item.DevoteeCategoryName;
-            ws.Cell(currentRow, 4).Value = item.TotalAllocated;
-
-            ws.Range(currentRow, 1, currentRow, totalColumns).Style
-                .Fill.SetBackgroundColor(bgColor)
-                .Border.SetOutsideBorder(XLBorderStyleValues.Thin)
-                .Alignment.SetWrapText(true);
-
-            currentRow++;
-        }
-
-        // ===== TOTAL ROW =====
-        ws.Cell(currentRow, 3).Value = "Total Allocated:";
-        ws.Cell(currentRow, 3).Style.Font.SetBold();
-        ws.Cell(currentRow, 4).Value = items.Sum(x => x.TotalAllocated);
-        ws.Cell(currentRow, 4).Style.Font.SetBold();
-
-        ws.Range(currentRow, 1, currentRow, totalColumns).Style
-            .Fill.SetBackgroundColor(XLColor.LightGreen)
-            .Border.SetOutsideBorder(XLBorderStyleValues.Thin);
-
-        currentRow++;
-
-        // ===== FOOTER PRINT DATE =====
-        currentRow++;
-        ws.Range(currentRow, 1, currentRow, totalColumns)
-            .Merge()
-            .Value = $"Printed On: {DateTime.Now:dd-MMM-yyyy hh:mm tt}";
-        ws.Range(currentRow, 1, currentRow, totalColumns)
-            .Style.Alignment.SetHorizontal(XLAlignmentHorizontalValues.Left)
-            .Font.SetItalic();
-
-        // ===== FORMATTING =====
-        ws.SheetView.FreezeRows(headerRowNumber); // freeze table header row only
-        ws.Range(headerRowNumber, 1, currentRow, totalColumns).SetAutoFilter();
-        ws.Columns().AdjustToContents();
-        ws.Columns(2, 3).Width = 30; // Name & Category wider
-        ws.Column(1).Width = 15; // Code
-
-        var stream = new MemoryStream();
-        workbook.SaveAs(stream);
-        stream.Position = 0;
-
-        return File(stream,
-            "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
-            "DevoteeCheckOutReport.xlsx");
-    }
-
-    public IActionResult ExportDevoteeCheckInToExcel(Company company, List<ReservationReportDTO> items, string subject)
-    {
-        using var workbook = new XLWorkbook();
-        var ws = workbook.Worksheets.Add("Check-In Report");
-
-        int currentRow = 1;
-        int totalColumns = 5;
-
-        // ===== COMPANY HEADER =====
-        ws.Range(currentRow, 1, currentRow, totalColumns).Merge().Value = company.Name;
-        ws.Range(currentRow, 1, currentRow, totalColumns).Style
-            .Font.SetBold().Font.SetFontSize(14)
-            .Alignment.SetHorizontal(XLAlignmentHorizontalValues.Center);
-        currentRow++;
-
-        ws.Range(currentRow, 1, currentRow, totalColumns).Merge()
-            .Value = $"{company.AddressLine1} {company.AddressLine2}".Trim();
-        ws.Range(currentRow, 1, currentRow, totalColumns).Style
-            .Alignment.SetHorizontal(XLAlignmentHorizontalValues.Center);
-        currentRow++;
-
-        ws.Range(currentRow, 1, currentRow, totalColumns).Merge()
-            .Value = $"{company.State}, {company.Country} - {company.PinCode}".Trim();
-        ws.Range(currentRow, 1, currentRow, totalColumns).Style
-            .Alignment.SetHorizontal(XLAlignmentHorizontalValues.Center);
-        currentRow++;
-
-        ws.Range(currentRow, 1, currentRow, totalColumns).Merge()
-            .Value = $"Mobile: {company.Mobile} | Email: {company.Email}";
-        ws.Range(currentRow, 1, currentRow, totalColumns).Style
-            .Alignment.SetHorizontal(XLAlignmentHorizontalValues.Center);
-        currentRow++;
-
-        if (!string.IsNullOrWhiteSpace(company.Website))
-        {
-            ws.Range(currentRow, 1, currentRow, totalColumns).Merge().Value = company.Website;
-            ws.Range(currentRow, 1, currentRow, totalColumns).Style
-                .Font.SetUnderline()
-                .Font.SetFontColor(XLColor.Blue)
-                .Alignment.SetHorizontal(XLAlignmentHorizontalValues.Center);
-            currentRow++;
-        }
-
-        currentRow++;
-
-        // ===== SUBJECT =====
-        ws.Range(currentRow, 1, currentRow, totalColumns).Merge().Value = subject;
-        ws.Range(currentRow, 1, currentRow, totalColumns).Style
-            .Font.SetBold().Font.SetFontSize(12)
-            .Fill.SetBackgroundColor(XLColor.FromArgb(34, 139, 34))
-            .Font.SetFontColor(XLColor.White)
-            .Alignment.SetHorizontal(XLAlignmentHorizontalValues.Center);
-        currentRow++;
-
-        currentRow++;
-
-        // ===== TABLE HEADER =====
-        ws.Cell(currentRow, 1).Value = "Code";
-        ws.Cell(currentRow, 2).Value = "Name";
-        ws.Cell(currentRow, 3).Value = "Room";
-        ws.Cell(currentRow, 4).Value = "Check-Out";
-        ws.Cell(currentRow, 5).Value = "Allocated";
-
-        ws.Range(currentRow, 1, currentRow, totalColumns).Style
-            .Font.SetBold()
-            .Fill.SetBackgroundColor(XLColor.DarkGreen)
-            .Font.SetFontColor(XLColor.White)
-            .Alignment.SetHorizontal(XLAlignmentHorizontalValues.Center)
-            .Alignment.SetVertical(XLAlignmentVerticalValues.Center)
-            .Border.SetOutsideBorder(XLBorderStyleValues.Thin);
-
-        int headerRow = currentRow;
-        currentRow++;
-
-        // ===== DATA ROWS =====
-        bool isEven = true;
-        foreach (var item in items)
-        {
-            var bg = isEven ? XLColor.White : XLColor.LightGray;
-            isEven = !isEven;
-
-            ws.Cell(currentRow, 1).Value = item.DevoteeCode;
-            ws.Cell(currentRow, 2).Value = item.DevoteeName;
-            ws.Cell(currentRow, 3).Value = item.RoomName;
-            ws.Cell(currentRow, 4).Value = item.ToDate.ToString("dd-MMM-yyyy");
-            ws.Cell(currentRow, 5).Value = item.Allocated;
-
-            ws.Range(currentRow, 1, currentRow, totalColumns).Style
-                .Fill.SetBackgroundColor(bg)
-                .Border.SetOutsideBorder(XLBorderStyleValues.Thin)
-                .Alignment.SetWrapText(true);
-
-            currentRow++;
-        }
-
-        // ===== TOTAL ROW =====
-        ws.Cell(currentRow, 4).Value = "Total :";
-        ws.Cell(currentRow, 4).Style.Font.SetBold();
-        ws.Cell(currentRow, 5).Value = items.Sum(x => x.Allocated);
-        ws.Cell(currentRow, 5).Style.Font.SetBold();
-
-        ws.Range(currentRow, 1, currentRow, totalColumns).Style
-            .Fill.SetBackgroundColor(XLColor.LightGreen)
-            .Border.SetOutsideBorder(XLBorderStyleValues.Thin);
-
-        currentRow++;
-
-        // ===== FOOTER (Print Date) =====
-        currentRow++;
-        ws.Range(currentRow, 1, currentRow, totalColumns).Merge()
-            .Value = $"Printed On: {DateTime.Now:dd-MMM-yyyy hh:mm tt}";
-        ws.Range(currentRow, 1, currentRow, totalColumns).Style
-            .Font.SetItalic()
-            .Alignment.SetHorizontal(XLAlignmentHorizontalValues.Left);
-
-        // ===== FORMATTING =====
-        ws.SheetView.FreezeRows(headerRow);
-        ws.Range(headerRow, 1, currentRow, totalColumns).SetAutoFilter();
-        ws.Columns().AdjustToContents();
-        ws.Column(1).Width = 15;
-        ws.Column(2).Width = 30;
-        ws.Column(3).Width = 20;
-        ws.Column(4).Width = 15;
-
-        // ===== RETURN EXCEL =====
-        var stream = new MemoryStream();
-        workbook.SaveAs(stream);
-        stream.Position = 0;
-
-        return File(stream,
-            "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
-            "DevoteeCheckInReport.xlsx");
     }
 
     private IActionResult RoomsAllocationPdfDownload(Company company, List<RoomReportDTO> roomList, DateTime dateValue)
@@ -1296,7 +861,6 @@ public class ReportController : Controller
         ws.Cell(currentRow, 2).Value =
             $"{devotee.AddressLine1} {devotee.AddressLine2} {devotee.State} {devotee.Country} {devotee.PinCode}".Trim();
         currentRow += 2;
-
         // ===== RESERVATION TABLE HEADER =====
         string[] headers = { "Room", "Building", "Block", "Floor", "From Date", "To Date", "Allocated", "Closed" };
 
@@ -1304,7 +868,6 @@ public class ReportController : Controller
         {
             ws.Cell(currentRow, col).Value = headers[col - 1];
         }
-
         ws.Range(currentRow, 1, currentRow, totalColumns).Style
             .Font.SetBold()
             .Fill.SetBackgroundColor(XLColor.DarkGreen)
@@ -1314,7 +877,6 @@ public class ReportController : Controller
 
         int headerRow = currentRow;
         currentRow++;
-
         // ===== RESERVATIONS DATA =====
         if (devotee.Reservations != null && devotee.Reservations.Count > 0)
         {
@@ -1323,7 +885,6 @@ public class ReportController : Controller
             {
                 var bg = isEven ? XLColor.White : XLColor.LightGray;
                 isEven = !isEven;
-
                 ws.Cell(currentRow, 1).Value = r.RoomName;
                 ws.Cell(currentRow, 2).Value = r.BuildingName;
                 ws.Cell(currentRow, 3).Value = r.BlockName;
@@ -1336,7 +897,6 @@ public class ReportController : Controller
                 ws.Range(currentRow, 1, currentRow, totalColumns).Style
                     .Fill.SetBackgroundColor(bg)
                     .Border.SetOutsideBorder(XLBorderStyleValues.Thin);
-
                 currentRow++;
             }
         }
@@ -1344,16 +904,12 @@ public class ReportController : Controller
         {
             ws.Range(currentRow, 1, currentRow, totalColumns).Merge().Value = "No Reservation Found";
             ws.Range(currentRow, 1, currentRow, totalColumns).Style
-                .Font.SetItalic()
-                .Alignment.SetHorizontal(XLAlignmentHorizontalValues.Center);
+                .Font.SetItalic().Alignment.SetHorizontal(XLAlignmentHorizontalValues.Center);
             currentRow++;
         }
-
         currentRow++;
-        ws.Range(currentRow, 1, currentRow, totalColumns).Merge()
-            .Value = $"Printed On: {DateTime.Now:dd-MMM-yyyy hh:mm tt}";
-        ws.Range(currentRow, 1, currentRow, totalColumns).Style
-            .Font.SetItalic()
+        ws.Range(currentRow, 1, currentRow, totalColumns).Merge().Value = $"Printed On: {DateTime.Now:dd-MMM-yyyy hh:mm tt}";
+        ws.Range(currentRow, 1, currentRow, totalColumns).Style.Font.SetItalic()
             .Alignment.SetHorizontal(XLAlignmentHorizontalValues.Left);
 
         // Freeze Header + Auto Filter
@@ -1370,6 +926,443 @@ public class ReportController : Controller
             "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
             $"Devotee_{devotee.Code}_Detail.xlsx");
     }
+    public IActionResult ExportRoomAllocationDateWiseToExcel(Company company, List<RoomReportDTO> rooms, string subject)
+    {
+        using var workbook = new XLWorkbook();
+        var ws = workbook.Worksheets.Add("Room Allocation");
+
+        int currentRow = 1;
+        int totalColumns = 4; // RoomName, Capacity, Allocated, Remaining
+
+        // ===== COMPANY HEADER =====
+        ws.Range(currentRow, 1, currentRow, totalColumns).Merge().Value = company.Name;
+        ws.Column(1).Width = 150;
+        ws.Column(2).Width = 150;
+        ws.Column(3).Width = 150;
+        ws.Column(4).Width = 150;
+        ws.Range(currentRow, 1, currentRow, totalColumns).Style
+            .Font.SetBold().Font.SetFontSize(14)
+            .Alignment.SetHorizontal(XLAlignmentHorizontalValues.Center);
+        currentRow++;
+
+        ws.Range(currentRow, 1, currentRow, totalColumns).Merge()
+            .Value = $"{company.AddressLine1} {company.AddressLine2}".Trim();
+        ws.Range(currentRow, 1, currentRow, totalColumns).Style
+            .Alignment.SetHorizontal(XLAlignmentHorizontalValues.Center);
+        currentRow++;
+
+        ws.Range(currentRow, 1, currentRow, totalColumns).Merge()
+            .Value = $"{company.State}, {company.Country} - {company.PinCode}".Trim();
+        ws.Range(currentRow, 1, currentRow, totalColumns).Style
+            .Alignment.SetHorizontal(XLAlignmentHorizontalValues.Center);
+        currentRow++;
+
+        ws.Range(currentRow, 1, currentRow, totalColumns).Merge()
+            .Value = $"Mobile: {company.Mobile} | Email: {company.Email}";
+        ws.Range(currentRow, 1, currentRow, totalColumns).Style
+            .Alignment.SetHorizontal(XLAlignmentHorizontalValues.Center);
+        currentRow++;
+
+        if (!string.IsNullOrWhiteSpace(company.Website))
+        {
+            ws.Range(currentRow, 1, currentRow, totalColumns).Merge().Value = company.Website;
+            ws.Range(currentRow, 1, currentRow, totalColumns).Style
+                .Font.SetUnderline()
+                .Font.SetFontColor(XLColor.Blue)
+                .Alignment.SetHorizontal(XLAlignmentHorizontalValues.Center);
+            currentRow++;
+        }
+
+        currentRow++;
+
+        // ===== SUBJECT =====
+        ws.Range(currentRow, 1, currentRow, totalColumns).Merge().Value = subject;
+        ws.Range(currentRow, 1, currentRow, totalColumns).Style
+            .Font.SetBold().Font.SetFontSize(12)
+            .Fill.SetBackgroundColor(XLColor.FromArgb(34, 139, 34))
+            .Font.SetFontColor(XLColor.White)
+            .Alignment.SetHorizontal(XLAlignmentHorizontalValues.Center);
+        currentRow++;
+        currentRow++;
+
+        var grouped = rooms
+            .OrderBy(r => r.BuildingName)
+            .ThenBy(r => r.BlockName)
+            .ThenBy(r => r.FloorName)
+            .GroupBy(g => new { g.BuildingName, g.BlockName, g.FloorName });
+
+        int headerRow = 0;
+
+        foreach (var group in grouped)
+        {
+            // Group Header
+            ws.Range(currentRow, 1, currentRow, totalColumns).Merge()
+                .Value = $"Building: {group.Key.BuildingName} | Block: {group.Key.BlockName} | Floor: {group.Key.FloorName}";
+            ws.Range(currentRow, 1, currentRow, totalColumns).Style
+                .Font.SetBold()
+                .Fill.SetBackgroundColor(XLColor.LightGray)
+                .Alignment.SetHorizontal(XLAlignmentHorizontalValues.Left);
+            currentRow++;
+
+            // ===== TABLE HEADER =====
+            ws.Cell(currentRow, 1).Value = "Room Name";
+            ws.Cell(currentRow, 2).Value = "Capacity";
+            ws.Cell(currentRow, 3).Value = "Allocated";
+            ws.Cell(currentRow, 4).Value = "Remaining";
+
+            ws.Range(currentRow, 1, currentRow, totalColumns).Style
+                .Font.SetBold()
+                .Fill.SetBackgroundColor(XLColor.DarkGreen)
+                .Font.SetFontColor(XLColor.White)
+                .Alignment.SetHorizontal(XLAlignmentHorizontalValues.Center)
+                .Alignment.SetVertical(XLAlignmentVerticalValues.Center)
+                .Border.SetOutsideBorder(XLBorderStyleValues.Thin);
+
+            if (headerRow == 0)
+                headerRow = currentRow;
+
+            currentRow++;
+
+            // ===== DATA ROWS =====
+            bool isEven = true;
+            foreach (var room in group)
+            {
+                var bg = isEven ? XLColor.White : XLColor.LightGray;
+                isEven = !isEven;
+
+                ws.Cell(currentRow, 1).Value = room.RoomName;
+                ws.Cell(currentRow, 2).Value = room.Capacity;
+                ws.Cell(currentRow, 3).Value = room.TotalAllocated;
+                ws.Cell(currentRow, 4).Value = room.TotalRemaining;
+
+                ws.Range(currentRow, 1, currentRow, totalColumns).Style
+                    .Fill.SetBackgroundColor(bg)
+                    .Border.SetOutsideBorder(XLBorderStyleValues.Thin)
+                    .Alignment.SetWrapText(true);
+
+                currentRow++;
+            }
+
+            // ===== SUBTOTAL =====
+            ws.Cell(currentRow, 1).Value = "Subtotal :";
+            ws.Cell(currentRow, 1).Style.Font.SetBold();
+
+            ws.Cell(currentRow, 2).Value = group.Sum(r => r.Capacity);
+            ws.Cell(currentRow, 3).Value = group.Sum(r => r.TotalAllocated);
+            ws.Cell(currentRow, 4).Value = group.Sum(r => r.TotalRemaining);
+
+            ws.Range(currentRow, 1, currentRow, totalColumns).Style
+                .Fill.SetBackgroundColor(XLColor.LightGreen)
+                .Border.SetOutsideBorder(XLBorderStyleValues.Thin);
+            currentRow += 2;
+        }
+
+        // ===== GRAND TOTAL =====
+        ws.Cell(currentRow, 1).Value = "Grand Total :";
+        ws.Cell(currentRow, 1).Style.Font.SetBold();
+
+        ws.Cell(currentRow, 2).Value = rooms.Sum(r => r.Capacity);
+        ws.Cell(currentRow, 3).Value = rooms.Sum(r => r.TotalAllocated);
+        ws.Cell(currentRow, 4).Value = rooms.Sum(r => r.TotalRemaining);
+
+        ws.Range(currentRow, 1, currentRow, totalColumns).Style
+            .Fill.SetBackgroundColor(XLColor.LightBlue)
+            .Border.SetOutsideBorder(XLBorderStyleValues.Thin);
+        currentRow++;
+
+        // ===== FOOTER =====
+        currentRow++;
+        ws.Range(currentRow, 1, currentRow, totalColumns).Merge()
+            .Value = $"Printed On: {DateTime.Now:dd-MMM-yyyy hh:mm tt}";
+        ws.Range(currentRow, 1, currentRow, totalColumns).Style
+            .Font.SetItalic()
+            .Alignment.SetHorizontal(XLAlignmentHorizontalValues.Left);
+
+        // ===== FORMATTING =====
+        ws.Range(headerRow, 1, currentRow, totalColumns).SetAutoFilter();
+        ws.SheetView.FreezeRows(headerRow);
+        ws.Columns().AdjustToContents();
+
+        var stream = new MemoryStream();
+        workbook.SaveAs(stream);
+        stream.Position = 0;
+
+        return File(stream,
+            "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+            "RoomAllocationDateWise.xlsx");
+    }
+    public IActionResult ExportDevoteeCheckOutToExcel(Company company, List<DevoteeReportDTO> items, string subject)
+    {
+        using var workbook = new XLWorkbook();
+        var ws = workbook.Worksheets.Add("Check-Out Report");
+
+        int currentRow = 1;
+        int totalColumns = 4;
+
+        // ===== COMPANY HEADER =====
+        ws.Range(currentRow, 1, currentRow, totalColumns)
+            .Merge()
+            .Value = company.Name;
+        ws.Range(currentRow, 1, currentRow, totalColumns)
+            .Style.Font.SetBold().Font.SetFontSize(14)
+            .Alignment.SetHorizontal(XLAlignmentHorizontalValues.Center);
+        currentRow++;
+
+        ws.Range(currentRow, 1, currentRow, totalColumns)
+            .Merge()
+            .Value = $"{company.AddressLine1} {company.AddressLine2}".Trim();
+        ws.Range(currentRow, 1, currentRow, totalColumns)
+            .Style.Alignment.SetHorizontal(XLAlignmentHorizontalValues.Center);
+        currentRow++;
+
+        ws.Range(currentRow, 1, currentRow, totalColumns)
+            .Merge()
+            .Value = $"{company.State}, {company.Country} - {company.PinCode}".Trim();
+        ws.Range(currentRow, 1, currentRow, totalColumns)
+            .Style.Alignment.SetHorizontal(XLAlignmentHorizontalValues.Center);
+        currentRow++;
+
+        ws.Range(currentRow, 1, currentRow, totalColumns)
+            .Merge()
+            .Value = $"Mobile: {company.Mobile} | Email: {company.Email}";
+        ws.Range(currentRow, 1, currentRow, totalColumns)
+            .Style.Alignment.SetHorizontal(XLAlignmentHorizontalValues.Center);
+        currentRow++;
+
+        if (!string.IsNullOrWhiteSpace(company.Website))
+        {
+            ws.Range(currentRow, 1, currentRow, totalColumns)
+                .Merge()
+                .Value = company.Website;
+            ws.Range(currentRow, 1, currentRow, totalColumns)
+                .Style.Font.SetUnderline()
+                .Font.SetFontColor(XLColor.Blue)
+                .Alignment.SetHorizontal(XLAlignmentHorizontalValues.Center);
+            currentRow++;
+        }
+
+        currentRow++; // blank line
+
+        // ===== SUBJECT =====
+        ws.Range(currentRow, 1, currentRow, totalColumns)
+            .Merge()
+            .Value = subject;
+        ws.Range(currentRow, 1, currentRow, totalColumns)
+            .Style.Font.SetBold().Font.SetFontSize(12)
+            .Fill.SetBackgroundColor(XLColor.FromArgb(34, 139, 34))
+            .Font.SetFontColor(XLColor.White)
+            .Alignment.SetHorizontal(XLAlignmentHorizontalValues.Center);
+        currentRow++;
+
+        currentRow++; // blank line
+
+        // ===== TABLE HEADER (filter only here) =====
+        ws.Cell(currentRow, 1).Value = "Code";
+        ws.Cell(currentRow, 2).Value = "Name";
+        ws.Cell(currentRow, 3).Value = "Category";
+        ws.Cell(currentRow, 4).Value = "Allocated";
+
+        ws.Range(currentRow, 1, currentRow, totalColumns).Style
+            .Font.SetBold()
+            .Fill.SetBackgroundColor(XLColor.DarkGreen)
+            .Font.SetFontColor(XLColor.White)
+            .Alignment.SetHorizontal(XLAlignmentHorizontalValues.Center)
+            .Alignment.SetVertical(XLAlignmentVerticalValues.Center)
+            .Border.SetOutsideBorder(XLBorderStyleValues.Thin);
+
+        int headerRowNumber = currentRow;
+        currentRow++;
+
+        // ===== DATA ROWS =====
+        bool isEven = true;
+        foreach (var item in items)
+        {
+            var bgColor = isEven ? XLColor.White : XLColor.LightGray;
+            isEven = !isEven;
+
+            ws.Cell(currentRow, 1).Value = item.Code;
+            ws.Cell(currentRow, 2).Value = item.Name;
+            ws.Cell(currentRow, 3).Value = item.DevoteeCategoryName;
+            ws.Cell(currentRow, 4).Value = item.TotalAllocated;
+
+            ws.Range(currentRow, 1, currentRow, totalColumns).Style
+                .Fill.SetBackgroundColor(bgColor)
+                .Border.SetOutsideBorder(XLBorderStyleValues.Thin)
+                .Alignment.SetWrapText(true);
+
+            currentRow++;
+        }
+
+        // ===== TOTAL ROW =====
+        ws.Cell(currentRow, 3).Value = "Total Allocated:";
+        ws.Cell(currentRow, 3).Style.Font.SetBold();
+        ws.Cell(currentRow, 4).Value = items.Sum(x => x.TotalAllocated);
+        ws.Cell(currentRow, 4).Style.Font.SetBold();
+
+        ws.Range(currentRow, 1, currentRow, totalColumns).Style
+            .Fill.SetBackgroundColor(XLColor.LightGreen)
+            .Border.SetOutsideBorder(XLBorderStyleValues.Thin);
+
+        currentRow++;
+
+        // ===== FOOTER PRINT DATE =====
+        currentRow++;
+        ws.Range(currentRow, 1, currentRow, totalColumns)
+            .Merge()
+            .Value = $"Printed On: {DateTime.Now:dd-MMM-yyyy hh:mm tt}";
+        ws.Range(currentRow, 1, currentRow, totalColumns)
+            .Style.Alignment.SetHorizontal(XLAlignmentHorizontalValues.Left)
+            .Font.SetItalic();
+
+        // ===== FORMATTING =====
+        ws.SheetView.FreezeRows(headerRowNumber); // freeze table header row only
+        ws.Range(headerRowNumber, 1, currentRow, totalColumns).SetAutoFilter();
+        ws.Columns().AdjustToContents();
+        ws.Columns(2, 3).Width = 30; // Name & Category wider
+        ws.Column(1).Width = 15; // Code
+
+        var stream = new MemoryStream();
+        workbook.SaveAs(stream);
+        stream.Position = 0;
+
+        return File(stream,
+            "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+            "DevoteeCheckOutReport.xlsx");
+    }
+    public IActionResult ExportDevoteeCheckInToExcel(Company company, List<ReservationReportDTO> items, string subject)
+    {
+        using var workbook = new XLWorkbook();
+        var ws = workbook.Worksheets.Add("Check-In Report");
+
+        int currentRow = 1;
+        int totalColumns = 5;
+
+        // ===== COMPANY HEADER =====
+        ws.Range(currentRow, 1, currentRow, totalColumns).Merge().Value = company.Name;
+        ws.Range(currentRow, 1, currentRow, totalColumns).Style
+            .Font.SetBold().Font.SetFontSize(14)
+            .Alignment.SetHorizontal(XLAlignmentHorizontalValues.Center);
+        currentRow++;
+
+        ws.Range(currentRow, 1, currentRow, totalColumns).Merge()
+            .Value = $"{company.AddressLine1} {company.AddressLine2}".Trim();
+        ws.Range(currentRow, 1, currentRow, totalColumns).Style
+            .Alignment.SetHorizontal(XLAlignmentHorizontalValues.Center);
+        currentRow++;
+
+        ws.Range(currentRow, 1, currentRow, totalColumns).Merge()
+            .Value = $"{company.State}, {company.Country} - {company.PinCode}".Trim();
+        ws.Range(currentRow, 1, currentRow, totalColumns).Style
+            .Alignment.SetHorizontal(XLAlignmentHorizontalValues.Center);
+        currentRow++;
+
+        ws.Range(currentRow, 1, currentRow, totalColumns).Merge()
+            .Value = $"Mobile: {company.Mobile} | Email: {company.Email}";
+        ws.Range(currentRow, 1, currentRow, totalColumns).Style
+            .Alignment.SetHorizontal(XLAlignmentHorizontalValues.Center);
+        currentRow++;
+
+        if (!string.IsNullOrWhiteSpace(company.Website))
+        {
+            ws.Range(currentRow, 1, currentRow, totalColumns).Merge().Value = company.Website;
+            ws.Range(currentRow, 1, currentRow, totalColumns).Style
+                .Font.SetUnderline()
+                .Font.SetFontColor(XLColor.Blue)
+                .Alignment.SetHorizontal(XLAlignmentHorizontalValues.Center);
+            currentRow++;
+        }
+
+        currentRow++;
+
+        // ===== SUBJECT =====
+        ws.Range(currentRow, 1, currentRow, totalColumns).Merge().Value = subject;
+        ws.Range(currentRow, 1, currentRow, totalColumns).Style
+            .Font.SetBold().Font.SetFontSize(12)
+            .Fill.SetBackgroundColor(XLColor.FromArgb(34, 139, 34))
+            .Font.SetFontColor(XLColor.White)
+            .Alignment.SetHorizontal(XLAlignmentHorizontalValues.Center);
+        currentRow++;
+
+        currentRow++;
+
+        // ===== TABLE HEADER =====
+        ws.Cell(currentRow, 1).Value = "Code";
+        ws.Cell(currentRow, 2).Value = "Name";
+        ws.Cell(currentRow, 3).Value = "Room";
+        ws.Cell(currentRow, 4).Value = "Check-Out";
+        ws.Cell(currentRow, 5).Value = "Allocated";
+
+        ws.Range(currentRow, 1, currentRow, totalColumns).Style
+            .Font.SetBold()
+            .Fill.SetBackgroundColor(XLColor.DarkGreen)
+            .Font.SetFontColor(XLColor.White)
+            .Alignment.SetHorizontal(XLAlignmentHorizontalValues.Center)
+            .Alignment.SetVertical(XLAlignmentVerticalValues.Center)
+            .Border.SetOutsideBorder(XLBorderStyleValues.Thin);
+
+        int headerRow = currentRow;
+        currentRow++;
+
+        // ===== DATA ROWS =====
+        bool isEven = true;
+        foreach (var item in items)
+        {
+            var bg = isEven ? XLColor.White : XLColor.LightGray;
+            isEven = !isEven;
+
+            ws.Cell(currentRow, 1).Value = item.DevoteeCode;
+            ws.Cell(currentRow, 2).Value = item.DevoteeName;
+            ws.Cell(currentRow, 3).Value = item.RoomName;
+            ws.Cell(currentRow, 4).Value = item.ToDate.ToString("dd-MMM-yyyy");
+            ws.Cell(currentRow, 5).Value = item.Allocated;
+
+            ws.Range(currentRow, 1, currentRow, totalColumns).Style
+                .Fill.SetBackgroundColor(bg)
+                .Border.SetOutsideBorder(XLBorderStyleValues.Thin)
+                .Alignment.SetWrapText(true);
+
+            currentRow++;
+        }
+
+        // ===== TOTAL ROW =====
+        ws.Cell(currentRow, 4).Value = "Total :";
+        ws.Cell(currentRow, 4).Style.Font.SetBold();
+        ws.Cell(currentRow, 5).Value = items.Sum(x => x.Allocated);
+        ws.Cell(currentRow, 5).Style.Font.SetBold();
+
+        ws.Range(currentRow, 1, currentRow, totalColumns).Style
+            .Fill.SetBackgroundColor(XLColor.LightGreen)
+            .Border.SetOutsideBorder(XLBorderStyleValues.Thin);
+
+        currentRow++;
+
+        // ===== FOOTER (Print Date) =====
+        currentRow++;
+        ws.Range(currentRow, 1, currentRow, totalColumns).Merge()
+            .Value = $"Printed On: {DateTime.Now:dd-MMM-yyyy hh:mm tt}";
+        ws.Range(currentRow, 1, currentRow, totalColumns).Style
+            .Font.SetItalic()
+            .Alignment.SetHorizontal(XLAlignmentHorizontalValues.Left);
+
+        // ===== FORMATTING =====
+        ws.SheetView.FreezeRows(headerRow);
+        ws.Range(headerRow, 1, currentRow, totalColumns).SetAutoFilter();
+        ws.Columns().AdjustToContents();
+        ws.Column(1).Width = 15;
+        ws.Column(2).Width = 30;
+        ws.Column(3).Width = 20;
+        ws.Column(4).Width = 15;
+
+        // ===== RETURN EXCEL =====
+        var stream = new MemoryStream();
+        workbook.SaveAs(stream);
+        stream.Position = 0;
+
+        return File(stream,
+            "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+            "DevoteeCheckInReport.xlsx");
+    }
+
     #endregion
 }
 
