@@ -372,8 +372,7 @@ public class DevoteeController : Controller
 
         int devoteeId = data.First().DevoteeId;
 
-        foreach (Reservation r in data) { r.CreatedDate = DateTime.Now; r.CreatedBy = this.User.FindFirstValue(ClaimTypes.NameIdentifier); }
-        ;
+        foreach (Reservation r in data) { r.CreatedDate = DateTime.Now; r.CreatedBy = this.User.FindFirstValue(ClaimTypes.NameIdentifier); };
         await _reservationRepo.AddReservation(data);
         return Json(new { isValid = true, html = Helper.RenderRazorViewToString(this, "AddOrEdit", devoteeId) });
     }

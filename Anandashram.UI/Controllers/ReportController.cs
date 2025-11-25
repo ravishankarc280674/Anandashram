@@ -60,7 +60,7 @@ public class ReportController : Controller
                 "List" =>
                         typeofreport switch
                         {
-                            "screen" => RoomsAllocationPdfPreview(company, roomList, dateValue),
+                            "screen" => ShowView(RoomsAllocationPdfPreview(company, roomList, dateValue)),
                             "pdf" => RoomsAllocationPdfDownload(company, roomList, dateValue),
                             "excel" => ExportRoomAllocationDateWiseToExcel(company, roomList, Subject),
                             _ => RedirectToAction("Index", "Home")
@@ -68,8 +68,8 @@ public class ReportController : Controller
                 "Detail" =>
                         typeofreport switch
                         {
-                            "screen" => await RoomsAllocationDetailPdfPreview(company, roomList, dateValue),
-                            "pdf" => await RoomsAllocationDetailPdfDownload(company, roomList, dateValue),
+                            "screen" =>  ShowView(RoomsAllocationDetailPdfPreview(company, roomList, dateValue)),
+                            "pdf" => RoomsAllocationDetailPdfDownload(company, roomList, dateValue),
                             "excel" => ExportRoomAllocationDetailDateWiseToExcel(company, roomList, Subject),
                             _ => RedirectToAction("Index", "Home")
                         },
@@ -78,7 +78,21 @@ public class ReportController : Controller
         }
         ;
     }
-   
+    private IActionResult ShowScreenView(byte[] pdfBytes, string title, string controllerName)
+    {
+        string base64 = Convert.ToBase64String(pdfBytes);
+        ViewBag.PdfSource = $"data:application/pdf;base64,{base64}";
+        ViewBag.Title = title;
+        controllerName = controllerName == "Category" ? "DevoteeCategory" : controllerName;
+
+        @ViewBag.BackController = controllerName;
+        return View("ReportViewer");
+    }
+    private IActionResult ShowView(byte[] pdfBytes)
+    {
+        string base64 = Convert.ToBase64String(pdfBytes);
+        return File(pdfBytes, "application/pdf");
+    }
     private List<GenericItemDTO> LoadGenericTableData(string type)
     {
         return type switch
@@ -145,13 +159,14 @@ public class ReportController : Controller
         return File(pdfBytes, "application/pdf", $"{type}_List.pdf");
     }
 
-    public IActionResult PrintGenericReport(string type)
+   
+    private byte[] PrintGenericReport(string type)
     {
         var items = LoadGenericTableData(type); // List<GenericItemDTO>
         var company = _companyrepo.CompanyDetails(); // company details
         type = type == "Category" ? "Devotee Category" : type;
         var pdfBytes = new PrintGenericTable(company, type + " List", items).GeneratePdf();
-        return File(pdfBytes, "application/pdf");
+        return pdfBytes;
     }
 
     private IActionResult RoomsAllocationPdfDownload(Company company, List<RoomReportDTO> roomList, DateTime dateValue)
@@ -169,7 +184,7 @@ public class ReportController : Controller
         return File(pdfBytes, "application/pdf", fileName);
     }
 
-    private IActionResult RoomsAllocationPdfPreview(Company company, List<RoomReportDTO> roomList, DateTime dateValue)
+    private byte[] RoomsAllocationPdfPreview(Company company, List<RoomReportDTO> roomList, DateTime dateValue)
     {
         string Subject = string.Empty;
         if (dateValue == DateTime.MinValue)
@@ -180,11 +195,12 @@ public class ReportController : Controller
 
         // Render to byte[]
         var pdfBytes = doc.GeneratePdf();
-        return File(pdfBytes, "application/pdf");
+        // return File(pdfBytes, "application/pdf");
+        return pdfBytes;
     }
 
 
-    private async Task<IActionResult> RoomsAllocationDetailPdfDownload(Company company, List<RoomReportDTO> roomList, DateTime dateValue)
+    private IActionResult RoomsAllocationDetailPdfDownload(Company company, List<RoomReportDTO> roomList, DateTime dateValue)
     {
         string Subject = string.Empty;
         if (dateValue == DateTime.MinValue)
@@ -199,7 +215,7 @@ public class ReportController : Controller
         return File(pdfBytes, "application/pdf", fileName);
     }
 
-    private async Task<IActionResult> RoomsAllocationDetailPdfPreview(Company company, List<RoomReportDTO> roomList, DateTime dateValue)
+    private byte[] RoomsAllocationDetailPdfPreview(Company company, List<RoomReportDTO> roomList, DateTime dateValue)
     {
         string Subject = string.Empty;
         if (dateValue == DateTime.MinValue)
@@ -210,7 +226,8 @@ public class ReportController : Controller
 
         // Render to byte[]
         var pdfBytes = doc.GeneratePdf();
-        return File(pdfBytes, "application/pdf");
+        // return File(pdfBytes, "application/pdf");
+        return pdfBytes;
     }
 
     public async Task<IActionResult> CheckOutViewer()
@@ -238,7 +255,7 @@ public class ReportController : Controller
                 var pdfBytes = doc.GeneratePdf();
                 return actionButton switch
                 {
-                    "Screen" => File(pdfBytes, "application/pdf"),
+                    "Screen" => ShowScreenView(pdfBytes, "Devotee List - Filtered", "Devotee"),
                     "Pdf" => File(pdfBytes, "application/pdf", "DevoteeList_Filter.pdf"),
                     "Excel" => ExportDevoteeListReportToExcel(devotees), // download Excel
                     _ => Content("Invalid action")
@@ -250,7 +267,7 @@ public class ReportController : Controller
                     var pbytes = detail.GeneratePdf();
                     return actionButton switch
                     {
-                        "Screen" => File(pbytes, "application/pdf"),
+                        "Screen" => ShowScreenView(pbytes, "Devotee Detail","Devotee"),
                         "Pdf" => File(pbytes, "application/pdf", "DevoteeDetail_" + Id + ".pdf"),
                         "Excel" => ExportDevoteeDetailToExcel(company, DevoteeDetail, "Devotee Detail"),
                         _ => RedirectToAction("Index", "Home")
@@ -263,7 +280,7 @@ public class ReportController : Controller
                 {
                     return actionButton switch
                     {
-                        "Screen" => PrintGenericReport(reportType),
+                        "Screen" => ShowScreenView(PrintGenericReport(reportType),reportType + " List ", reportType),
                         "Pdf" => ExportGenericReportToPdf(reportType),
                         "Excel" => ExportGenericItemsToExcel(reportType),
                         _ => RedirectToAction("Index", "Home")
@@ -275,11 +292,11 @@ public class ReportController : Controller
                     string Subject = $"Rooms Allocation List / Detail Report (All Dates)";
                     return actionButton switch
                     {
-                        "ScreenList" => RoomsAllocationPdfPreview(company, roomAllocationList, DateTime.MinValue),
+                        "ScreenList" => ShowScreenView(RoomsAllocationPdfPreview(company, roomAllocationList, DateTime.MinValue), "Rooms Allocation List (All Dates)","Reservation"),
                         "PdfList" => RoomsAllocationPdfDownload(company, roomAllocationList, DateTime.MinValue),
                         "ExcelList" => ExportRoomAllocationDateWiseToExcel(company, roomAllocationList, Subject),
-                        "ScreenDetail" => await RoomsAllocationDetailPdfPreview(company, roomAllocationList, DateTime.MinValue),
-                        "PdfDetail" => await RoomsAllocationDetailPdfDownload(company, roomAllocationList, DateTime.MinValue),
+                        "ScreenDetail" => ShowScreenView(RoomsAllocationDetailPdfPreview(company, roomAllocationList, DateTime.MinValue), "Rooms Allocation Detail (All Dates)","Reservation"),
+                        "PdfDetail" =>  RoomsAllocationDetailPdfDownload(company, roomAllocationList, DateTime.MinValue),
                         "ExcelDetail" => ExportRoomAllocationDetailDateWiseToExcel(company, roomAllocationList, Subject),
                         _ => RedirectToAction("Index", "Home")
                     };
@@ -290,8 +307,8 @@ public class ReportController : Controller
                 var pdBytes = roomsReport.GeneratePdf();
                 return actionButton switch
                 {
-                    "Screen" => File(pdBytes, "application/pdf"),
-                    "Pdf" => File(pdBytes, "application/pdf", $"RoomsReport_{DateTime.Now:yyyyMMdd}.pdf"),
+                    "Screen" => ShowScreenView(pdBytes,"Room List","Room"),
+                    "Pdf" => File(pdBytes, "application/pdf", $"RoomsReport.pdf"),
                     "Excel" => ExportRoomsListToExcel(company, roomList, "Room List"),
                     _ => RedirectToAction("Index", "Home")
                 };
@@ -628,9 +645,6 @@ public class ReportController : Controller
         int currentRow = 1;
         int totalColumns = 2;
 
-        ws.Column(1).Width = 30; // Room Name
-        ws.Column(2).Width = 15; // Capacity
-
         // ===== COMPANY HEADER =====
         ws.Range(currentRow, 1, currentRow, totalColumns).Merge().Value = company.Name;
         ws.Range(currentRow, 1, currentRow, totalColumns).Style
@@ -690,7 +704,7 @@ public class ReportController : Controller
         {
             // GROUP HEADER
             ws.Range(currentRow, 1, currentRow, totalColumns).Merge()
-                .Value = $"Building: {group.Key.BuildingName} | Block: {group.Key.BlockName} | Floor: {group.Key.FloorName}";
+                .Value = $"Building:  {group.Key.BuildingName}    |   Block:  {group.Key.BlockName}    |    Floor:  {group.Key.FloorName}";
             ws.Range(currentRow, 1, currentRow, totalColumns).Style
                 .Font.SetBold()
                 .Fill.SetBackgroundColor(XLColor.LightGray)
@@ -763,7 +777,12 @@ public class ReportController : Controller
         // Formatting
         ws.Range(headerRow, 1, currentRow, totalColumns).SetAutoFilter();
         ws.SheetView.FreezeRows(headerRow);
-        ws.Columns().AdjustToContents();
+
+        // Increase width of all defined columns
+        ws.Columns(1, totalColumns).Width = 35; // Adjust as per your requirement
+
+        // Optional: Auto adjust row heights if wrapping is enabled
+        ws.Rows().AdjustToContents();
 
         var stream = new MemoryStream();
         workbook.SaveAs(stream);
@@ -936,10 +955,7 @@ public class ReportController : Controller
 
         // ===== COMPANY HEADER =====
         ws.Range(currentRow, 1, currentRow, totalColumns).Merge().Value = company.Name;
-        ws.Column(1).Width = 150;
-        ws.Column(2).Width = 150;
-        ws.Column(3).Width = 150;
-        ws.Column(4).Width = 150;
+      
         ws.Range(currentRow, 1, currentRow, totalColumns).Style
             .Font.SetBold().Font.SetFontSize(14)
             .Alignment.SetHorizontal(XLAlignmentHorizontalValues.Center);
@@ -1086,7 +1102,15 @@ public class ReportController : Controller
         var stream = new MemoryStream();
         workbook.SaveAs(stream);
         stream.Position = 0;
+        // Formatting
+        ws.Range(headerRow, 1, currentRow, totalColumns).SetAutoFilter();
+        ws.SheetView.FreezeRows(headerRow);
 
+        // Increase width of all defined columns
+        ws.Columns(1, totalColumns).Width = 40; // Adjust as per your requirement
+
+        // Optional: Auto adjust row heights if wrapping is enabled
+        ws.Rows().AdjustToContents();
         return File(stream,
             "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
             "RoomAllocationDateWise.xlsx");
