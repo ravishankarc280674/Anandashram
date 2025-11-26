@@ -6,27 +6,27 @@ public class FloorRepository : IFloor
     {
         _context = context;
     }
-    public async Task<Floor> Create(Floor floor)
+    public async Task<Floor> Create(Floor floors)
     {
-        _context.Floors.Add(floor);
+        _context.Floors.Add(floors);
         await _context.SaveChangesAsync();
-        return floor;
+        return floors;
     }
 
-    public async Task<Floor> Delete(Floor floor)
+    public async Task<Floor> Delete(Floor floors)
     {
-        _context.Floors.Attach(floor);
-        _context.Entry(floor).State = EntityState.Deleted;
+        _context.Floors.Attach(floors);
+        _context.Entry(floors).State = EntityState.Deleted;
         await _context.SaveChangesAsync();
-        return floor;
+        return floors;
     }
 
-    public async Task<Floor> Edit(Floor floor)
+    public async Task<Floor> Edit(Floor floors)
     {
-        _context.Floors.Attach(floor);
-        _context.Entry(floor).State = EntityState.Modified;
-       await _context.SaveChangesAsync();
-        return floor;
+        _context.Floors.Attach(floors);
+        _context.Entry(floors).State = EntityState.Modified;
+        await _context.SaveChangesAsync();
+        return floors;
     }
 
 
@@ -50,18 +50,23 @@ public class FloorRepository : IFloor
 
         return floors;
     }
-
+    public async Task<bool> IsExists(string floorsName, int excludeId = 0)
+    {
+        return await _context.Floors
+            .AnyAsync(b => b.Name.ToLower().Trim() == floorsName.ToLower().Trim()
+                           && b.Id != excludeId);
+    }
     public async Task<PaginatedList<Floor>> GetItems(string SortProperty, SortOrder sortOrder, string SearchText = "", int pg = 1, int pageSize = 5)
     {
         List<Floor> floors;
 
         if (!string.IsNullOrEmpty(SearchText))
         {
-            floors =await _context.Floors.Where(n => n.Name.Contains(SearchText) || n.Description.Contains(SearchText))
+            floors = await _context.Floors.Where(n => n.Name.Contains(SearchText) || n.Description.Contains(SearchText))
                 .ToListAsync();
         }
         else
-            floors =await _context.Floors.ToListAsync();
+            floors = await _context.Floors.ToListAsync();
 
         floors = DoSort(floors, SortProperty, sortOrder);
 
@@ -71,8 +76,8 @@ public class FloorRepository : IFloor
 
     public async Task<Floor> GetFloor(int id)
     {
-        Floor floor =await _context.Floors.Where(u => u.Id == id).FirstOrDefaultAsync();
-        return floor;
+        Floor floors = await _context.Floors.Where(u => u.Id == id).FirstOrDefaultAsync();
+        return floors;
     }
     public bool IsFloorNameExists(string name)
     {

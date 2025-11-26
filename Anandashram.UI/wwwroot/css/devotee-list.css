@@ -1,0 +1,113 @@
+﻿/* wwwroot/css/devotee-list.css */
+.devotee-page .table-wrapper {
+    width: 100%;
+    max-width: 100%;
+    padding: 0 15px;
+    box-sizing: border-box;
+}
+
+.devotee-page .tbl-container {
+    height: 350px;
+    overflow: auto;
+    border: 1px solid #d1e7dd;
+    border-radius: 8px;
+    background-color: #fff;
+    box-shadow: 0 3px 8px rgba(0, 0, 0, 0.08);
+    width: 100%;
+}
+
+.devotee-page thead th {
+    position: sticky;
+    top: 0;
+    background-color: #0f5132;
+    color: #ffffff;
+    font-weight: 400;
+    padding: 12px 14px;
+    border-bottom: 2px solid #198754;
+    text-align: center;
+    white-space: nowrap;
+    z-index: 4;
+}
+/* sticky columns */
+.devotee-page .sticky-col {
+    position: sticky;
+    color: #111;
+    z-index: 5;
+}
+
+.devotee-page .first-col {
+    left: 0;
+    z-index: 2;
+    background: #aaa392;
+}
+
+.devotee-page .second-col {
+    left: 40px;
+    z-index: 2;
+    background: #aaa392;
+}
+
+.devotee-page .last-col {
+    right: 0;
+    z-index: 2;
+    background: #aaa392;
+}
+/* hover */
+.devotee-page tbody tr:hover td {
+    background-color: #e6f4ea;
+}
+/* links */
+.devotee-page .devotee-link {
+    color: #0f5132;
+    font-weight: 700;
+    text-decoration: none;
+}
+
+    .devotee-page .devotee-link:hover {
+        color: #20c997;
+        text-decoration: underline;
+    }
+/* code links */
+.devotee-page .code-link {
+    color: #1e88e5;
+    font-size: 1.3rem;
+    transition: color 0.3s ease;
+}
+
+    .devotee-page .code-link:hover {
+        color: #0d6efd;
+    }
+
+.devotee-page .code-link-closed {
+    color: #6c757d;
+    font-size: 1.3rem;
+}
+/* scrollbars */
+.devotee-page .tbl-container::-webkit-scrollbar {
+    height: 10px;
+    width: 10px;
+    background-color: #f1f1f1;
+}
+
+.devotee-page .tbl-container::-webkit-scrollbar-thumb {
+    background-color: #198754;
+    border-radius: 5px;
+}
+/* cards */
+.devotee-page .card {
+    border-radius: 10px;
+    overflow: hidden;
+}
+
+.devotee-page .card-header {
+    font-size: 1.1rem;
+    background-color: darkred;
+    color: white;
+    border: none;
+}
+
+.devotee-page .card-body-bordered {
+    border: 10px solid #dcdcdc;
+    border-radius: 10px;
+    background-color: #fff;
+}

@@ -14,7 +14,6 @@ $(function() {
     });
 });
 showInPopup = (url, title) => {
-    debugger;
     $.ajax({
         type: "GET",
         url: url,
@@ -36,6 +35,7 @@ showInPopup = (url, title) => {
 
 jQueryAjaxPost = form => {
     try {
+    debugger;
         $.ajax({
             type: "POST",
             url: form.action,

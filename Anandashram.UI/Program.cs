@@ -7,6 +7,7 @@ global using Anandashram.UI.Tools.Core.Helpers;
 global using Anandashram.UI.Tools.Core.Models;
 global using Anandashram.UI.Tools.Enums;
 global using Anandashram.UI.Tools.Models;
+global using Microsoft.AspNetCore.Authorization;
 global using Microsoft.AspNetCore.Identity;
 global using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 global using Microsoft.AspNetCore.Mvc;
@@ -17,8 +18,8 @@ global using System.ComponentModel;
 global using System.ComponentModel.DataAnnotations;
 global using System.ComponentModel.DataAnnotations.Schema;
 global using System.Security.Claims;
-global using Microsoft.AspNetCore.Authorization;
 using Anandashram;
+using Anandashram.Services;
 using Microsoft.AspNetCore.DataProtection;
 using Microsoft.AspNetCore.Mvc.Authorization;
 using Microsoft.Extensions.FileProviders;
@@ -101,9 +102,11 @@ builder.Services.AddScoped<IFileManagement, FileManagement>();
 builder.Services.AddScoped<IDevoteeCategory, DevoteeCategoryRepository>();
 builder.Services.AddScoped<IReservation, ReservationRepository>();
 builder.Services.AddScoped<IHome, HomeRepository>();
-
+builder.Services.AddScoped<IBuildingService, BuildingService>();
+builder.Services.AddScoped<IBlockService, BlockService>();
+builder.Services.AddScoped<IFloorService, FloorService>();
+builder.Services.AddScoped<IDevoteeCategoryService, DevoteeCategoryService>();
 var app = builder.Build();
-
 
 if (app.Environment.IsDevelopment())
 {

@@ -50,7 +50,12 @@ public class BuildingRepository : IBuilding
 
         return buildings;
     }
-
+    public async Task<bool> IsExists(string buildingName, int excludeId = 0)
+    {
+        return await _context.Buildings
+            .AnyAsync(b => b.Name.ToLower().Trim() == buildingName.ToLower().Trim()
+                           && b.Id != excludeId);
+    }
     public async Task<PaginatedList<Building>> GetItems(string SortProperty, SortOrder sortOrder, string SearchText = "", int pg = 1, int pageSize = 5)
     {
         List<Building> buildings;

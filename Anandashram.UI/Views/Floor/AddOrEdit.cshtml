@@ -3,6 +3,7 @@
 @{
     ViewData["Title"] = "Floor - Edit";
     Layout = null;
+
     SortModel sortModel = (SortModel)ViewData["SortModel"];
     int pg = 1;
     string searchText = ViewBag.SearchText;
@@ -26,11 +27,10 @@
         ViewBag.Pager = pager;
     }
 }
-
 <div class="row">
     <div class="col-md-12">
-            <form asp-action="AddOrEdit" asp-route-id="@Model.Id" asp-route-pg="@pg" asp-route-SearchText="@ViewBag.SearchText" asp-route-PageSize="@ViewBag.PageSize" onsubmit="return jQueryAjaxPost(this);" autocomplete="off">
-                <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+        <form asp-action="AddOrEdit" asp-route-id="@Model.Id" asp-route-pg="@pg" asp-route-SearchText="@ViewBag.SearchText" asp-route-PageSize="@ViewBag.PageSize" asp-route-Closed="@ViewBag.Closed" onsubmit="return jQueryAjaxPost(this);" autocomplete="off">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
             <input type="hidden" asp-for="Id" />
             <input type="hidden" asp-for="CreatedBy" />
             <input type="hidden" asp-for="CreatedDate" />
@@ -56,8 +56,11 @@
                     </div>
                 </dd>
             </dl>
-            <div class="col-md-12">
-                <input type="submit" value="Submit" class="btn btn-primary btn-block" />
+            <div class="row">
+
+                <div class="col-md-12">
+                    <input type="submit" value="Submit" class="btn btn-primary btn-block" />
+                </div>
             </div>
         </form>
     </div>

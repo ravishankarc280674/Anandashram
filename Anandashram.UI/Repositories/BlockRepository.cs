@@ -50,7 +50,12 @@ public class BlockRepository : IBlock
 
         return blocks;
     }
-
+    public async Task<bool> IsExists(string blockName, int excludeId = 0)
+    {
+        return await _context.Blocks
+            .AnyAsync(b => b.Name.ToLower().Trim() == blockName.ToLower().Trim()
+                           && b.Id != excludeId);
+    }
     public async Task<PaginatedList<Block>> GetItems(string SortProperty, SortOrder sortOrder, string SearchText = "", int pg = 1, int pageSize = 5)
     {
         List<Block> blocks;
@@ -61,7 +66,7 @@ public class BlockRepository : IBlock
                 .ToListAsync();
         }
         else
-            blocks =await _context.Blocks.ToListAsync();
+            blocks = await _context.Blocks.ToListAsync();
 
         blocks = DoSort(blocks, SortProperty, sortOrder);
 
@@ -71,19 +76,10 @@ public class BlockRepository : IBlock
 
     public async Task<Block> GetBlock(int id)
     {
-        //Block block = await (from blockrecs in _context.Blocks.Where(u => u.Id == id)
-        //                     join CreatedUser in _context.Users on blockrecs.CreatedBy equals CreatedUser.Id
-        //                     join ModifiedUser in _context.Users on blockrecs.ModifiedBy equals ModifiedUser.Id
-        //                     select new{
-        //                    blockrecs.Id,blockrecs.ModifiedBy,blockrecs.Name,blockrecs.Description,blockrecs.CreatedBy,blockrecs.CreatedDate,blockrecs.ModifiedDate,
-        //                     CreatedUser =     CreatedUser.UserName,
-        //                    ModifiedUser= ModifiedUser.UserName
-        //                     }).FirstOrDefault();
         Block block = await _context.Blocks.Where(u => u.Id == id).FirstOrDefaultAsync();
-        return block == null ? new Block() : block;
+        return block;
     }
-   
-public bool IsBlockNameExists(string name)
+    public bool IsBlockNameExists(string name)
     {
         int ct = _context.Blocks.Where(n => n.Name.ToLower() == name.ToLower()).Count();
         if (ct > 0)

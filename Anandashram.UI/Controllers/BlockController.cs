@@ -1,171 +1,176 @@
-﻿namespace Anandashram.Controllers;
-[Authorize]
-public class BlockController : Controller
+﻿namespace Anandashram.Controllers
 {
-    private readonly IBlock _blockRepo;
-    private ILogger<BlockController> _logger;
-
-    public BlockController(IBlock blockRepo, ILogger<BlockController> logger)
+    [Authorize]
+    public class BlockController : Controller
     {
-        _logger = logger;
-        _blockRepo = blockRepo;
-    }
+        private readonly IBlockService _blockService;
 
-    // GET: Block
-    public async Task<IActionResult> Index(string sortExpression = "", string searchText = "", int pg = 1, int pageSize = 5)
-    {
-        if (pg < 1) pg = 1;
-        SortModel sortModel = ApplySorting(sortExpression); // Consolidated sorting logic
-        ViewData["SortModel"] = sortModel;
-        ViewBag.PageSize = pageSize;
-        ViewBag.SearchText = searchText;
-        TempData["CurrentPage"] = pg;
-
-        var blockList = await _blockRepo.GetItems(sortModel.SortedProperty, sortModel.SortedOrder, searchText, pg, pageSize);
-        var pager = new PageModel(blockList.TotalRecords, pg, pageSize)
+        public BlockController(IBlockService blockService)
         {
-            Action = "Index",
-            Controller = "Block",
-            SearchText = searchText,
-            SortExpression = sortExpression
-        };
-        ViewBag.Pager = pager;
-        ViewBag.PageSizes = GetPageSizes(pageSize);
-
-        ViewBag.ReportType = "Block";
-        return View(blockList);
-    }
-
-    // Helper method for sorting logic
-    private SortModel ApplySorting(string sortExpression)
-    {
-        var sortModel = new SortModel();
-        sortModel.AddColumn("name");
-        sortModel.AddColumn("description");
-        sortModel.ApplySort(sortExpression);
-        return sortModel;
-    }
-
-    // Helper method to get page sizes
-    private List<SelectListItem> GetPageSizes(int selectedPageSize = 5)
-    {
-        var pageSizes = new List<SelectListItem>
-        {
-            new SelectListItem("5", "5", selectedPageSize == 5)
-        };
-        for (int i = 10; i <= 100; i += 10)
-        {
-            pageSizes.Add(new SelectListItem(i.ToString(), i.ToString(), i == selectedPageSize));
+            _blockService = blockService;
         }
-        return pageSizes;
-    }
 
-    // GET: Block/Details/5
-    public async Task<IActionResult> Details(int id)
-    {
-        var block = await _blockRepo.GetBlock(id);
-        if (block == null)
+        // GET: Block
+        public async Task<IActionResult> Index(string sortExpression = "", string SearchText = "", int pg = 1, int PageSize = 5)
         {
-            return NotFound();
-        }
-        return View(block);
-    }
+            if (pg < 1) pg = 1;
 
-    // GET: Block/AddOrEdit
-    public async Task<IActionResult> AddOrEdit(int id = 0)
-    {
-        Block block = new Block();
-        if (id == 0)
-        {
-            block.CreatedBy = User.FindFirstValue(ClaimTypes.NameIdentifier);
-            block.CreatedDate = DateTime.Now;
-            return View(block);
+            SortModel sortModel = new SortModel();
+            sortModel.AddColumn("name");
+            sortModel.AddColumn("description");
+            sortModel.ApplySort(sortExpression);
+            ViewData["SortModel"] = sortModel;
+            ViewBag.PageSize = PageSize;
+            ViewBag.SearchText = SearchText;
+            TempData["CurrentPage"] = pg;
+
+            var BlockList = await _blockService.GetItems(sortModel.SortedProperty, sortModel.SortedOrder, SearchText, pg, PageSize);
+
+            var pager = new PageModel(BlockList.TotalRecords, pg, PageSize) { Action = "Index", Controller = "Block", SearchText = SearchText };
+            pager.SortExpression = sortExpression;
+            this.ViewBag.Pager = pager;
+            this.ViewBag.PageSizes = GetPageSizes(PageSize);
+            ViewBag.ReportType = "Block";
+
+            return View(BlockList);
         }
-        else
+
+        private List<SelectListItem> GetPageSizes(int selectedPageSize = 5)
         {
-            block = await _blockRepo.GetBlock(id);
-            TempData.Keep();
+            var pagesSizes = new List<SelectListItem>();
+
+            if (selectedPageSize == 5)
+                pagesSizes.Add(new SelectListItem("5", "5", true));
+            else
+                pagesSizes.Add(new SelectListItem("5", "5"));
+
+            for (int lp = 10; lp <= 100; lp += 10)
+            {
+                if (lp == selectedPageSize)
+                    pagesSizes.Add(new SelectListItem(lp.ToString(), lp.ToString(), true));
+                else
+                    pagesSizes.Add(new SelectListItem(lp.ToString(), lp.ToString()));
+            }
+
+            return pagesSizes;
+        }
+
+        // GET: Block/Details/5
+        public async Task<IActionResult> Details(int id)
+        {
+            var block = await _blockService.GetBlock(id);
             if (block == null)
             {
                 return NotFound();
             }
-            block.ModifiedBy = User.FindFirstValue(ClaimTypes.NameIdentifier);
-            block.ModifiedDate = DateTime.Now;
+
+            return View(block);
         }
-        return View(block);
-    }
 
-    // POST: Block/AddOrEdit
-    [HttpPost]
-    public async Task<IActionResult> AddOrEdit(Block block, int id, int pg = 0, int pageSize = 5, string sortExpression = "", string searchText = "")
-    {
-        BuildData(pg, pageSize, sortExpression, searchText);
-
-        if (ModelState.IsValid)
+        public async Task<IActionResult> AddOrEdit(int id = 0)
         {
-            try
+            Block block = new Block();
+            if (id == 0)
             {
-                if (id == 0)
-                {
-                    block = await _blockRepo.Create(block);
-                }
-                else
-                {
-                    block = await _blockRepo.Edit(block);
-                }
-
-                var html = Helper.RenderRazorViewToString(this, "_ViewAll", _blockRepo.GetBlocks());
-                return Json(new { isValid = true, html });
+                block.CreatedBy = this.User.FindFirstValue(ClaimTypes.NameIdentifier);
+                block.CreatedDate = DateTime.Now;
+                return View(block);
             }
-            catch (DbUpdateConcurrencyException)
+            else
             {
-                // Handle concurrency issue
-                if (_blockRepo.GetBlock(block.Id) == null)
+                block = await _blockService.GetBlock(id);
+                TempData.Keep();
+                if (block == null)
                 {
                     return NotFound();
                 }
+                block.ModifiedBy = this.User.FindFirstValue(ClaimTypes.NameIdentifier);
+                block.ModifiedDate = DateTime.Now;
+            }
+            return View(block);
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> AddOrEdit(Block block, int id, int pg = 0, int pageSize = 5, string sortExpression = "", string searchText = "")
+        {
+            BuildData(pg, pageSize, sortExpression, searchText);
+
+            if (ModelState.IsValid)
+            {
+                if (id == 0)
+                {
+                    var result = await _blockService.Create(block);
+                    if (!result.Success)
+                    {
+                        // Service reported validation/error
+                        ModelState.AddModelError(string.Empty, result.Message);
+                        return Json(new { isValid = false, html = Helper.RenderRazorViewToString(this, "AddOrEdit", block) });
+                    }
+
+                    // Created OK
+                    var all = _blockService.GetBlocks();
+                    return Json(new { isValid = true, html = Helper.RenderRazorViewToString(this, "_ViewAll", all) });
+                }
                 else
                 {
-                    throw;
+                    try
+                    {
+                        var result = await _blockService.Edit(block);
+                        if (!result.Success)
+                        {
+                            ModelState.AddModelError(string.Empty, result.Message);
+                            return Json(new { isValid = false, html = Helper.RenderRazorViewToString(this, "AddOrEdit", block) });
+                        }
+
+                        var all = _blockService.GetBlocks();
+                        return Json(new { isValid = true, html = Helper.RenderRazorViewToString(this, "_ViewAll", all) });
+                    }
+                    catch (DbUpdateConcurrencyException)
+                    {
+                        // replicate original behavior
+                        var exists = await _blockService.GetBlock(block.Id);
+                        if (exists == null)
+                        {
+                            return NotFound();
+                        }
+                        else
+                        {
+                            throw;
+                        }
+                    }
                 }
             }
-            catch (Exception ex)
+
+            // model invalid
+            return Json(new { isValid = false, html = Helper.RenderRazorViewToString(this, "AddOrEdit", block) });
+        }
+
+        private void BuildData(int pg, int pageSize, string sortExpression, string searchText)
+        {
+            SortModel sortModel = new SortModel();
+            sortModel.AddColumn("name");
+            sortModel.AddColumn("description");
+            sortModel.ApplySort(sortExpression);
+            ViewData["SortModel"] = sortModel;
+            ViewBag.PageSize = pageSize;
+            ViewBag.SearchText = searchText;
+            TempData["CurrentPage"] = pg;
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> Delete(Block block, int pg = 0, int pageSize = 5, string sortExpression = "", string searchText = "")
+        {
+            BuildData(pg, pageSize, sortExpression, searchText);
+
+            var result = await _blockService.Delete(block);
+            if (!result.Success)
             {
-                // Log the exception and show a friendly error page
-                _logger.LogError(ex, "Error occurred while saving the block.");
-                return View("Error");
+                // return view with error message (or JSON with error)
+                ModelState.AddModelError(string.Empty, result.Message);
             }
-        }
-        return Json(new { isValid = false, html = Helper.RenderRazorViewToString(this, "AddOrEdit", block) });
-    }
 
-    // POST: Block/Delete
-    [HttpPost]
-    public async Task<IActionResult> Delete(Block block, int pg = 0, int pageSize = 5, string sortExpression = "", string searchText = "")
-    {
-        BuildData(pg, pageSize, sortExpression, searchText);
-
-        try
-        {
-            block = await _blockRepo.Delete(block);
-            var html = Helper.RenderRazorViewToString(this, "_ViewAll", _blockRepo.GetBlocks());
-            return Json(new { html });
+            var all = _blockService.GetBlocks();
+            return Json(new { html = Helper.RenderRazorViewToString(this, "_ViewAll", all) });
         }
-        catch (Exception ex)
-        {
-            // Log the error
-            _logger.LogError(ex, "Error occurred while deleting the block.");
-            return Json(new { success = false, message = "Error occurred during deletion" });
-        }
-    }
-
-    // Helper method to build pagination and sorting data
-    private void BuildData(int pg, int pageSize, string sortExpression, string searchText)
-    {
-        SortModel sortModel = ApplySorting(sortExpression); // Reuse the sorting helper
-        ViewData["SortModel"] = sortModel;
-        ViewBag.PageSize = pageSize;
-        ViewBag.SearchText = searchText;
-        TempData["CurrentPage"] = pg;
     }
 }

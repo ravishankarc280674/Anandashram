@@ -31,7 +31,7 @@ public class DevoteeCategoryRepository : IDevoteeCategory
 
 
     private List<DevoteeCategory> DoSort(List<DevoteeCategory> devoteeCategories, string SortProperty, SortOrder sortOrder)
-    {           
+    {
 
         if (SortProperty.ToLower() == "name")
         {
@@ -50,7 +50,12 @@ public class DevoteeCategoryRepository : IDevoteeCategory
 
         return devoteeCategories;
     }
-
+    public async Task<bool> IsExists(string devoteeCategoryName, int excludeId = 0)
+    {
+        return await _context.DevoteeCategories
+            .AnyAsync(b => b.Name.ToLower().Trim() == devoteeCategoryName.ToLower().Trim()
+                           && b.Id != excludeId);
+    }
     public async Task<PaginatedList<DevoteeCategory>> GetItems(string SortProperty, SortOrder sortOrder, string SearchText = "", int pg = 1, int pageSize = 5)
     {
         List<DevoteeCategory> devoteeCategories;
@@ -65,8 +70,8 @@ public class DevoteeCategoryRepository : IDevoteeCategory
 
         devoteeCategories = DoSort(devoteeCategories, SortProperty, sortOrder);
 
-        PaginatedList<DevoteeCategory> retDevoteeCategorys = new PaginatedList<DevoteeCategory>(devoteeCategories,pg,pageSize);
-        return retDevoteeCategorys;
+        PaginatedList<DevoteeCategory> retDevoteeCategories = new PaginatedList<DevoteeCategory>(devoteeCategories, pg, pageSize);
+        return retDevoteeCategories;
     }
 
     public async Task<DevoteeCategory> GetDevoteeCategory(int id)
@@ -80,20 +85,20 @@ public class DevoteeCategoryRepository : IDevoteeCategory
         if (ct > 0)
             return true;
         else
-            return false;      
+            return false;
     }
 
-    public bool IsDevoteeCategoryNameExists(string name,int Id)
+    public bool IsDevoteeCategoryNameExists(string name, int Id)
     {
-        int ct = _context.DevoteeCategories.Where(n => n.Name.ToLower() == name.ToLower() && n.Id!=Id).Count();
+        int ct = _context.DevoteeCategories.Where(n => n.Name.ToLower() == name.ToLower() && n.Id != Id).Count();
         if (ct > 0)
             return true;
         else
             return false;
     }
-    public  List<DevoteeCategory> GetDevoteeCategories()
+
+    public IEnumerable<DevoteeCategory> GetDevoteeCategories()
     {
         return _context.DevoteeCategories.ToList();
     }
-
 }

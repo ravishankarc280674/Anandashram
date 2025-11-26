@@ -97,7 +97,7 @@ public class ReportController : Controller
     {
         return type switch
         {
-            "Category" => _devotecategoryrepo.GetDevoteeCategories()
+            "Category" =>_devotecategoryrepo.GetDevoteeCategories()
                                 .Select(x => new GenericItemDTO { Id = x.Id, Name = x.Name, Description = x.Description })
                                 .ToList(),
 
@@ -105,7 +105,7 @@ public class ReportController : Controller
                                 .Select(x => new GenericItemDTO { Id = x.Id, Name = x.Name, Description = x.Description })
                                 .ToList(),
 
-            "Block" => _blockrepo.GetBlocks()
+            "Block" =>  _blockrepo.GetBlocks()
                                 .Select(x => new GenericItemDTO { Id = x.Id, Name = x.Name, Description = x.Description })
                                 .ToList(),
 

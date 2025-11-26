@@ -12,25 +12,25 @@
     ViewData["SortModel"] = sortModel;
     ViewBag.Pager = pager;
 }
-
-<div class="d-flex justify-content-between align-items-center mb-3">
-    <h3 class="mb-0 text-success">
-        <i class="fas fa-building"></i> @currentModel - List
-    </h3>
-    <a onclick="showInPopup('@Url.Action("AddOrEdit", "Block", null, Context.Request.Scheme)',
+<div class="container-fluid">
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <h3 class="mb-0 text-success">
+            <i class="fas fa-building"></i> @currentModel - List
+        </h3>
+        <a onclick="showInPopup('@Url.Action("AddOrEdit", "Block", null, Context.Request.Scheme)',
                                 '@currentModel - New')"
-       class="btn btn-success">
-        <i class="fas fa-plus-circle"></i> Create New
-    </a>
-</div>
+           class="btn btn-success">
+            <i class="fas fa-plus-circle"></i> Create New
+        </a>
+    </div>
 
-<partial name="_pager" model="@pager" />
+    <partial name="_pager" model="@pager" />
 
-<div id="view-all">
-    @await Html.PartialAsync("_ViewAll", Model)
-</div>
+    <div id="view-all">
+        @await Html.PartialAsync("_ViewAll", Model)
+    </div>
 
-<partial name="_BottomBar" model="@pager" />
+    <partial name="_BottomBar" model="@pager" />
 </div>
 
 @section Scripts {
