@@ -97,7 +97,7 @@ public class ReportController : Controller
     {
         return type switch
         {
-            "Category" =>_devotecategoryrepo.GetDevoteeCategories()
+            "DevoteeCategory" =>_devotecategoryrepo.GetDevoteeCategories()
                                 .Select(x => new GenericItemDTO { Id = x.Id, Name = x.Name, Description = x.Description })
                                 .ToList(),
 
@@ -154,7 +154,7 @@ public class ReportController : Controller
     {
         var items = LoadGenericTableData(type); // List<GenericItemDTO>
         var company = _companyrepo.CompanyDetails(); // your company details
-        type = type == "Category" ? "Devotee Category" : type;
+        type = type == "DevoteeCategory" ? "Devotee Category" : type;
         var pdfBytes = new PrintGenericTable(company, type + " List", items).GeneratePdf();
         return File(pdfBytes, "application/pdf", $"{type}_List.pdf");
     }
@@ -164,7 +164,7 @@ public class ReportController : Controller
     {
         var items = LoadGenericTableData(type); // List<GenericItemDTO>
         var company = _companyrepo.CompanyDetails(); // company details
-        type = type == "Category" ? "Devotee Category" : type;
+        type = type == "DevoteeCategory" ? "Devotee Category" : type;
         var pdfBytes = new PrintGenericTable(company, type + " List", items).GeneratePdf();
         return pdfBytes;
     }
@@ -240,6 +240,7 @@ public class ReportController : Controller
     {
         Company company = _companyrepo.CompanyDetails();
         switch (reportType)
+
         {
             case "DevoteeList":
                 var jsonData = HttpContext.Session.GetString("DevoteesFilterData");
@@ -273,7 +274,7 @@ public class ReportController : Controller
                         _ => RedirectToAction("Index", "Home")
                     };
                 }
-            case "Category":
+            case "DevoteeCategory":
             case "Building":
             case "Block":
             case "Floor":

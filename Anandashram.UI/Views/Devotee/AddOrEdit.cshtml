@@ -447,7 +447,7 @@
         document.addEventListener("DOMContentLoaded",calculateTotal);
         // $(document).ready(function () {
            $(document).on('change', '.dropdown',function () {
-            //     var rooms =
+            
                     var id = $(this).val(); // Get selected value
                     var currentRow = $(this).closest('tr');
                               $.ajax({
@@ -455,6 +455,7 @@
                                     url: '/Devotee/GetSelectedRoom',
                                     data: { Id: id }, // Parameters sent to the controller
                             success: function (Data) {
+                                debugger;
                                 var room = Data.data;
                                 currentRow.find('.building-label').text(room.buildingName);
                                 currentRow.find('.block-label').text(room.blockName);
@@ -466,7 +467,8 @@
                                 currentRow.find('.ToDate-label').text(room.toDate);
                             },
                             error: function (error) {
-                                console.log(error);
+                                            debugger;
+                                            console.log(error);
                             }
                          });
             });
