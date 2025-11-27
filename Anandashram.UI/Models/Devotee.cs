@@ -51,7 +51,7 @@ public partial class Devotee
     [MaxLength(100)]
     public string? PinCode { get; set; }
 
-    [DisplayName("Check In Date")]
+    [DisplayName("Registration Date")]
     [DisplayFormat(DataFormatString = "{dd/MM/yyyy}")]
     public DateTime StartDate { get; set; } = DateTime.Now;
 

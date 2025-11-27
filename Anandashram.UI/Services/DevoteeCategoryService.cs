@@ -1,8 +1,4 @@
-﻿using Anandashram.Models;
-using Anandashram.Repositories;
-using System.Threading.Tasks;
-
-namespace Anandashram.Services
+﻿namespace Anandashram.Services
 {
     public class DevoteeCategoryService : IDevoteeCategoryService
     {
@@ -43,6 +39,11 @@ namespace Anandashram.Services
         {
             await _repo.Delete(building);
             return (true, "Deleted successfully");
+        }
+
+        public async Task<IEnumerable<DevoteeCategory>> GetAllAsync()
+        {
+            return await _repo.GetAllAsync();
         }
     }
 }

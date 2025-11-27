@@ -1,4 +1,4 @@
-﻿namespace Anandashram.Interfaces;
+﻿namespace Anandashram.Interfaces.Services;
 public interface IBlockService
 {
     Task<PaginatedList<Block>> GetItems(string sortProperty, SortOrder sortOrder, string searchText, int pageIndex, int pageSize);

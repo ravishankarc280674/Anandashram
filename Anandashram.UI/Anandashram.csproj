@@ -12,7 +12,7 @@
   <ItemGroup>
    
    
-    <Compile Remove="Repositories\Floor.cs" />
+    <Compile Remove="Repository\Floor.cs" />
   </ItemGroup>
 
   <ItemGroup>

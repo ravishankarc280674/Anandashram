@@ -1,4 +1,6 @@
-﻿namespace Anandashram.Repositories;
+﻿using Anandashram.Interfaces.Repository;
+
+
 public class RoomRepository : IRoom
 {
     private readonly ApplicationDbContext _context; // for connecting to efcore.
@@ -135,7 +137,7 @@ public class RoomRepository : IRoom
                     Description = result.r.Description,
                     ModifiedBy = result.r.ModifiedBy,
                     ModifiedDate = result.r.ModifiedDate,
-                    Remaining = result.r.Capacity - (result.rss.Where(rs => rs.Closed == false).Sum(rs => rs.Allocated))
+                    Remaining = result.r.Capacity - (result.rss.Where(rs => !rs.Closed).Sum(rs => rs.Allocated))
                 }).FirstOrDefault();
 
         return room == null ? new Room() : room;

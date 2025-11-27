@@ -1,4 +1,4 @@
-﻿namespace Anandashram.Interfaces;
+﻿namespace Anandashram.Interfaces.Services;
 public interface IDevoteeCategoryService
 {
     Task<PaginatedList<DevoteeCategory>> GetItems(string sortProperty, SortOrder sortOrder, string searchText, int pageIndex, int pageSize);
@@ -7,4 +7,5 @@ public interface IDevoteeCategoryService
     Task<(bool Success, string Message, DevoteeCategory Entity)> Edit(DevoteeCategory devoteeCategory);
     Task<(bool Success, string Message)> Delete(DevoteeCategory devoteeCategory);
     IEnumerable<DevoteeCategory> GetDevoteeCategories();
+    Task<IEnumerable<DevoteeCategory>> GetAllAsync();
 }

@@ -1,4 +1,4 @@
-﻿namespace Anandashram.Interfaces;
+﻿namespace Anandashram.Interfaces.Repository;
 public interface IReservation
 {
     Task<int> AddReservation(List<Reservation> reservationList);

@@ -1,4 +1,6 @@
-﻿namespace Anandashram.Repositories;
+﻿using Anandashram.Interfaces.Repository;
+
+
 public class DevoteeRepository : IDevotee
 {
     private readonly ApplicationDbContext _context; // for connecting to efcore.
@@ -153,11 +155,6 @@ public class DevoteeRepository : IDevotee
             return true;
         else
             return false;
-    }
-
-    public IEnumerable<Devotee> GetDevotees()
-    {
-        return _context.Devotees.ToList();
     }
 
     public async Task<Devotee> GetDevoteeWithReservations(int devoteeId)

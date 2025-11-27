@@ -1,4 +1,4 @@
-﻿namespace Anandashram.Interfaces;
+﻿namespace Anandashram.Interfaces.Repository;
 public interface ICompany
 {
     Company CompanyDetails();

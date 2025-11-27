@@ -1,4 +1,4 @@
-﻿namespace Anandashram.Interfaces;
+﻿namespace Anandashram.Interfaces.Repository;
 public interface IHome
 {
     HomeDTO GetHomeData();

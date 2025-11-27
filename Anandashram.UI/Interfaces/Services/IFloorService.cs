@@ -1,4 +1,4 @@
-﻿namespace Anandashram.Interfaces;
+﻿namespace Anandashram.Interfaces.Services;
 public interface IFloorService
 {
     Task<PaginatedList<Floor>> GetItems(string sortProperty, SortOrder sortOrder, string searchText, int pageIndex, int pageSize);

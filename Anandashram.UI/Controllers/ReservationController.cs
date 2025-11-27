@@ -1,21 +1,15 @@
-﻿namespace Anandashram.Controllers;
+﻿using Anandashram.Interfaces.Repository;
+
+namespace Anandashram.Controllers;
 [Authorize]
 public class ReservationController : Controller
 {
     // GET: ReservationController
-    private readonly IRoom _roomRepo;
-    private readonly IBlock _blockrepo;
-    private readonly IBuilding _buildingrepo;
-    private readonly IFloor _floorrepo;
-    private readonly IReservation _reservationrepo;
+    private readonly IRoomService _roomService;
 
-    public ReservationController(IRoom roomRepo, IBlock blockrepo, IBuilding buildingrepo, IFloor floorrepo,IReservation reservationrepo)
+    public ReservationController(IRoomService roomService)
     {
-        _roomRepo = roomRepo;
-        _blockrepo = blockrepo;
-        _buildingrepo = buildingrepo;
-        _floorrepo = floorrepo;
-        _reservationrepo = reservationrepo;
+        _roomService = roomService;
     }
 
     public async Task<IActionResult> Index(string sortExpression = "", string SearchText = "", int pg = 1, int PageSize = 5000)
@@ -30,7 +24,7 @@ public class ReservationController : Controller
         ViewBag.SearchText = SearchText;
         ViewBag.ReportType = "Reservation";
        
-        List<Room> ReservationList = await _roomRepo.GeRoomReservations(sortModel.SortedProperty, sortModel.SortedOrder, SearchText);
+        List<Room> ReservationList = await _roomService.GeRoomReservations(sortModel.SortedProperty, sortModel.SortedOrder, SearchText);
         var pager = new PageModel(ReservationList.Count, pg, PageSize) { Action = "Index", Controller = "Reservation", SearchText = SearchText };
         pager.SortExpression = sortExpression;
         pager.ControllerName = "Reservation";

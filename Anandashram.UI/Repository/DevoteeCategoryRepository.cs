@@ -1,4 +1,6 @@
-﻿namespace Anandashram.Repositories;
+﻿using Anandashram.Interfaces.Services;
+
+
 public class DevoteeCategoryRepository : IDevoteeCategory
 {
     private readonly ApplicationDbContext _context; // for connecting to efcore.
@@ -100,5 +102,10 @@ public class DevoteeCategoryRepository : IDevoteeCategory
     public IEnumerable<DevoteeCategory> GetDevoteeCategories()
     {
         return _context.DevoteeCategories.ToList();
+    }
+
+    public async Task<IEnumerable<DevoteeCategory>> GetAllAsync()
+    {
+        return await _context.DevoteeCategories.ToListAsync();
     }
 }

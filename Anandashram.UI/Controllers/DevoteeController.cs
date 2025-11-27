@@ -4,25 +4,25 @@ namespace Anandashram.Controllers;
 public class DevoteeController : Controller
 {
     //  private readonly ApplicationDbContext _context;
-    private readonly IDevotee _devoteeRepo;
-    private readonly IDevoteeCategory _devoteeCategoryRepo;
-    private readonly IRoom _roomRepo;
+    private readonly IDevoteeService _devoteeService;
+    private readonly IDevoteeCategoryService _devoteeCategoryService;
+    private readonly IRoomService _roomService;
     private readonly IFileManagement _fileManagement;
-    private readonly IReservation _reservationRepo;
-    private readonly ICompany _companyrepo;
+    private readonly IReservationService _reservationService;
+    private readonly ICompanyService _companyService;
     private readonly IWebHostEnvironment _env;
     private readonly ValidationSettings _validationSettings;
-    public DevoteeController(IOptions<ValidationSettings> validationOptions,IWebHostEnvironment env, ICompany companyRepo, IDevotee devoteeRepo, IDevoteeCategory devoteeCategoryRepo, IRoom roomRepo, IFileManagement fileManagement, IReservation reservationRepo)
+    public DevoteeController(IOptions<ValidationSettings> validationOptions,IWebHostEnvironment env, ICompanyService companyService, IDevoteeService devoteeService, IDevoteeCategoryService devoteeCategoryService, IRoomService roomService, IFileManagement fileManagement, IReservationService reservationService)
     {
         _validationSettings = validationOptions.Value;
         // _context = context;
         _env = env;
-        _devoteeRepo = devoteeRepo;
-        _roomRepo = roomRepo;
-        _devoteeCategoryRepo = devoteeCategoryRepo;
+        _devoteeService = devoteeService;
+        _roomService = roomService;
+        _devoteeCategoryService = devoteeCategoryService;
         _fileManagement = fileManagement;
-        _reservationRepo = reservationRepo;
-        _companyrepo = companyRepo;
+        _reservationService = reservationService;
+        _companyService = companyService;
     }
 
     // GET: Devotee
@@ -47,7 +47,7 @@ public class DevoteeController : Controller
             ViewBag.SearchText = SearchText;
             ViewBag.Closed = Closed;
             TempData["CurrentPage"] = pg;
-            var DevoteeList = await _devoteeRepo.GetItems(sortModel.SortedProperty, sortModel.SortedOrder, SearchText, pg, PageSize, Closed);
+            var DevoteeList = await _devoteeService.GetItems(sortModel.SortedProperty, sortModel.SortedOrder, SearchText, pg, PageSize, Closed);
 
             var pager = new PageModel(DevoteeList.TotalRecords, pg, PageSize) { Action = "Index", Controller = "Devotee", SearchText = SearchText, Closed = Closed };
             pager.SortExpression = sortExpression;
@@ -86,7 +86,7 @@ public class DevoteeController : Controller
      
     public List<SelectListItem> GetDevoteeCategories()
     {
-        var devoteeCategories = _devoteeCategoryRepo.GetDevoteeCategories().Select(m => new SelectListItem()
+        var devoteeCategories = _devoteeCategoryService.GetDevoteeCategories().Select(m => new SelectListItem()
         {
             Value = m.Id.ToString(),
             Text = m.Name
@@ -118,7 +118,7 @@ public class DevoteeController : Controller
     // GET: Devotee/Details/5
     public async Task<IActionResult> Details(int id)
     {
-        var devotee = await _devoteeRepo.GetDevoteeWithReservations(id);
+        var devotee = await _devoteeService.GetDevoteeWithReservations(id);
         if (devotee == null)
         {
             return NotFound();
@@ -144,8 +144,8 @@ public class DevoteeController : Controller
         else
         {
             AddFile file = new AddFile();
-            devotee = await _devoteeRepo.GetDevotee(Id);
-            devotee.Reservations = await _reservationRepo.ReservationList(Id);
+            devotee = await _devoteeService.GetDevotee(Id);
+            devotee.Reservations = await _reservationService.ReservationList(Id);
             ViewBag.RoomsList = GetFilteredRooms();
             TempData.Keep();
             
@@ -174,7 +174,7 @@ public class DevoteeController : Controller
             string NewDevoteeCode = string.Empty;
             if (Id == 0)
             {
-                devotee = await _devoteeRepo.Create(devotee);
+                devotee = await _devoteeService.Create(devotee);
                 IdToRedirect = devotee.Id;
             }
             else
@@ -208,7 +208,7 @@ public class DevoteeController : Controller
                             Mobile = devotee.Mobile,
                             NoOfPeople = devotee.NoOfPeople
                         };
-                        newDevotee = await _devoteeRepo.Create(newDevotee);
+                        newDevotee = await _devoteeService.Create(newDevotee);
                         NewDevoteeCode = newDevotee.Code;
                         IdToRedirect = newDevotee.Id;
 
@@ -216,7 +216,7 @@ public class DevoteeController : Controller
                         await _fileManagement.CopyProfilePic(OldDevoteeCode, NewDevoteeCode);
                         await _fileManagement.CopyDocuments(OldDevoteeCode, NewDevoteeCode);
                     }
-                    devotee = await _devoteeRepo.Edit(devotee);
+                    devotee = await _devoteeService.Edit(devotee);
                     if (actionButton == "Closed")
                     {
                         await CloseReservations(IdToRedirect);
@@ -226,7 +226,7 @@ public class DevoteeController : Controller
                 }
                 catch (DbUpdateConcurrencyException)
                 {
-                    if (_devoteeRepo.GetDevotee(devotee.Id) == null)
+                    if (_devoteeService.GetDevotee(devotee.Id) == null)
                     {
                         return NotFound();
                     }
@@ -248,7 +248,7 @@ public class DevoteeController : Controller
     // GET: Devotee/Delete/5
     public async Task<IActionResult> Delete(int id)
     {
-        Devotee devotee = await _devoteeRepo.GetDevotee(id);
+        Devotee devotee = await _devoteeService.GetDevotee(id);
         TempData.Keep();
         return View(devotee);
     }
@@ -259,7 +259,7 @@ public class DevoteeController : Controller
     {
         try
         {
-            devotee = await _devoteeRepo.Delete(devotee);
+            devotee = await _devoteeService.Delete(devotee);
         }
         catch (Exception ex)
         {
@@ -277,10 +277,7 @@ public class DevoteeController : Controller
         return RedirectToAction(nameof(Index), new { pg = currentPage });
     }
 
-    //image captured from webcam
-
     [HttpPost]
-
     public async Task<IActionResult> SaveImage(int Id, string Code, string Data)
     {
         AddFile addFile = new AddFile();
@@ -293,24 +290,18 @@ public class DevoteeController : Controller
         await _fileManagement.Upload(addFile);
         return Json(new { success = true });
     }
-
     public async Task<IActionResult> UploadDocument(AddFile addFile)
     {
-        //if (!ModelState.IsValid)
-        //{
         string fileExtention = Path.GetExtension(addFile.ImageFile.FileName);
         addFile.FileName = addFile.FileName + fileExtention;
         await _fileManagement.UploadDocument(addFile);
-        //}
         return RedirectToAction("AddOrEdit", new { Id = addFile.DevoteeId });
     }
-
     public async Task<IActionResult> GetImage(string fileName)
     {
         var fileBytes = await _fileManagement.GetProfilePic(fileName);
         return File(fileBytes, "image/jpeg");
     }
-
     public async Task<FileResult> GetDocument(string filePath, string fileName)
     {
         var fileBytes = await _fileManagement.GetDocument(filePath);
@@ -322,23 +313,15 @@ public class DevoteeController : Controller
         await _fileManagement.DeleteDocument(filePath);
         NotifyUser("Document Deleted Successfully");
         return RedirectToAction("AddOrEdit", new { Id = Id });
-
     }
-
-
-
     public void NotifyUser(string message)
     {
-        // Perform some server-side logic
         Content($"<script>notify('{message}');</script>", "text/html");
     }
-
     private List<SelectListItem> GetFilteredRooms()
     {
         var lstRooms = new List<SelectListItem>();
-
-        PaginatedList<Room> rooms = new PaginatedList<Room>(_roomRepo.GetFilteredRooms(), 1, 1000);
-
+        PaginatedList<Room> rooms = new PaginatedList<Room>(_roomService.GetFilteredRooms(), 1, 1000);
         lstRooms = rooms.Select(ut => new SelectListItem()
         {
             Value = ut.Id.ToString(),
@@ -359,12 +342,11 @@ public class DevoteeController : Controller
     [HttpPost]
     public JsonResult GetSelectedRoom(int Id)
     {
-        var room = _roomRepo.GetSelectedRoom(Id);
+        var room = _roomService.GetSelectedRoom(Id);
         return Json(new { Success = "true", Data = room });
     }
 
     [HttpPost]
-
     public async Task<IActionResult> AddReservation([FromBody] List<Reservation> data)
     {
         if (data == null || !data.Any())
@@ -373,39 +355,27 @@ public class DevoteeController : Controller
         int devoteeId = data.First().DevoteeId;
 
         foreach (Reservation r in data) { r.CreatedDate = DateTime.Now; r.CreatedBy = this.User.FindFirstValue(ClaimTypes.NameIdentifier); };
-        await _reservationRepo.AddReservation(data);
+        await _reservationService.AddReservation(data);
         return Json(new { isValid = true, html = Helper.RenderRazorViewToString(this, "AddOrEdit", devoteeId) });
     }
 
     [HttpPost]
-
     public async Task<IActionResult> CloseReservation(int Id, int DevoteeId)
     {
-        await _reservationRepo.CloseReservation(Id, DevoteeId, DateTime.Now, this.User.FindFirstValue(ClaimTypes.NameIdentifier));
+        await _reservationService.CloseReservation(Id, DevoteeId, DateTime.Now, this.User.FindFirstValue(ClaimTypes.NameIdentifier));
         return Json(new { isValid = true, html = Helper.RenderRazorViewToString(this, "AddOrEdit", DevoteeId) });
     }
 
     [HttpPost]
-
     public async Task<IActionResult> CloseReservations(int DevoteeId)
     {
-        await _reservationRepo.CloseReservations(DevoteeId, DateTime.Now, this.User.FindFirstValue(ClaimTypes.NameIdentifier));
+        await _reservationService.CloseReservations(DevoteeId, DateTime.Now, this.User.FindFirstValue(ClaimTypes.NameIdentifier));
         return Json(new { isValid = true, html = Helper.RenderRazorViewToString(this, "AddOrEdit", DevoteeId) });
     }
 
     public async Task<Devotee> GetDevoteeWithReservations(int devoteeId)
     {
-
         Devotee devotee = new Devotee();
-        try
-        {
-            devotee = await _devoteeRepo.GetDevoteeWithReservations(devoteeId);
-        }
-        catch (Exception ex)
-        {
-            string x = ex.Message;
-        }
-        return devotee;
-
+         return   await _devoteeService.GetDevoteeWithReservations(devoteeId);
     }
 }

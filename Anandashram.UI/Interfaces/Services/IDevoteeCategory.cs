@@ -1,4 +1,4 @@
-﻿namespace Anandashram.Interfaces;
+﻿namespace Anandashram.Interfaces.Services;
 public interface IDevoteeCategory
 {
     Task<PaginatedList<DevoteeCategory>> GetItems(string SortProperty, SortOrder sortOrder, string SearchText = "", int pageIndex = 1, int pageSize = 5); //read all
@@ -10,4 +10,5 @@ public interface IDevoteeCategory
     bool IsDevoteeCategoryNameExists(string name, int Id);
     IEnumerable<DevoteeCategory> GetDevoteeCategories();
     Task<bool> IsExists(string devoteeCategoryName, int excludeId = 0);
+    Task<IEnumerable<DevoteeCategory>> GetAllAsync();
 }

@@ -1,4 +1,6 @@
-﻿namespace Anandashram.Controllers
+﻿using Anandashram.Interfaces.Services;
+
+namespace Anandashram.Controllers
 {
     [Authorize]
     public class FloorController : Controller

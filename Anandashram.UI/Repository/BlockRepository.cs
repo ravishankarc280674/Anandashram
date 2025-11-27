@@ -1,4 +1,4 @@
-﻿namespace Anandashram.Repositories;
+﻿
 public class BlockRepository : IBlock
 {
     private readonly ApplicationDbContext _context; // for connecting to efcore.

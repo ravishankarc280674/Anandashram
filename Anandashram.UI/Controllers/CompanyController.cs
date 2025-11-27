@@ -1,4 +1,6 @@
-﻿namespace Anandashram.Controllers;
+﻿using Anandashram.Interfaces.Repository;
+
+namespace Anandashram.Controllers;
 [Authorize]
 public class CompanyController : Controller
 {

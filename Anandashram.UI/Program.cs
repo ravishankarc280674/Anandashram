@@ -1,29 +1,35 @@
-﻿global using Anandashram.Data;
+﻿global using Anandashram;
+global using Anandashram.Data;
 global using Anandashram.DTO;
 global using Anandashram.Interfaces;
+global using Anandashram.Interfaces.Repository;
+global using Anandashram.Interfaces.Services;
 global using Anandashram.Models;
-global using Anandashram.Repositories;
+global using Anandashram.Reports;
+global using Anandashram.Services;
 global using Anandashram.UI.Tools.Core.Helpers;
 global using Anandashram.UI.Tools.Core.Models;
 global using Anandashram.UI.Tools.Enums;
 global using Anandashram.UI.Tools.Models;
+global using ClosedXML.Excel;
+global using DocumentFormat.OpenXml;
 global using Microsoft.AspNetCore.Authorization;
+global using Microsoft.AspNetCore.DataProtection;
 global using Microsoft.AspNetCore.Identity;
 global using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 global using Microsoft.AspNetCore.Mvc;
+global using Microsoft.AspNetCore.Mvc.Authorization;
 global using Microsoft.AspNetCore.Mvc.Rendering;
 global using Microsoft.EntityFrameworkCore;
+global using Microsoft.Extensions.FileProviders;
 global using Newtonsoft.Json;
+global using QuestPDF.Fluent;
+global using QuestPDF.Infrastructure;
 global using System.ComponentModel;
 global using System.ComponentModel.DataAnnotations;
 global using System.ComponentModel.DataAnnotations.Schema;
 global using System.Security.Claims;
-using Anandashram;
-using Anandashram.Services;
-using Microsoft.AspNetCore.DataProtection;
-using Microsoft.AspNetCore.Mvc.Authorization;
-using Microsoft.Extensions.FileProviders;
-using QuestPDF.Infrastructure;
+using DocumentFormat.OpenXml.Office2016.Drawing.ChartDrawing;
 
 QuestPDF.Settings.License = LicenseType.Community;
 
@@ -106,6 +112,11 @@ builder.Services.AddScoped<IBuildingService, BuildingService>();
 builder.Services.AddScoped<IBlockService, BlockService>();
 builder.Services.AddScoped<IFloorService, FloorService>();
 builder.Services.AddScoped<IDevoteeCategoryService, DevoteeCategoryService>();
+builder.Services.AddScoped<IRoomService, RoomService>();
+builder.Services.AddScoped<IDevoteeService, DevoteeService>();
+builder.Services.AddScoped<ICompanyService, CompanyService>();
+builder.Services.AddScoped<IReservationService, ReservationService>();
+
 var app = builder.Build();
 
 if (app.Environment.IsDevelopment())

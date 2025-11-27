@@ -1,4 +1,6 @@
-﻿namespace Anandashram.Repositories;
+﻿using Anandashram.Interfaces.Repository;
+
+
 public class FloorRepository : IFloor
 {
     private readonly ApplicationDbContext _context; // for connecting to efcore.

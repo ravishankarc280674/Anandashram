@@ -252,14 +252,14 @@
                         <i class="@sortModel.GetColumn("startdate").SortIcon"></i>
                         <a class="text-white text-decoration-none fw-bold" asp-action="Index" asp-route-sortExpression="@sortModel.GetColumn("startdate").SortExpression"
                            asp-route-SearchText="@ViewBag.SearchText" asp-route-PageSize="@ViewBag.PageSize"
-                           asp-route-Closed="@ViewBag.Closed" asp-route-view="@ViewBag.view">Start Date</a>
+                           asp-route-Closed="@ViewBag.Closed" asp-route-view="@ViewBag.view">Registration Date</a>
                     </th>
-                    <th>
+                    @* <th>
                         <i class="@sortModel.GetColumn("enddate").SortIcon"></i>
                         <a class="text-white text-decoration-none fw-bold" asp-action="Index" asp-route-sortExpression="@sortModel.GetColumn("enddate").SortExpression"
                            asp-route-SearchText="@ViewBag.SearchText" asp-route-PageSize="@ViewBag.PageSize"
                            asp-route-Closed="@ViewBag.Closed" asp-route-view="@ViewBag.view">End Date</a>
-                    </th>
+                    </th> *@
                     <th>
                         <i class="@sortModel.GetColumn("mobile").SortIcon"></i>
                         <a class="text-white text-decoration-none fw-bold" style="color:white" asp-action="Index" asp-route-sortExpression="@sortModel.GetColumn("mobile").SortExpression"
@@ -309,7 +309,7 @@
                             <td class="@rowClass">@item.Name</td>
                             <td class="@rowClass">@item.DevoteeCategoryName</td>
                             <td class="@rowClass">@item.StartDate.ToString("dd/MM/yyyy")</td>
-                            <td class="@rowClass">@item.EndDate.ToString("dd/MM/yyyy")</td>
+                           @*  <td class="@rowClass">@item.EndDate.ToString("dd/MM/yyyy")</td> *@
                             <td class="@rowClass">@item.Mobile</td>
                             <td class="@rowClass">@item.Email</td>
                             <td class="@rowClass">

@@ -188,18 +188,18 @@
                             <label asp-for="StartDate" class="form-label fw-semibold"></label>
                             <input type="date" asp-for="StartDate" class="form-control" />
                         </div>
-                        <div class="col-md-6">
+                        <div class="col-md-6" style="display:none">
                             <label asp-for="EndDate" class="form-label fw-semibold"></label>
                             <input type="date" asp-for="EndDate" class="form-control" />
                         </div>
-                    </div>
-
-                    <div class="row mb-3">
                         <div class="col-md-4">
                             <label asp-for="NoOfPeople" class="form-label fw-semibold"></label>
                             <input asp-for="NoOfPeople" class="form-control" type="number" min="1" max="999" />
                         </div>
-                        <div class="col-md-4">
+                    </div>
+
+                    <div class="row mb-3">
+                        <div class="col-md-12">
                             <label asp-for="Document" class="form-label fw-semibold"></label>
                             <input asp-for="Document" class="form-control" />
                         </div>

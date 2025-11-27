@@ -101,7 +101,7 @@ namespace Anandashram.Reports
                     header.Cell().Background(Colors.Green.Darken2).Padding(6).AlignCenter().Text("Code").SemiBold().FontColor(Colors.White);
                     header.Cell().Background(Colors.Green.Darken2).Padding(6).AlignLeft().Text("Name").SemiBold().FontColor(Colors.White);
                     header.Cell().Background(Colors.Green.Darken2).Padding(6).AlignLeft().Text("Category").SemiBold().FontColor(Colors.White);
-                    header.Cell().Background(Colors.Green.Darken2).Padding(6).AlignCenter().Text("Start Date").SemiBold().FontColor(Colors.White);
+                    header.Cell().Background(Colors.Green.Darken2).Padding(6).AlignCenter().Text("Registration Date").SemiBold().FontColor(Colors.White);
                     header.Cell().Background(Colors.Green.Darken2).Padding(6).AlignLeft().Text("Mobile").SemiBold().FontColor(Colors.White);
                     header.Cell().Background(Colors.Green.Darken2).Padding(6).AlignCenter().Text("No. of Devotees").SemiBold().FontColor(Colors.White);
                     header.Cell().Background(Colors.Green.Darken2).Padding(6).AlignLeft().Text("Document").SemiBold().FontColor(Colors.White);
