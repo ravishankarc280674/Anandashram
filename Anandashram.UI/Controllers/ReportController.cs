@@ -60,7 +60,7 @@ public class ReportController : Controller
                 "List" =>
                         typeofreport switch
                         {
-                            "screen" => ShowView(RoomsAllocationPdfPreview(company, roomList, dateValue)),
+        return await CheckInViewer(DateTime.MinValue, "screen");
                             "pdf" => RoomsAllocationPdfDownload(company, roomList, dateValue),
                             "excel" => ExportRoomAllocationDateWiseToExcel(company, roomList, Subject),
                             _ => RedirectToAction("Index", "Home")
