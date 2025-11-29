@@ -8,13 +8,13 @@ public interface IRoom
     Task<Room> Delete(Room room);
     bool IsRoomNameExists(string name);
     bool IsRoomNameExists(string name, int Id);
-    List<Room> GetFilteredRooms();
-    Room GetSelectedRoom(int id);
+    Task<List<Room>> GetFilteredRooms();
+    Task<Room> GetSelectedRoom(int id);
     Task<List<Room>> GeRoomReservations(string SortProperty, SortOrder sortOrder, string SearchText = "");
     Task<List<Room>> GetAllRoomReservations(string SearchText = "");
     Task<List<RoomReportDTO>> GetRoomsUpToDateAsync(DateTime dateValue);
     Task<List<RoomReportDTO>> GetRoomsWithReservationsUpToDateAsync(DateTime dateValue);
-    List<RoomDTO> GetRooms();
+    Task<List<RoomDTO>> GetRooms();
     Task<List<ReservationReportDTO>> GetCheckInDetailsReportAsync(DateTime dateValue);
     Task<List<Room>> GetRoomsList(string SearchText);
 }

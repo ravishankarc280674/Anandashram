@@ -8,6 +8,6 @@ public interface IBuilding
     Task<Building> Delete(Building building);
     bool IsBuildingNameExists(string name);
     bool IsBuildingNameExists(string name, int Id);
-    IEnumerable<Building> GetBuildings();
+    Task<IEnumerable<Building>> GetBuildings();
     Task<bool> IsExists(string buildingName, int excludeId = 0);
 }

@@ -1,7 +1,5 @@
-﻿using Anandashram.Interfaces.Repository;
-
-
-public class HomeRepository:IHome
+﻿namespace Anandashram.Repository;
+public class HomeRepository: IHome
 {
     private readonly ApplicationDbContext _context; // for connecting to efcore.
     public HomeRepository(ApplicationDbContext context) // will be passed by dependency injection.

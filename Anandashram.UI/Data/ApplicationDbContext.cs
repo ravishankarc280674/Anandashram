@@ -1,8 +1,4 @@
-﻿using Microsoft.EntityFrameworkCore;
-using Anandashram.Models;
-
-
-namespace Anandashram.Data;
+﻿namespace Anandashram.Data;
 public class ApplicationDbContext : IdentityDbContext
 {
     public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options)

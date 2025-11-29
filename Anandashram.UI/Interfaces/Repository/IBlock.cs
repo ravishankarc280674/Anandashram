@@ -1,5 +1,4 @@
 ﻿namespace Anandashram.Interfaces.Repository;
-
 public interface IBlock
 {
     Task<PaginatedList<Block>> GetItems(string SortProperty, SortOrder sortOrder, string SearchText = "", int pageIndex = 1, int pageSize = 5); //read all
@@ -9,6 +8,6 @@ public interface IBlock
     Task<Block> Delete(Block block);
     bool IsBlockNameExists(string name);
     bool IsBlockNameExists(string name, int Id);
-    IEnumerable<Block> GetBlocks();
+    Task<IEnumerable<Block>> GetBlocks();
     Task<bool> IsExists(string blockName, int excludeId = 0);
 }

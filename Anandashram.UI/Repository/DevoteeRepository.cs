@@ -1,6 +1,4 @@
-﻿using Anandashram.Interfaces.Repository;
-
-
+﻿namespace Anandashram.Repository;
 public class DevoteeRepository : IDevotee
 {
     private readonly ApplicationDbContext _context; // for connecting to efcore.

@@ -1,6 +1,4 @@
-﻿using Anandashram.Interfaces.Repository;
-
-
+﻿namespace Anandashram.Repository;
 public class RoomRepository : IRoom
 {
     private readonly ApplicationDbContext _context; // for connecting to efcore.
@@ -108,16 +106,15 @@ public class RoomRepository : IRoom
             return false;
     }
 
-    public List<Room> GetFilteredRooms()
+    public async Task<List<Room>> GetFilteredRooms()
     {
-
-        return _context.Rooms.Include(e => e.Building)
+        return await _context.Rooms.Include(e => e.Building)
                 .Include(e => e.Block)
-                .Include(e => e.Floor).ToList();
+                .Include(e => e.Floor).ToListAsync();
     }
-    public Room GetSelectedRoom(int Id) // to be changed future
+    public async Task<Room> GetSelectedRoom(int Id) // to be changed future
     {
-        Room room = _context.Rooms.Where(u => u.Id == Id).Include(e => e.Building)
+        Room room =await _context.Rooms.Where(u => u.Id == Id).Include(e => e.Building)
                 .Include(e => e.Block)
                 .Include(e => e.Floor)
                 .GroupJoin(_context.Reservations, r => r.Id, rs => rs.RoomId, (r, rss) => new { r, rss })
@@ -138,7 +135,7 @@ public class RoomRepository : IRoom
                     ModifiedBy = result.r.ModifiedBy,
                     ModifiedDate = result.r.ModifiedDate,
                     Remaining = result.r.Capacity - (result.rss.Where(rs => !rs.Closed).Sum(rs => rs.Allocated))
-                }).FirstOrDefault();
+                }).FirstOrDefaultAsync();
 
         return room == null ? new Room() : room;
     }
@@ -337,9 +334,9 @@ public class RoomRepository : IRoom
         return rooms;
     }
 
-    public List<RoomDTO> GetRooms()
+    public async Task<List<RoomDTO>> GetRooms()
     {
-        var rooms = _context.Rooms
+        var rooms =await _context.Rooms
             .Include(r => r.Building)
             .Include(r => r.Block)
             .Include(r => r.Floor)
@@ -359,7 +356,7 @@ public class RoomRepository : IRoom
                 BlockId = r.BlockId,
                 FloorId = r.FloorId
             })
-            .ToList();
+            .ToListAsync();
 
         return rooms;
     }

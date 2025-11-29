@@ -1,4 +1,4 @@
-﻿namespace Anandashram;
+﻿namespace Anandashram.Repository;
 public class FileManagement : IFileManagement
 {
     private readonly IConfiguration _configuration;

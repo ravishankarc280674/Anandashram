@@ -1,4 +1,5 @@
-﻿public class CompanyRepository:ICompany
+﻿namespace Anandashram.Repository;
+public class CompanyRepository:ICompany
 {
 
     private readonly ApplicationDbContext _context; // for connecting to efcore.

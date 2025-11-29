@@ -6,6 +6,6 @@ public interface IDevoteeCategoryService
     Task<(bool Success, string Message, DevoteeCategory Entity)> Create(DevoteeCategory devoteeCategory);
     Task<(bool Success, string Message, DevoteeCategory Entity)> Edit(DevoteeCategory devoteeCategory);
     Task<(bool Success, string Message)> Delete(DevoteeCategory devoteeCategory);
-    IEnumerable<DevoteeCategory> GetDevoteeCategories();
+    Task<IEnumerable<DevoteeCategory>> GetDevoteeCategories();
     Task<IEnumerable<DevoteeCategory>> GetAllAsync();
 }

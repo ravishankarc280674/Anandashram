@@ -1,6 +1,4 @@
-﻿using Anandashram.Interfaces.Repository;
-
-
+﻿namespace Anandashram.Repository;
 public class FloorRepository : IFloor
 {
     private readonly ApplicationDbContext _context; // for connecting to efcore.
@@ -99,8 +97,8 @@ public class FloorRepository : IFloor
             return false;
     }
 
-    public IEnumerable<Floor> GetFloors()
+    public async Task<IEnumerable<Floor>> GetFloors()
     {
-        return _context.Floors.ToList();
+        return await _context.Floors.ToListAsync();
     }
 }

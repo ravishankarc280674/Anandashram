@@ -1,11 +1,11 @@
-﻿global using Anandashram;
-global using Anandashram.Data;
+﻿global using Anandashram.Data;
 global using Anandashram.DTO;
 global using Anandashram.Interfaces;
 global using Anandashram.Interfaces.Repository;
 global using Anandashram.Interfaces.Services;
 global using Anandashram.Models;
 global using Anandashram.Reports;
+global using Anandashram.Repository;
 global using Anandashram.Services;
 global using Anandashram.UI.Tools.Core.Helpers;
 global using Anandashram.UI.Tools.Core.Models;
@@ -29,7 +29,6 @@ global using System.ComponentModel;
 global using System.ComponentModel.DataAnnotations;
 global using System.ComponentModel.DataAnnotations.Schema;
 global using System.Security.Claims;
-using DocumentFormat.OpenXml.Office2016.Drawing.ChartDrawing;
 
 QuestPDF.Settings.License = LicenseType.Community;
 
@@ -116,6 +115,7 @@ builder.Services.AddScoped<IRoomService, RoomService>();
 builder.Services.AddScoped<IDevoteeService, DevoteeService>();
 builder.Services.AddScoped<ICompanyService, CompanyService>();
 builder.Services.AddScoped<IReservationService, ReservationService>();
+builder.Services.AddScoped<IReportService, ReportService>();
 
 var app = builder.Build();
 

@@ -1,4 +1,5 @@
 ﻿using Microsoft.Extensions.Options;
+using System.Threading.Tasks;
 namespace Anandashram.Controllers;
 [Authorize]
 public class DevoteeController : Controller
@@ -84,9 +85,9 @@ public class DevoteeController : Controller
         return View();
     }
      
-    public List<SelectListItem> GetDevoteeCategories()
+    public async Task<List<SelectListItem>> GetDevoteeCategories()
     {
-        var devoteeCategories = _devoteeCategoryService.GetDevoteeCategories().Select(m => new SelectListItem()
+        var devoteeCategories =(await _devoteeCategoryService.GetDevoteeCategories()).Select(m => new SelectListItem()
         {
             Value = m.Id.ToString(),
             Text = m.Name
@@ -133,7 +134,7 @@ public class DevoteeController : Controller
     {
         Devotee devotee = new Devotee();
         ViewBag.ValidateRoomCapacity = _validationSettings.ValidateRoomCapacity;
-        ViewBag.DevoteeCategoryId = GetDevoteeCategories();
+        ViewBag.DevoteeCategoryId =await GetDevoteeCategories();
         if (Id == 0)
         {
             devotee.CreatedBy = this.User.FindFirstValue(ClaimTypes.NameIdentifier);
@@ -146,7 +147,7 @@ public class DevoteeController : Controller
             AddFile file = new AddFile();
             devotee = await _devoteeService.GetDevotee(Id);
             devotee.Reservations = await _reservationService.ReservationList(Id);
-            ViewBag.RoomsList = GetFilteredRooms();
+            ViewBag.RoomsList =await GetFilteredRooms();
             TempData.Keep();
             
             if (devotee == null)
@@ -226,7 +227,7 @@ public class DevoteeController : Controller
                 }
                 catch (DbUpdateConcurrencyException)
                 {
-                    if (_devoteeService.GetDevotee(devotee.Id) == null)
+                    if (await _devoteeService.GetDevotee(devotee.Id) == null)
                     {
                         return NotFound();
                     }
@@ -318,10 +319,10 @@ public class DevoteeController : Controller
     {
         Content($"<script>notify('{message}');</script>", "text/html");
     }
-    private List<SelectListItem> GetFilteredRooms()
+    private async Task<List<SelectListItem>> GetFilteredRooms()
     {
         var lstRooms = new List<SelectListItem>();
-        PaginatedList<Room> rooms = new PaginatedList<Room>(_roomService.GetFilteredRooms(), 1, 1000);
+        PaginatedList<Room> rooms = new PaginatedList<Room>(await _roomService.GetFilteredRooms(), 1, 1000);
         lstRooms = rooms.Select(ut => new SelectListItem()
         {
             Value = ut.Id.ToString(),
@@ -340,9 +341,9 @@ public class DevoteeController : Controller
     }
 
     [HttpPost]
-    public JsonResult GetSelectedRoom(int Id)
+    public async Task<JsonResult> GetSelectedRoom(int Id)
     {
-        var room = _roomService.GetSelectedRoom(Id);
+        var room =await _roomService.GetSelectedRoom(Id);
         return Json(new { Success = "true", Data = room });
     }
 

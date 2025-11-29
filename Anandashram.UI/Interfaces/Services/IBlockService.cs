@@ -6,5 +6,5 @@ public interface IBlockService
     Task<(bool Success, string Message, Block Entity)> Create(Block block);
     Task<(bool Success, string Message, Block Entity)> Edit(Block block);
     Task<(bool Success, string Message)> Delete(Block block);
-    IEnumerable<Block> GetBlocks();
+    Task<IEnumerable<Block>> GetBlocks();
 }

@@ -7,9 +7,9 @@ public interface IRoomService
     Task Create(Room room);
     Task<Room> Edit(Room room);
     Task<Room> Delete(Room room);
-    Room GetSelectedRoom(int id);
+    Task<Room> GetSelectedRoom(int id);
     bool IsRoomNameExists(string name, int id);
-    List<Room> GetFilteredRooms();
+    Task<List<Room>> GetFilteredRooms();
 
     Task<List<Room>> GeRoomReservations(string SortProperty, SortOrder sortOrder, string SearchText = "");
 }

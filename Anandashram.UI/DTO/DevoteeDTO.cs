@@ -1,5 +1,4 @@
 ﻿namespace Anandashram.DTO;
-
 internal class DevoteeDTO
 {
     public int Id { get; set; }

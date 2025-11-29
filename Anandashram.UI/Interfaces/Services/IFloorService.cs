@@ -6,5 +6,5 @@ public interface IFloorService
     Task<(bool Success, string Message, Floor Entity)> Create(Floor floor);
     Task<(bool Success, string Message, Floor Entity)> Edit(Floor floor);
     Task<(bool Success, string Message)> Delete(Floor floor);
-    IEnumerable<Floor> GetFloors();
+    Task<IEnumerable<Floor>> GetFloors();
 }

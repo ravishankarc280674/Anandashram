@@ -1,4 +1,5 @@
-﻿
+﻿namespace Anandashram.Repository;
+
 public class BlockRepository : IBlock
 {
     private readonly ApplicationDbContext _context; // for connecting to efcore.
@@ -97,8 +98,8 @@ public class BlockRepository : IBlock
             return false;
     }
 
-    public IEnumerable<Block> GetBlocks()
+    public async Task<IEnumerable<Block>> GetBlocks()
     {
-        return _context.Blocks.ToList();
+        return await _context.Blocks.ToListAsync();
     }
 }

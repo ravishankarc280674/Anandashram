@@ -6,5 +6,5 @@ public interface IBuildingService
     Task<(bool Success, string Message, Building Entity)> Create(Building building);
     Task<(bool Success, string Message, Building Entity)> Edit(Building building);
     Task<(bool Success, string Message)> Delete(Building building);
-    IEnumerable<Building> GetBuildings();
+    Task<IEnumerable<Building>> GetBuildings();
 }

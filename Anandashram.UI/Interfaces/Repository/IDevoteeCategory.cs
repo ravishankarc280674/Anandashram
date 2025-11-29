@@ -8,7 +8,7 @@ public interface IDevoteeCategory
     Task<DevoteeCategory> Delete(DevoteeCategory devoteeCategory);
     bool IsDevoteeCategoryNameExists(string name);
     bool IsDevoteeCategoryNameExists(string name, int Id);
-    IEnumerable<DevoteeCategory> GetDevoteeCategories();
+    Task<IEnumerable<DevoteeCategory>> GetDevoteeCategories();
     Task<bool> IsExists(string devoteeCategoryName, int excludeId = 0);
     Task<IEnumerable<DevoteeCategory>> GetAllAsync();
 }

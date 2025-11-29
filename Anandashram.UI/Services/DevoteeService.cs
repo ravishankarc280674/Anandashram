@@ -1,10 +1,4 @@
 ﻿namespace Anandashram.Services;
-using Anandashram.Interfaces.Repository;
-using Anandashram.Interfaces.Services;
-using Anandashram.UI.Tools.Core.Models;
-using System.Collections.Generic;
-using System.Threading.Tasks;
-
 public class DevoteeService : IDevoteeService
 {
     private readonly IDevotee _devoteeRepo;

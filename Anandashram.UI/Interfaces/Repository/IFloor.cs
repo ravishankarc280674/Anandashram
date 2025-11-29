@@ -8,6 +8,6 @@ public interface IFloor
     Task<Floor> Delete(Floor floor);
     bool IsFloorNameExists(string name);
     bool IsFloorNameExists(string name, int Id);
-    IEnumerable<Floor> GetFloors();
+    Task<IEnumerable<Floor>> GetFloors();
     Task<bool> IsExists(string floorName, int excludeId = 0);
 }
