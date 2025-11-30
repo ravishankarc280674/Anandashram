@@ -48,6 +48,7 @@ public class DevoteeController : Controller
             ViewBag.SearchText = SearchText;
             ViewBag.Closed = Closed;
             TempData["CurrentPage"] = pg;
+            ViewBag.pg = pg;
             var DevoteeList = await _devoteeService.GetItems(sortModel.SortedProperty, sortModel.SortedOrder, SearchText, pg, PageSize, Closed);
 
             var pager = new PageModel(DevoteeList.TotalRecords, pg, PageSize) { Action = "Index", Controller = "Devotee", SearchText = SearchText, Closed = Closed };
