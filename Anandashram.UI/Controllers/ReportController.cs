@@ -19,29 +19,29 @@ public class ReportController : Controller
     }
     #region << Moved to Services >>
     [HttpPost]
-    public async Task<IActionResult> CheckOutViewer(DateTime dateValue, string typeofreport = "")
+    public async Task<IActionResult> CheckOutViewer(DateTime dateValue, string typeofreport = "", string dataType = "All")
     {
         if (typeofreport == "" || dateValue == DateTime.MinValue)
             return View();
         else
         {
-            return await DevoteeCheckOutReportList(dateValue, typeofreport, "Check-Out" + dateValue.Date.ToString("ddMMyyyy"));
+            return await DevoteeCheckOutReportList(dateValue, typeofreport, "Check-Out" + dateValue.Date.ToString("ddMMyyyy"), dataType);
         }
     }
-    private async Task<IActionResult> DevoteeCheckOutReportList(DateTime dateValue, string typeofreport, string reportname)
+    private async Task<IActionResult> DevoteeCheckOutReportList(DateTime dateValue, string typeofreport, string reportname,string dataType)
     {
         return typeofreport switch
         {
-            "screen" => await DevoteeCheckOutReportListData(dateValue,typeofreport,string.Empty),
-            "pdf" => await DevoteeCheckOutReportListData(dateValue, typeofreport, reportname),
-            "excel" =>await ExportDevoteeCheckOutToExcel(dateValue),
+            "screen" => await DevoteeCheckOutReportListData(dateValue,typeofreport,string.Empty, dataType),
+            "pdf" => await DevoteeCheckOutReportListData(dateValue, typeofreport, reportname, dataType),
+            "excel" =>await ExportDevoteeCheckOutToExcel(dateValue, dataType),
             _ => RedirectToAction("Index", "Home")
         };
     }
 
-    private async Task<IActionResult> DevoteeCheckOutReportListData(DateTime dateValue, string typeofreport, string reportname)
+    private async Task<IActionResult> DevoteeCheckOutReportListData(DateTime dateValue, string typeofreport, string reportname, string dataType)
     {
-        var reportResult = await _reportService.DevoteeCheckOutReportList(dateValue, typeofreport);
+        var reportResult = await _reportService.DevoteeCheckOutReportList(dateValue, typeofreport, dataType);
         if (reportResult.HasData)
             if (reportname == string.Empty)
                 return File(reportResult.DataArray, "application/pdf");
@@ -282,10 +282,10 @@ private async Task<IActionResult> RoomsAllocationDetailPdfPreviewAlloted(DateTim
         }
         ;
     }
-    public async Task<IActionResult> ExportDevoteeCheckOutToExcel(DateTime dateValue)
+    public async Task<IActionResult> ExportDevoteeCheckOutToExcel(DateTime dateValue, string dataType)
     {
-        string Subject = "Devotee Check-Out List as On: " + dateValue.Date.ToString("dd - MMM - yyyy");
-        var stream =await _reportService.ExportDevoteeCheckOutToExcel(dateValue, Subject);
+        string Subject = "Devotee Check-Out List as On: " + dateValue.Date.ToString("dd - MMM - yyyy") + " - " +dataType;
+        var stream =await _reportService.ExportDevoteeCheckOutToExcel(dateValue, Subject, dataType);
 
         return File(stream,
             "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",

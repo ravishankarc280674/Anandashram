@@ -165,31 +165,80 @@ public class DevoteeRepository : IDevotee
         return devotee;
 
     }
-    public async Task<List<DevoteeReportDTO>> GetDevoteeSummaryByDateAsync(DateTime dateValue)
+    public async Task<List<DevoteeReportDTO>> GetDevoteeSummaryByDateAsync(DateTime dateValue, string dataType)
     {
         DateTime nextDate = dateValue.Date.AddDays(1);
-
-        var result = await _context.Reservations
-            .Where(r => !r.Closed
-                        && r.ToDate >= dateValue.Date
-                        && r.ToDate < nextDate) // ✅ filter by date only
-            .GroupBy(r => new
-            {
-                r.DevoteeId,
-                r.Devotee.Name,
-                r.Devotee.Code,
-                CategoryName = r.Devotee.DevoteeCategory.Name
-            })
-            .Select(g => new DevoteeReportDTO
-            {
-                Name = g.Key.Name,
-                Code = g.Key.Code,
-                DevoteeCategoryName = g.Key.CategoryName,
-                TotalAllocated = g.Sum(x => x.Allocated)
-            })
-            .ToListAsync();
-
-        return result;
+        if (dataType == "All")
+        {
+            return await _context.Reservations
+               .Where(r => r.ToDate >= dateValue.Date
+                           && r.ToDate < nextDate) // ✅ filter by date only
+               .GroupBy(r => new
+               {
+                   r.DevoteeId,
+                   r.Devotee.Name,
+                   r.Devotee.Code,
+                   CategoryName = r.Devotee.DevoteeCategory.Name,
+                   r.Closed
+               })
+               .Select(g => new DevoteeReportDTO
+               {
+                   Name = g.Key.Name,
+                   Code = g.Key.Code,
+                   DevoteeCategoryName = g.Key.CategoryName,
+                   TotalAllocated = g.Sum(x => x.Allocated),
+                   Closed = g.Key.Closed
+               })
+               .ToListAsync();
+        }
+        else if (dataType == "Open")
+        {
+            return await _context.Reservations
+                .Where(r => !r.Closed
+                            && r.ToDate >= dateValue.Date
+                            && r.ToDate < nextDate) // ✅ filter by date only
+                .GroupBy(r => new
+                {
+                    r.DevoteeId,
+                    r.Devotee.Name,
+                    r.Devotee.Code,
+                    CategoryName = r.Devotee.DevoteeCategory.Name,
+                    Closed = r.Closed
+                })
+                .Select(g => new DevoteeReportDTO
+                {
+                    Name = g.Key.Name,
+                    Code = g.Key.Code,
+                    DevoteeCategoryName = g.Key.CategoryName,
+                    TotalAllocated = g.Sum(x => x.Allocated),
+                    Closed = g.Key.Closed
+                })
+                .ToListAsync();
+        }
+        else
+        {
+            return await _context.Reservations
+                .Where(r => r.Closed
+                            && r.ToDate >= dateValue.Date
+                            && r.ToDate < nextDate) // ✅ filter by date only
+                .GroupBy(r => new
+                {
+                    r.DevoteeId,
+                    r.Devotee.Name,
+                    r.Devotee.Code,
+                    CategoryName = r.Devotee.DevoteeCategory.Name,
+                    r.Closed
+                })
+                .Select(g => new DevoteeReportDTO
+                {
+                    Name = g.Key.Name,
+                    Code = g.Key.Code,
+                    DevoteeCategoryName = g.Key.CategoryName,
+                    TotalAllocated = g.Sum(x => x.Allocated),
+                   Closed = g.Key.Closed
+                })
+                .ToListAsync();
+        }
     }
 
 }

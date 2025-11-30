@@ -10,5 +10,5 @@ public interface IDevotee
     bool IsDevoteeNameExists(string name, int Id);
     Task<List<Devotee>> GetAllDevotees(bool Checked);
     Task<Devotee> GetDevoteeWithReservations(int devoteeId);
-    Task<List<DevoteeReportDTO>> GetDevoteeSummaryByDateAsync(DateTime dateValue);
+    Task<List<DevoteeReportDTO>> GetDevoteeSummaryByDateAsync(DateTime dateValue,string dataType);
 }

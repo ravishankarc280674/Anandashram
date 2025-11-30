@@ -76,6 +76,7 @@ public class DevoteeCheckOutReport: IDocument
                 cols.RelativeColumn(4); // Devotee Name
                 cols.RelativeColumn(3); // Category
                 cols.RelativeColumn(2); // Allocated
+                cols.RelativeColumn(2); // Closed
             });
 
             // Header row with background for entire row
@@ -92,6 +93,9 @@ public class DevoteeCheckOutReport: IDocument
 
                 header.Cell().Background(Colors.Green.Darken2).Padding(5)
                     .AlignCenter().Text("Allocated").SemiBold().FontColor(Colors.White);
+
+                header.Cell().Background(Colors.Green.Darken2).Padding(5)
+                    .AlignCenter().Text("Closed").SemiBold().FontColor(Colors.White);
             });
 
             // Data rows
@@ -110,6 +114,9 @@ public class DevoteeCheckOutReport: IDocument
                 table.Cell().Background(isEven ? Colors.Grey.Lighten3 : Colors.White).Border(0.5f).BorderColor(Colors.Black)
                     .Padding(5).AlignCenter().Text(item.TotalAllocated.ToString());
                     isEven = !isEven;
+                table.Cell().Background(isEven ? Colors.Grey.Lighten3 : Colors.White).Border(0.5f).BorderColor(Colors.Black)
+                    .Padding(5).AlignCenter().Text(item.Closed ? "☑" : "☐");
+
             }
 
             // Totals row
@@ -126,6 +133,9 @@ public class DevoteeCheckOutReport: IDocument
 
             table.Cell().Border(0.5f).BorderColor(Colors.Black)
                 .Padding(5).AlignCenter().Text(totalAllocated.ToString()).Bold();
+
+            table.Cell().Border(0.5f).BorderColor(Colors.Black)
+               .Padding(5).Text("");
         });
     }
 

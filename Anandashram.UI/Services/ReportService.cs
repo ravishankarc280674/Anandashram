@@ -283,15 +283,16 @@ public class ReportService : IReportService
         var pdfBytes = doc.GeneratePdf();
         return pdfBytes;
     }
-    public async Task<ReportResult<byte[]>> DevoteeCheckOutReportList(DateTime dateValue, string typeofreport)
+    public async Task<ReportResult<byte[]>> DevoteeCheckOutReportList(DateTime dateValue, string typeofreport,string dataType)
     {
-        string Subject = "Devotee Check-Out List as On: " + dateValue.Date.ToString("dd - MMM - yyyy");
+        string Subject = "Devotee Check-Out List as On: " + dateValue.Date.ToString("dd - MMM - yyyy") +" - " +  dataType;
         var company = _companyrepo.CompanyDetails();
-        var devoteeList = await _devoteerepo.GetDevoteeSummaryByDateAsync(dateValue);
+        var devoteeList = await _devoteerepo.GetDevoteeSummaryByDateAsync(dateValue, dataType);
         if (devoteeList == null || !devoteeList.Any())
         {
             return new ReportResult<byte[]>
             {
+                
                 DataArray = null,
                 Message = "No data available for report."
             };
@@ -926,15 +927,15 @@ public class ReportService : IReportService
         stream.Position = 0;
         return stream;
     }
-    public async Task<MemoryStream> ExportDevoteeCheckOutToExcel(DateTime dateValue, string subject)
+    public async Task<MemoryStream> ExportDevoteeCheckOutToExcel(DateTime dateValue, string subject, string dataType)
     {
         var company = _companyrepo.CompanyDetails(); // your company details
-        var items =await _devoteerepo.GetDevoteeSummaryByDateAsync(dateValue);
+        var items =await _devoteerepo.GetDevoteeSummaryByDateAsync(dateValue,dataType);
         using var workbook = new XLWorkbook();
         var ws = workbook.Worksheets.Add("Check-Out Report");
 
         int currentRow = 1;
-        int totalColumns = 4;
+        int totalColumns = 5;
 
         // ===== COMPANY HEADER =====
         ws.Range(currentRow, 1, currentRow, totalColumns)
@@ -998,6 +999,7 @@ public class ReportService : IReportService
         ws.Cell(currentRow, 2).Value = "Name";
         ws.Cell(currentRow, 3).Value = "Category";
         ws.Cell(currentRow, 4).Value = "Allocated";
+        ws.Cell(currentRow, 5).Value = "Closed";
 
         ws.Range(currentRow, 1, currentRow, totalColumns).Style
             .Font.SetBold()
@@ -1021,6 +1023,7 @@ public class ReportService : IReportService
             ws.Cell(currentRow, 2).Value = item.Name;
             ws.Cell(currentRow, 3).Value = item.DevoteeCategoryName;
             ws.Cell(currentRow, 4).Value = item.TotalAllocated;
+            ws.Cell(currentRow, 5).Value = item.Closed ? "Yes" : "No";
 
             ws.Range(currentRow, 1, currentRow, totalColumns).Style
                 .Fill.SetBackgroundColor(bgColor)

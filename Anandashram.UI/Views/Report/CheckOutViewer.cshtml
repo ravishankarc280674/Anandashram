@@ -24,25 +24,33 @@
                            value="@DateTime.Today.ToString("yyyy-MM-dd")"
                            class="form-control border-success shadow-sm" />
                 </div>
-                <!-- Report View Type (List / Detail) -->
-                <div class="col-md-4" style="display:none">
+                <!-- Report Status Type (All / Open / Closed) -->
+                <div class="col-md-4">
                     <label class="form-label fw-semibold text-secondary d-block">
-                        <i class="fas fa-table-list me-2 text-success"></i> Report Format:
+                        <i class="fas fa-table-list me-2 text-success"></i> Status:
                     </label>
 
                     <div class="form-check form-check-inline">
-                        <input class="form-check-input" type="radio" id="reportList"
-                               name="reportformat" value="list" checked />
-                        <label class="form-check-label fw-bold" for="reportList">
-                            <i class="fas fa-bars me-1 text-success"></i> List
+                        <input class="form-check-input" type="radio" id="reportAll"
+                               name="dataType" value="All" checked />
+                        <label class="form-check-label fw-bold" for="reportAll">
+                            <i class="fas fa-layer-group me-1 text-success"></i> All
                         </label>
                     </div>
 
                     <div class="form-check form-check-inline">
-                        <input class="form-check-input" type="radio" id="reportDetail"
-                               name="reportformat" value="detail" />
-                        <label class="form-check-label fw-bold" for="reportDetail">
-                            <i class="fas fa-list-ul me-1 text-primary"></i> Detail
+                        <input class="form-check-input" type="radio" id="reportOpen"
+                               name="dataType" value="Open" />
+                        <label class="form-check-label fw-bold" for="reportOpen">
+                            <i class="fas fa-check-circle me-1 text-danger"></i> Open
+                        </label>
+                    </div>
+
+                    <div class="form-check form-check-inline">
+                        <input class="form-check-input" type="radio" id="reportClosed"
+                               name="dataType" value="Closed" />
+                        <label class="form-check-label fw-bold" for="reportClosed">
+                            <i class="fas fa-door-closed me-1 text-primary"></i> Closed
                         </label>
                     </div>
                 </div>
@@ -53,7 +61,8 @@
                         <i class="fas fa-file-alt text-success me-2"></i> Choose Report Type:
                     </label>
                     <div class="form-check form-check-inline">
-                        <input class="form-check-input" type="radio" id="reportScreen" name="typeofreport" value="screen" checked />
+                        <input class="form-check-input" type="radio" id="reportScreen"
+                        name="typeofreport" value="screen" checked />
                         <label class="form-check-label fw-bold" for="reportScreen">
                             <i class="fas fa-desktop text-success me-1"></i> Screen
                         </label>
@@ -97,13 +106,15 @@
                    $("#btnGenerate").click(function () {
 
             var dateValue = $("#dateValue").val();
-            var reportType = $("input[name='typeofreport']:checked").val();
+                var reportType = $("input[name='typeofreport']:checked").val();
+                        var dataType = $("input[name='dataType']:checked").val();
 
             if (!dateValue) return;
 
             var formData = new FormData();
             formData.append("dateValue", dateValue);
-            formData.append("typeofreport", reportType);
+                formData.append("typeofreport", reportType);
+                formData.append("dataType", dataType);
                 formData.append("reportname", "Check-out Report");
 
             $.ajax({
