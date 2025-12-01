@@ -1,4 +1,5 @@
-﻿using Microsoft.Extensions.Options;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.Extensions.Options;
 using System.Threading.Tasks;
 namespace Anandashram.Controllers;
 [Authorize]

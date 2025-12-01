@@ -14,14 +14,11 @@ global using Anandashram.UI.Tools.Models;
 global using ClosedXML.Excel;
 global using DocumentFormat.OpenXml;
 global using Microsoft.AspNetCore.Authorization;
-global using Microsoft.AspNetCore.DataProtection;
 global using Microsoft.AspNetCore.Identity;
 global using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
-global using Microsoft.AspNetCore.Mvc;
 global using Microsoft.AspNetCore.Mvc.Authorization;
 global using Microsoft.AspNetCore.Mvc.Rendering;
 global using Microsoft.EntityFrameworkCore;
-global using Microsoft.Extensions.FileProviders;
 global using Newtonsoft.Json;
 global using QuestPDF.Fluent;
 global using QuestPDF.Infrastructure;
@@ -29,21 +26,20 @@ global using System.ComponentModel;
 global using System.ComponentModel.DataAnnotations;
 global using System.ComponentModel.DataAnnotations.Schema;
 global using System.Security.Claims;
+global using Microsoft.AspNetCore.Mvc;
 
 QuestPDF.Settings.License = LicenseType.Community;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// 🔹 Database connection
-var connectionString = builder.Configuration.GetConnectionString("AnandashramDBConnection")
-    ?? throw new InvalidOperationException("Connection string 'AnandashramDBConnection' not found.");
-
+// Database
+var connectionString = builder.Configuration.GetConnectionString("AnandashramDBConnection");
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
     options.UseSqlServer(connectionString));
 
 builder.Services.AddDatabaseDeveloperPageExceptionFilter();
 
-// 🔹 Identity configuration
+// Identity
 builder.Services.AddDefaultIdentity<IdentityUser>(options =>
 {
     options.SignIn.RequireConfirmedAccount = false;
@@ -55,48 +51,40 @@ builder.Services.AddDefaultIdentity<IdentityUser>(options =>
 })
 .AddEntityFrameworkStores<ApplicationDbContext>();
 
-// 🔹 Configure Identity cookie settings
+// Cookie
 builder.Services.ConfigureApplicationCookie(options =>
 {
-    options.LoginPath = "/Identity/Account/Login"; // Redirect here when not logged in
-    options.LogoutPath = "/Identity/Account/Logout";
+    options.LoginPath = "/Identity/Account/Login";
     options.AccessDeniedPath = "/Identity/Account/AccessDenied";
-    options.ExpireTimeSpan = TimeSpan.FromMinutes(30); // Match session timeout
-    options.SlidingExpiration = true; // Extend cookie if user is active
+    options.ExpireTimeSpan = TimeSpan.FromMinutes(30);
+    options.SlidingExpiration = true;
+    options.Cookie.HttpOnly = true;
+    options.Cookie.SameSite = SameSiteMode.Lax;
 });
 
-// 🔹 MVC and global authorization policy
+// MVC
 builder.Services.AddControllersWithViews(options =>
 {
     var policy = new AuthorizationPolicyBuilder()
         .RequireAuthenticatedUser()
         .Build();
     options.Filters.Add(new AuthorizeFilter(policy));
-
-    options.Filters.Add(new IgnoreAntiforgeryTokenAttribute());
-}).AddRazorPagesOptions(options =>
+})
+.AddRazorPagesOptions(options =>
 {
-    // ✅ Allow anonymous access to Identity pages
+    // Allow anonymous access to login and register pages only
     options.Conventions.AllowAnonymousToAreaFolder("Identity", "/Account");
-}); ;
-
-
-builder.Services.Configure<ValidationSettings>(builder.Configuration.GetSection("ValidationSettings"));
-builder.Services.AddAuthorization();
-builder.Services.AddResponseCompression();
-builder.Services.AddDataProtection().ProtectKeysWithDpapi();
-
-// 🔹 Session configuration
-builder.Services.AddSession(options =>
-{
-    options.IdleTimeout = TimeSpan.FromMinutes(60);
-    options.Cookie.HttpOnly = true;
-    options.Cookie.IsEssential = true;
-    options.Cookie.SecurePolicy = CookieSecurePolicy.Always;
-    options.Cookie.SameSite = SameSiteMode.Lax;
 });
 
-// 🔹 Dependency Injection
+// Session
+builder.Services.AddSession(options =>
+{
+    options.IdleTimeout = TimeSpan.FromMinutes(30);
+    options.Cookie.HttpOnly = true;
+    options.Cookie.IsEssential = true;
+});
+
+// DI
 builder.Services.AddScoped<ICompany, CompanyRepository>();
 builder.Services.AddScoped<IDevotee, DevoteeRepository>();
 builder.Services.AddScoped<IBlock, BlockRepository>();
@@ -119,11 +107,8 @@ builder.Services.AddScoped<IReportService, ReportService>();
 
 var app = builder.Build();
 
-if (app.Environment.IsDevelopment())
-{
-    app.UseMigrationsEndPoint();
-}
-else
+// Pipeline
+if (!app.Environment.IsDevelopment())
 {
     app.UseExceptionHandler("/Home/Error");
     app.UseHsts();
@@ -131,46 +116,12 @@ else
 
 app.UseHttpsRedirection();
 app.UseStaticFiles();
-
-// 🔹 Serve document storage folder
-app.UseStaticFiles(new StaticFileOptions
-{
-    FileProvider = new PhysicalFileProvider(
-        builder.Configuration.GetSection("DocumentStoragePath").Value),
-    RequestPath = "/Documents"
-});
-
 app.UseRouting();
-
 app.UseSession();
-
-// 🔹 Middleware to check for expired session and force login
-app.Use(async (context, next) =>
-{
-    if (context.User.Identity?.IsAuthenticated == true)
-    {
-        if (context.Session.GetString("UserId") == null)
-        {
-            // If it's an AJAX request, return 401 instead of redirecting
-            if (context.Request.Headers["X-Requested-With"] == "XMLHttpRequest")
-            {
-                context.Response.StatusCode = StatusCodes.Status401Unauthorized;
-                return;
-            }
-
-            var signInManager = context.RequestServices.GetRequiredService<SignInManager<IdentityUser>>();
-            await signInManager.SignOutAsync();
-            context.Response.Redirect("/Identity/Account/Login");
-            return;
-        }
-    }
-    await next();
-});
-
 app.UseAuthentication();
 app.UseAuthorization();
 
-// 🔹 Default route
+// Default
 app.MapControllerRoute(
     name: "default",
     pattern: "{controller=Home}/{action=Index}/{id?}");

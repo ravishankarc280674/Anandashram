@@ -122,24 +122,24 @@ public class DevoteeRepository : IDevotee
     {
         if (!Checked)
         {
-            return await _context.Devotees.Include(d => d.DevoteeCategory).Where(n => n.Closed == false).ToListAsync();
+            return await _context.Devotees.AsNoTracking().Include(d => d.DevoteeCategory).Where(n => n.Closed == false).ToListAsync();
         }
         else
         {
-            return await _context.Devotees.Include(d => d.DevoteeCategory).ToListAsync();
+            return await _context.Devotees.AsNoTracking().Include(d => d.DevoteeCategory).ToListAsync();
         }
 
     }
 
     public async Task<Devotee> GetDevotee(int id)
     {
-        Devotee devotee = await _context.Devotees.Where(u => u.Id == id).FirstOrDefaultAsync();
+        Devotee devotee = await _context.Devotees.AsNoTracking().Where(u => u.Id == id).FirstOrDefaultAsync();
         return devotee == null ? new Devotee() : devotee;
     }
 
     public bool IsDevoteeNameExists(string name)
     {
-        int ct = _context.Devotees.Where(n => n.Name.ToLower() == name.ToLower()).Count();
+        int ct = _context.Devotees.AsNoTracking().Where(n => n.Name.ToLower() == name.ToLower()).Count();
         if (ct > 0)
             return true;
         else
@@ -148,7 +148,7 @@ public class DevoteeRepository : IDevotee
 
     public bool IsDevoteeNameExists(string name, int Id)
     {
-        int ct = _context.Devotees.Where(n => n.Name.ToLower() == name.ToLower() && n.Id != Id).Count();
+        int ct = _context.Devotees.AsNoTracking().Where(n => n.Name.ToLower() == name.ToLower() && n.Id != Id).Count();
         if (ct > 0)
             return true;
         else
@@ -157,7 +157,7 @@ public class DevoteeRepository : IDevotee
 
     public async Task<Devotee> GetDevoteeWithReservations(int devoteeId)
     {
-        Devotee devotee = await _context.Devotees.Where(t1 => t1.Id == devoteeId).Include(t1 => t1.DevoteeCategory)
+        Devotee devotee = await _context.Devotees.AsNoTracking().Where(t1 => t1.Id == devoteeId).Include(t1 => t1.DevoteeCategory)
                       .Include(t1 => t1.Reservations).ThenInclude(t2 => t2.Room).ThenInclude(t3 => t3.Building)
                       .Include(t1 => t1.Reservations).ThenInclude(t2 => t2.Room).ThenInclude(t3 => t3.Block)
                       .Include(t1 => t1.Reservations).ThenInclude(t2 => t2.Room).ThenInclude(t3 => t3.Floor)
@@ -170,7 +170,7 @@ public class DevoteeRepository : IDevotee
         DateTime nextDate = dateValue.Date.AddDays(1);
         if (dataType == "All")
         {
-            return await _context.Reservations
+            return await _context.Reservations.AsNoTracking()
                .Where(r => r.ToDate >= dateValue.Date
                            && r.ToDate < nextDate) // ✅ filter by date only
                .GroupBy(r => new
@@ -193,7 +193,7 @@ public class DevoteeRepository : IDevotee
         }
         else if (dataType == "Open")
         {
-            return await _context.Reservations
+            return await _context.Reservations.AsNoTracking()
                 .Where(r => !r.Closed
                             && r.ToDate >= dateValue.Date
                             && r.ToDate < nextDate) // ✅ filter by date only
@@ -217,7 +217,7 @@ public class DevoteeRepository : IDevotee
         }
         else
         {
-            return await _context.Reservations
+            return await _context.Reservations.AsNoTracking()
                 .Where(r => r.Closed
                             && r.ToDate >= dateValue.Date
                             && r.ToDate < nextDate) // ✅ filter by date only
