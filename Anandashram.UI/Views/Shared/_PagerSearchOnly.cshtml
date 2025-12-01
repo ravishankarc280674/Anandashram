@@ -141,38 +141,20 @@
                         </ul>
 
                     </div>
-
-
                 </form>
-
             }
         }
 
         <!-- TILE / GRID TOGGLE -->
         @if (Model != null)
         {
-            @if (Model.ViewType != "Tile")
-            {
-                <a class="btn btn-sm btn-outline-secondary"
-                   asp-controller="@Model.Controller"
-                   asp-action="@Model.Action"
-                   asp-route-SearchText="@Model.SearchText"
-                   asp-route-view="Tile"
-                   title="Switch to Tile View">
-                    <i class="fa fa-id-card"></i>
+
+            <a asp-action="@Model.Action" asp-controller="@Model.Controller"
+            asp-route-SearchText="@Model.SearchText"
+               asp-route-view="@(Model.ViewType == "Tile" ? "Grid" : "Tile")"
+               class="btn btn-sm btn-outline-secondary dev-btn-toggle" title="Toggle View">
+                <i class="fa @(Model.ViewType == "Tile" ? "fa-th-large" : "fa-id-card")"></i>
                 </a>
-            }
-            else
-            {
-                <a class="btn btn-sm btn-outline-secondary"
-                   asp-controller="@Model.Controller"
-                   asp-action="@Model.Action"
-                   asp-route-SearchText="@Model.SearchText"
-                   asp-route-view="Grid"
-                   title="Switch to Grid View">
-                    <i class="fa fa-th-large"></i>
-                </a>
-            }
         }
          
     </div>
