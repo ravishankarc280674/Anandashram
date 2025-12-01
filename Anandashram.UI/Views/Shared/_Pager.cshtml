@@ -2,67 +2,31 @@
 @model PageModel
 
 <style>
-    .toolbar {
-        background-color: black;
-        border-radius: 10px;
-        min-height: 45px;
-        padding: 8px 12px;
-    }
-
-        .toolbar .form-control {
-            height: 32px;
-            width: 220px;
-        }
-
     .page-link {
         color: black !important;
     }
-
-    .page-item.active .page-link {
-        color: #fff !important;
-        background-color: red !important;
-        border-color: red !important;
-    }
-
-    .page-item .page-link:hover {
-        background-color: #f0f0f0;
-    }
-
-    .btn-outline-secondary {
-        border: 1px solid #666;
-    }
-
-    .btn-danger {
-        background-color: red;
-        border: none;
-    }
-
-    .toolbar .form-check-label {
-        color: white;
-    }
 </style>
 
-<div class="container-fluid d-flex justify-content-between align-items-center flex-wrap toolbar">
+<div class="dev-toolbar container-fluid d-flex justify-content-between align-items-center flex-wrap">
 
     <!-- LEFT SIDE: Search -->
     <form asp-action="Index"
           asp-route-SearchText="@ViewBag.SearchText"
-          class="d-flex align-items-center m-0 flex-nowrap">
+          asp-route-PageSize="@ViewBag.PageSize"
+          class="d-flex align-items-center m-0 flex-nowrap dev-toolbar-form">
 
-        <input class="form-control me-2"
+        <input class="fform-control dev-search-input me-2"
                type="text" name="SearchText"
                value="@ViewBag.SearchText"
                placeholder="Search Key" />
 
-        <button type="submit"
-                class="btn btn-danger d-flex align-items-center px-3"
-                style="height:32px; border-radius:8px;">
+        <button type="submit" class="btn dev-btn-search d-flex align-items-center px-3">
             <i class="fa fa-search me-1"></i> Search
         </button>
     </form>
 
     <!-- RIGHT SIDE -->
-    <div class="d-flex align-items-center flex-wrap justify-content-end gap-2">
+    <div class="d-flex align-items-center gap-2 dev-toolbar-actions">
 
         <!-- REPORT BUTTONS -->
         @if (Model != null)
@@ -71,20 +35,21 @@
                   asp-route-reportType="@ViewBag.ReportType"
                   asp-action="ShowReport"
                   method="post"
-                  class="d-flex align-items-center gap-1 m-0">
+                  class="d-flex gap-1 m-0">
 
-                <button type="submit" class="btn btn-sm btn-outline-primary"
-                        name="actionButton" value="Screen" title="View on Screen">
-                    <i class="fa fa-print" style="color:#28a745;"></i>
+                <button type="submit" class="btn dev-btn-screen"
+                        name="actionButton" value="Screen" title="View On Screen">
+                    <i class="fa fa-print"></i>
                 </button>
 
-                <button type="submit" class="btn btn-sm btn-outline-danger"
+                <button type="submit" class="btn dev-btn-pdf"
                         name="actionButton" value="Pdf" title="Download PDF">
-                    <i class="fa fa-file-pdf" style="color:#dc3545;"></i>
+                    <i class="fa fa-file-pdf"></i>
                 </button>
-                <button type="submit" class="btn btn-sm btn-outline-success"
+
+                <button type="submit" class="btn dev-btn-excel"
                         name="actionButton" value="Excel" title="Download Excel">
-                    <i class="fa fa-file-excel" style="color:#919112;"></i>
+                    <i class="fa fa-file-excel"></i>
                 </button>
             </form>
         }

@@ -2,73 +2,28 @@
 @model PageModel
 
 <style>
-    .toolbar {
-        background-color: black;
-        border-radius: 10px;
-        min-height: 45px;
-        padding: 8px 12px;
-    }
-
-        .toolbar .form-control {
-            height: 32px;
-            width: 220px;
-        }
-
-    .btn-search {
-        background-color: red;
-        border: none;
-        color: white;
-        height: 32px;
-        border-radius: 8px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        padding: 0 12px;
-    }
-
-        .btn-search i {
-            margin-right: 6px;
-        }
-
-    .btn-outline-secondary {
-        border: 1px solid #666;
-    }
-
     .page-link {
         color: black !important;
     }
-
-    .page-item.active .page-link {
-        color: #fff !important;
-        background-color: red !important;
-        border-color: red !important;
-    }
-
-    .page-item .page-link:hover {
-        background-color: #f0f0f0;
-    }
-
-    .toolbar .form-check-label {
-        color: white;
-        font-size: 0.85rem;
-    }
+     
+ 
 </style>
 
-<div class="container-fluid d-flex justify-content-between align-items-center flex-wrap toolbar">
+<div class="dev-toolbar container-fluid d-flex justify-content-between align-items-center flex-wrap">
 
     <!-- LEFT SIDE -->
     <form asp-action="Index"
           asp-route-SearchText="@ViewBag.SearchText"
           asp-route-Closed="@ViewBag.Closed"
-          class="d-flex align-items-center m-0 flex-nowrap">
+          class="d-flex align-items-center m-0 flex-nowrap dev-toolbar-form">
 
-        <input class="form-control me-2"
+        <input class="form-control dev-search-input me-2"
                type="text"
                name="SearchText"
                value="@ViewBag.SearchText"
                placeholder="Search Key" />
 
-        <button type="submit" class="btn-search">
+        <button type="submit" class="btn dev-btn-search d-flex align-items-center px-3">
             <i class="fa fa-search"></i> Search
         </button>
 
@@ -83,33 +38,24 @@
             if(Model.ControllerName=="Room")
             {
                 <form asp-controller="Report"
-                      asp-route-reportType="@ViewBag.ReportType"
+                      asp-route-reportType="DevoteeList"
                       asp-action="ShowReport"
                       method="post"
-                      class="d-flex align-items-center gap-1 m-0">
+                      class="d-flex align-items-center m-0 flex-nowrap dev-toolbar-form">
 
-                    <!-- Screen Button (List) -->
-                    <button type="submit"
-                            class="btn btn-sm btn-outline-primary"
-                            name="actionButton" value="Screen"
-                            title="View on Screen">
-                        <i class="fa fa-print" style="color:#28a745;"></i>
+                    <button type="submit" class="btn dev-btn-screen"
+                            name="actionButton" value="Screen" title="View On Screen">
+                        <i class="fa fa-print"></i>
                     </button>
 
-                    <!-- PDF Button (List/Detail) -->
-                    <button type="submit"
-                            class="btn btn-sm btn-outline-danger"
-                            name="actionButton" value="Pdf"
-                            title="Download PDF">
-                        <i class="fa fa-file-pdf" style="color:#dc3545;"></i>
+                    <button type="submit" class="btn dev-btn-pdf"
+                            name="actionButton" value="Pdf" title="Download PDF">
+                        <i class="fa fa-file-pdf"></i>
                     </button>
 
-                    <!-- Excel Button (List only) -->
-                    <button type="submit"
-                            class="btn btn-sm btn-outline-success"
-                            name="actionButton" value="Excel"
-                            title="Export to Excel">
-                        <i class="fa fa-file-excel" style="color:#28a745;"></i>
+                    <button type="submit" class="btn dev-btn-excel"
+                            name="actionButton" value="Excel" title="Download Excel">
+                        <i class="fa fa-file-excel"></i>
                     </button>
                 </form>
 
@@ -121,31 +67,29 @@
                       asp-route-reportType="@ViewBag.ReportType"
                       asp-action="ShowReport"
                       method="post"
-                      class="d-flex align-items-center gap-2 m-0">
+                      class="d-flex align-items-center m-0 flex-nowrap dev-toolbar-form">
                     <!-- Will be changed dynamically before Submit -->
                     <input type="hidden" id="actionButton" name="actionButton" />
 
-                    <!-- SCREEN DROPDOWN -->
+                    <!-- PRINT DROPDOWN -->
                     <div class="btn-group">
                         <button type="button"
-                                class="btn btn-sm btn-outline-secondary dropdown-toggle"
-                                data-bs-toggle="dropdown">
-                            <i class="fa fa-print text-success"></i>
+                                class="btn btn-sm dev-btn-screen dev-btn-toggle dropdown-toggle"
+                                data-bs-toggle="dropdown" title="View On Screen">
+                            <i class="fa fa-print"></i>
                         </button>
                         <ul class="dropdown-menu">
                             <li>
-                                <a class="dropdown-item bg-success bg-opacity-25 text-success"
-                                   href="#"
-                                   onclick="submitReport('ScreenList')">
+                                <button class="dropdown-item text-primary bg-primary bg-opacity-10"
+                                        onclick="submitReport('ScreenList')">
                                     <i class="fa fa-list"></i> List
-                                </a>
+                                </button>
                             </li>
                             <li>
-                                <a class="dropdown-item bg-primary bg-opacity-25 text-primary"
-                                   href="#"
-                                   onclick="submitReport('ScreenDetail')">
+                                <button class="dropdown-item text-primary bg-primary bg-opacity-10"
+                                        onclick="submitReport('ScreenDetail')">
                                     <i class="fa fa-file-alt"></i> Detail
-                                </a>
+                                </button>
                             </li>
                         </ul>
                     </div>
@@ -153,54 +97,51 @@
                     <!-- PDF DROPDOWN -->
                     <div class="btn-group">
                         <button type="button"
-                                class="btn btn-sm btn-outline-secondary dropdown-toggle"
-                                data-bs-toggle="dropdown"
-                                title="Download PDF">
-                            <i class="fa fa-file-pdf text-danger"></i>
+                                class="btn btn-sm dev-btn-pdf dev-btn-toggle dropdown-toggle"
+                                data-bs-toggle="dropdown" title="Download PDF">
+                            <i class="fa fa-file-pdf"></i>
                         </button>
                         <ul class="dropdown-menu">
                             <li>
-                                <a class="dropdown-item bg-danger bg-opacity-25 text-danger"
-                                   href="#"
-                                   onclick="submitReport('PdfList')">
+                                <button class="dropdown-item text-danger bg-danger bg-opacity-10"
+                                        onclick="submitReport('PdfList')">
                                     <i class="fa fa-list"></i> List
-                                </a>
+                                </button>
                             </li>
                             <li>
-                                <a class="dropdown-item bg-warning bg-opacity-25 text-warning"
-                                   href="#"
-                                   onclick="submitReport('PdfDetail')">
+                                <button class="dropdown-item text-danger bg-danger bg-opacity-10"
+                                        onclick="submitReport('PdfDetail')">
                                     <i class="fa fa-file-alt"></i> Detail
-                                </a>
+                                </button>
                             </li>
                         </ul>
+
                     </div>
 
                     <!-- EXCEL DROPDOWN -->
                     <div class="btn-group">
                         <button type="button"
-                                class="btn btn-sm btn-outline-secondary dropdown-toggle"
-                                data-bs-toggle="dropdown"
-                                title="Export to Excel">
-                            <i class="fa fa-file-excel text-success"></i>
+                                class="btn btn-sm dev-btn-excel dev-btn-toggle dropdown-toggle"
+                                data-bs-toggle="dropdown" title="Export to Excel">
+                            <i class="fa fa-file-excel"></i>
                         </button>
                         <ul class="dropdown-menu">
                             <li>
-                                <a class="dropdown-item bg-success bg-opacity-25 text-success"
-                                   href="#"
-                                   onclick="submitReport('ExcelList')">
+                                <button class="dropdown-item text-success bg-success bg-opacity-10"
+                                        onclick="submitReport('ExcelList')">
                                     <i class="fa fa-list"></i> List
-                                </a>
+                                </button>
                             </li>
                             <li>
-                                <a class="dropdown-item bg-info bg-opacity-25 text-info"
-                                   href="#"
-                                   onclick="submitReport('ExcelDetail')">
+                                <button class="dropdown-item text-success bg-success bg-opacity-10"
+                                        onclick="submitReport('ExcelDetail')">
                                     <i class="fa fa-table"></i> Detail
-                                </a>
+                                </button>
                             </li>
                         </ul>
+
                     </div>
+
 
                 </form>
 
@@ -233,76 +174,6 @@
                 </a>
             }
         }
-
-        <!-- PAGINATION -->
-         @if (Model != null)
-        {
-        @if (Model.TotalPages > 0)
-        {
-            <ul class="pagination mb-0 d-flex align-items-center justify-content-end ms-2">
-                @if (Model.CurrentPage > 1)
-                {
-                    <li class="page-item">
-                        <a class="page-link"
-                           asp-controller="@Model.Controller"
-                           asp-action="@Model.Action"
-                           asp-route-pg="1"
-                           asp-route-SearchText="@Model.SearchText"
-                           asp-route-Closed="@Model.Closed"
-                           asp-route-PageSize="@Model.PageSize"
-                           asp-route-view="@Model.ViewType">First</a>
-                    </li>
-                    <li class="page-item">
-                        <a class="page-link"
-                           asp-controller="@Model.Controller"
-                           asp-action="@Model.Action"
-                           asp-route-pg="@(Model.CurrentPage - 1)"
-                           asp-route-SearchText="@Model.SearchText"
-                           asp-route-Closed="@Model.Closed"
-                           asp-route-PageSize="@Model.PageSize"
-                           asp-route-view="@Model.ViewType">Prev</a>
-                    </li>
-                }
-
-                @for (var pge = Model.StartPage; pge <= Model.EndPage; pge++)
-                {
-                    <li class="page-item @(pge == Model.CurrentPage ? "active" : "")">
-                        <a class="page-link"
-                           asp-controller="@Model.Controller"
-                           asp-action="@Model.Action"
-                           asp-route-pg="@pge"
-                           asp-route-SearchText="@Model.SearchText"
-                           asp-route-Closed="@Model.Closed"
-                           asp-route-PageSize="@Model.PageSize"
-                           asp-route-view="@Model.ViewType">@pge</a>
-                    </li>
-                }
-
-                @if (Model.CurrentPage < Model.TotalPages)
-                {
-                    <li class="page-item">
-                        <a class="page-link"
-                           asp-controller="@Model.Controller"
-                           asp-action="@Model.Action"
-                           asp-route-pg="@(Model.CurrentPage + 1)"
-                           asp-route-SearchText="@Model.SearchText"
-                           asp-route-Closed="@Model.Closed"
-                           asp-route-PageSize="@Model.PageSize"
-                           asp-route-view="@Model.ViewType">Next</a>
-                    </li>
-                    <li class="page-item">
-                        <a class="page-link"
-                           asp-controller="@Model.Controller"
-                           asp-action="@Model.Action"
-                           asp-route-pg="@Model.TotalPages"
-                           asp-route-SearchText="@Model.SearchText"
-                           asp-route-Closed="@Model.Closed"
-                           asp-route-PageSize="@Model.PageSize"
-                           asp-route-view="@Model.ViewType">Last</a>
-                    </li>
-                }
-            </ul>
-        }
-        }
+         
     </div>
 </div>

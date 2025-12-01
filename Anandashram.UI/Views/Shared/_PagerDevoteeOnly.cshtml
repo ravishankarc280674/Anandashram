@@ -2,38 +2,13 @@
 @model PageModel
 
 <style>
-    .toolbar {
-        background-color: black;
-        border-radius: 10px;
-        min-height: 45px;
-        padding: 8px 12px;
-    }
-
-    .toolbar .form-control {
-        height: 32px;
-        width: 220px;
-    }
-
     .page-link {
         color: black !important;
     }
 
-    .page-item.active .page-link {
-        color: #fff !important;
-        background-color: red !important;
-        border-color: red !important;
-    }
-
-    .page-item .page-link:hover {
-        background-color: #f0f0f0;
-    }
-
-    .btn-outline-secondary {
-        border: 1px solid #666;
-    }
 </style>
 
-<div class="container-fluid d-flex justify-content-between align-items-center flex-wrap toolbar">
+<div class="dev-toolbar container-fluid d-flex justify-content-between align-items-center flex-wrap">
 
     <!-- LEFT SIDE: Search + Checkbox -->
     <form asp-action="Index"
@@ -41,17 +16,14 @@
           asp-route-PageSize="@ViewBag.PageSize"
           asp-route-Closed="@ViewBag.Closed"
           asp-route-view="@ViewBag.view"
-          asp-route-PageSize="@Model.PageSize"
-          class="d-flex align-items-center m-0 flex-nowrap">
+          class="d-flex align-items-center m-0 flex-nowrap dev-toolbar-form">
 
-        <input class="form-control me-2"
+        <input class="form-control dev-search-input me-2"
                type="text" name="SearchText"
                value="@ViewBag.SearchText"
                placeholder="Search Key" />
 
-        <button type="submit"
-                class="btn btn-danger d-flex align-items-center px-3"
-                style="height:32px; border-radius:8px;">
+        <button type="submit" class="btn dev-btn-search d-flex align-items-center px-3">
             <i class="fa fa-search me-1"></i> Search
         </button>
 
@@ -61,12 +33,12 @@
                    onchange="this.form.submit()"
                    class="form-check-input me-1"
                    title="Include Closed" />
-            <label class="form-check-label text-white small" asp-for="Closed">Include Closed</label>
+            <label class="form-check-label small text-muted" asp-for="Closed">Include Closed</label>
         </div>
     </form>
 
     <!-- RIGHT SIDE -->
-    <div class="d-flex align-items-center flex-wrap justify-content-end gap-2">
+    <div class="d-flex align-items-center gap-2 dev-toolbar-actions">
 
         @if (Model != null)
         {
@@ -74,55 +46,35 @@
                   asp-route-reportType="DevoteeList"
                   asp-action="ShowReport"
                   method="post"
-                  class="d-flex align-items-center gap-1 m-0">
+                  class="d-flex gap-1 m-0">
 
-                <button type="submit" class="btn btn-sm btn-outline-secondary"
-                        name="actionButton" value="Screen" title="View on Screen">
-                    <i class="fa fa-print" style="color:#28a745;"></i>
+                <button type="submit" class="btn dev-btn-screen"
+                        name="actionButton" value="Screen" title="View On Screen">
+                    <i class="fa fa-print"></i>
                 </button>
 
-                <button type="submit" class="btn btn-sm btn-outline-secondary"
+                <button type="submit" class="btn dev-btn-pdf"
                         name="actionButton" value="Pdf" title="Download PDF">
-                    <i class="fa fa-file-pdf" style="color:#dc3545;"></i>
+                    <i class="fa fa-file-pdf"></i>
                 </button>
-                <button type="submit" class="btn btn-sm btn-outline-secondary"
+
+                <button type="submit" class="btn dev-btn-excel"
                         name="actionButton" value="Excel" title="Download Excel">
-                    <i class="fa fa-file-excel" style="color:#28a745;"></i>
+                    <i class="fa fa-file-excel"></i>
                 </button>
             </form>
         }
 
-        @if (Model.ViewType != "Tile")
-        {
-            <a asp-controller="@Model.Controller"
-               asp-action="@Model.Action"
+            <a asp-action="@Model.Action" asp-controller="@Model.Controller"
                asp-route-SearchText="@Model.SearchText"
                asp-route-Closed="@Model.Closed"
-               asp-route-view="Tile"
                asp-route-sortExpression="@Model.SortExpression"
                asp-route-pg="@Model.CurrentPage"
                asp-route-PageSize="@Model.PageSize"
-               title="Switch to Tile View"
-               class="btn btn-sm btn-outline-secondary">
-                <i class="fa fa-id-card"></i>
+               asp-route-view="@(Model.ViewType == "Tile" ? "Grid" : "Tile")"
+               class="btn btn-sm btn-outline-secondary dev-btn-toggle" title="Toggle View">
+                <i class="fa @(Model.ViewType == "Tile" ? "fa-th-large" : "fa-id-card")"></i>
             </a>
-        }
-        else
-        {
-            <a asp-controller="@Model.Controller"
-               asp-action="@Model.Action"
-               asp-route-SearchText="@Model.SearchText"
-               asp-route-Closed="@Model.Closed"
-               asp-route-view="Grid"
-               asp-route-PageSize="@Model.PageSize"
-               asp-route-sortExpression="@Model.SortExpression"
-               asp-route-pg="@Model.CurrentPage"
-               title="Switch to Grid View"
-               class="btn btn-sm btn-outline-secondary">
-                <i class="fa fa-th-large"></i>
-            </a>
-        }
-
         <!-- PAGINATION -->
         @if (Model.TotalPages > 0)
         {
@@ -197,5 +149,5 @@
                 }
             </ul>
         }
-    </div>
+</div>
 </div>

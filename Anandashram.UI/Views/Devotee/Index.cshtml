@@ -70,12 +70,6 @@
                            asp-route-SearchText="@ViewBag.SearchText" asp-route-PageSize="@ViewBag.PageSize"
                            asp-route-Closed="@ViewBag.Closed" asp-route-view="@ViewBag.view">Registration Date</a>
                     </th>
-                    @* <th>
-                        <i class="@sortModel.GetColumn("enddate").SortIcon"></i>
-                        <a class="text-white text-decoration-none fw-bold" asp-action="Index" asp-route-sortExpression="@sortModel.GetColumn("enddate").SortExpression"
-                           asp-route-SearchText="@ViewBag.SearchText" asp-route-PageSize="@ViewBag.PageSize"
-                           asp-route-Closed="@ViewBag.Closed" asp-route-view="@ViewBag.view">End Date</a>
-                    </th> *@
                     <th>
                         <i class="@sortModel.GetColumn("mobile").SortIcon"></i>
                         <a class="text-white text-decoration-none fw-bold" style="color:white" asp-action="Index" asp-route-sortExpression="@sortModel.GetColumn("mobile").SortExpression"
@@ -108,24 +102,23 @@
                             rowClass = "bg-warning";
                         }
                         <tr>
-                            <td class="sticky-col first-col" style="background:#94a09c">
+                            <td class="sticky-col first-col" style="background:#305313">
                                 <img src="@Url.Action("GetImage", "Devotee", new { fileName = item.Code })"
                                      width="35" height="35" class="rounded-circle" />
                             </td>
-                            <td class="sticky-col second-col" style="background:#94a09c">
+                            <td class="sticky-col second-col text-white" style="background:#305313">
                                 @if (!item.Closed)
                                 {
-                                    <a asp-action="AddOrEdit" asp-route-id="@item.Id" class="devotee-link">@item.Code</a>
+                                    <a asp-action="AddOrEdit" asp-route-id="@item.Id" class="devotee-link text-white">@item.Code</a>
                                 }
                                 else
                                 {
-                                    <a asp-action="Details" asp-route-id="@item.Id" class="devotee-link">@item.Code</a>
+                                    <a asp-action="Details" asp-route-id="@item.Id" class="devotee-link text-white" style="color:#fff">@item.Code</a>
                                 }
                             </td>
                             <td class="@rowClass">@item.Name</td>
                             <td class="@rowClass">@item.DevoteeCategoryName</td>
                             <td class="@rowClass">@item.StartDate.ToString("dd/MM/yyyy")</td>
-                           @*  <td class="@rowClass">@item.EndDate.ToString("dd/MM/yyyy")</td> *@
                             <td class="@rowClass">@item.Mobile</td>
                             <td class="@rowClass">@item.Email</td>
                             <td class="@rowClass">
@@ -138,7 +131,7 @@
                                 </span>
                             </td>
                             <td class="@rowClass">@item.NoOfPeople</td>
-                            <td class="sticky-col last-col" style="background:#94a09c">
+                            <td class="sticky-col last-col" style="background:#305313">
                                 <div class="btn-group">
                                     @if (!item.Closed)
                                     {

@@ -419,7 +419,7 @@ html, body {
 
 /* === SCROLLABLE TABLE CONTAINER === */
 .tbl-container {
-    height: 350px; /* Fixed visible height */
+    height: 400px; /* Fixed visible height */
     overflow: auto;
     border: 1px solid #d1e7dd;
     border-radius: 8px;
@@ -471,27 +471,27 @@ tbody tr:hover td {
     position: sticky;
     left: 0;
     z-index: 2;
-    background: #aaa392;
+    background: #0f5132;
 }
 
 .second-col {
     position: sticky;
     left: 40px;
     z-index: 2;
-    background: #aaa392;
+    background: #0f5132;
 }
 
 .last-col {
     position: sticky;
     right: 0;
     z-index: 2;
-    background: #aaa392;
+    background: #0f5132;
 }
 
 
 /* === LINKS === */
 .devotee-link {
-    color: #0f5132;
+    color: #f2f2f2;
     font-weight: 700;
     text-decoration: none;
 }
@@ -589,3 +589,251 @@ tbody tr:hover td {
     white-space: normal;
     text-align: left;
 }
+
+.dev-toolbar {
+    background-color: #000;
+    border-radius: 10px;
+    min-height: 45px;
+    padding: 8px 12px;
+    color: #fff;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.dev-toolbar-form {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.dev-search-input {
+    height: 32px;
+    width: 220px;
+    border-radius: 6px;
+    padding: 4px 8px;
+}
+
+/* main toolbar buttons */
+.dev-btn-search {
+    height: 32px;
+    border-radius: 8px;
+    background-color: #c82333; /* red */
+    color: #fff;
+    border: none;
+}
+
+    .dev-btn-search:hover {
+        opacity: .9;
+    }
+
+/* Custom Theme (B) */
+.dev-btn-screen {
+    background-color: #0d6efd; /* blue */
+    color: #fff;
+    border-radius: 6px;
+    padding: 4px 10px;
+}
+
+    .dev-btn-screen:hover {
+        background-color: #0b5ed7;
+    }
+
+.dev-btn-pdf {
+    background-color: #7a0b0b; /* dark red */
+    color: #fff;
+    border-radius: 6px;
+    padding: 4px 10px;
+}
+
+    .dev-btn-pdf:hover {
+        background-color: #660909;
+    }
+
+.dev-btn-excel {
+    background-color: #16572b; /* dark green */
+    color: #fff;
+    border-radius: 6px;
+    padding: 4px 10px;
+}
+
+    .dev-btn-excel:hover {
+        background-color: #0f3f1e;
+    }
+
+.dev-btn-toggle {
+    border-radius: 6px;
+}
+
+.dev-pagination .page-item .page-link {
+    color: #000 !important;
+    background: #fff;
+    border: 1px solid #ddd;
+}
+
+.dev-pagination .page-item.active .page-link,
+.dev-pagination .page-item.active .dev-current-page {
+    color: #fff !important;
+    background-color: red !important;
+    border-color: red !important;
+}
+
+.dev-pagination .page-item .page-link:hover {
+    background-color: #f0f0f0;
+}
+
+/* remove pointer/hover on active page */
+.dev-current-page {
+    cursor: default;
+    pointer-events: none;
+}
+
+
+.page-item.active .page-link {
+    color: #fff !important;
+    background-color: red !important;
+    border-color: red !important;
+}
+
+.page-item .page-link:hover {
+    background-color: #f0f0f0;
+}
+.btn-outline-primary:hover {
+    background-color: #0d6efd;
+    color: white;
+}
+
+.btn-outline-danger:hover {
+    background-color: #dc3545;
+    color: white;
+}
+
+.action-icon {
+    font-size: 14px;
+}
+/* Dropdown items — align left + better hover */
+.dropdown-item {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    border-radius: 4px;
+}
+
+    .dropdown-item:hover {
+        background-color: #e9ecef !important;
+        color: inherit !important;
+    }
+
+/* 🌿 INNER (RESERVATION) TABLE */
+.inner-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 10px;
+    background-color: #ffffff;
+    border-radius: 8px;
+}
+
+    .inner-table th {
+        background-color: #1b5e20;
+        color: #fff;
+        font-weight: bold;
+        padding: 8px;
+        font-size: 14px;
+    }
+
+    .inner-table td {
+        padding: 8px;
+        border-top: 1px solid #e0e0e0;
+    }
+
+    .inner-table tr:nth-child(even) {
+        background-color: #f2faf3;
+    }
+
+.capacity-row th {
+    background: #4caf50;
+    color: #fff;
+    font-size: 15px;
+}
+
+.no-records {
+    text-align: center;
+    font-weight: 600;
+    color: #555;
+    background-color: #f9f9f9;
+}
+
+/* 🌿 ICONS & LINKS */
+.clickable-row i {
+    color: #2e7d32;
+    margin-right: 5px;
+}
+
+a.devotee-link {
+    font-weight: bold;
+    color: #1565c0;
+    text-decoration: none;
+}
+
+    a.devotee-link:hover {
+        color: #0d47a1;
+        text-decoration: underline;
+        .reservation-container
+
+{
+    background-color: #f6fff7;
+    border-radius: 10px;
+    padding: 15px;
+    box-shadow: 0 0 10px rgba(0, 64, 0, 0.1);
+}
+
+/* 🌿 MAIN TABLE STYLE */
+.green-table {
+    width: 100%;
+    border-collapse: separate;
+    border-spacing: 0;
+    margin: 0;
+}
+
+    .green-table th {
+        background: linear-gradient(90deg, #256d29, #2e7d32);
+        color: white;
+        text-align: center;
+        font-weight: bold;
+        padding: 10px;
+        font-size: 16px;
+    }
+
+    .green-table td {
+        text-align: center;
+        padding: 10px;
+        font-size: 15px;
+        vertical-align: middle;
+    }
+
+    .green-table tbody tr:nth-child(even) {
+        background-color: #ecf9ee;
+    }
+
+    .green-table tbody tr:hover {
+        background-color: #d8f5db;
+        transition: 0.2s;
+    }
+
+.clickable-row {
+    cursor: pointer;
+    background-color: #e5f6e7;
+    font-weight: 500;
+}
+
+    .clickable-row:hover {
+        background-color: #c7ebca !important;
+    }
+
+.collapse-content {
+    background-color: #f1f9f2;
+    border-left: 4px solid #388e3c;
+    border-right: 4px solid #388e3c;
+    border-bottom: 4px solid #388e3c;
+    border-radius: 0 0 10px 10px;
+}  }

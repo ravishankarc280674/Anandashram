@@ -81,12 +81,21 @@
 <div class="container-fluid mt-3">
 
     <div class="d-flex justify-content-between align-items-center mb-3">
-        <h4 class="fw-bold text-success">@ViewData["Title"]</h4>
-        <a class="btn btn-secondary" asp-action="index"
-           asp-route-pg="@TempData.Peek("CurrentPage")" asp-route-SearchText="@ViewBag.SearchText">
-            <i class="fa fa-arrow-left"></i> Back
-        </a>
-    </div>
+
+    <h4 class="fw-bold text-success mb-0">
+        <i class="fa fa-user-circle me-2"></i>@ViewData["Title"]
+    </h4>
+
+    <a class="btn btn-outline-dark btn-sm rounded-pill shadow-sm px-3"
+       asp-action="Index"
+       asp-route-pg="@TempData.Peek("CurrentPage")"
+       asp-route-SearchText="@ViewBag.SearchText"
+       title="Back to List">
+        <i class="fa fa-arrow-left me-1"></i>Back
+    </a>
+
+</div>
+
 
     <div class="card p-4">
         <form asp-action="AddOrEdit">
