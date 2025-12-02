@@ -102,11 +102,11 @@
                             rowClass = "bg-warning";
                         }
                         <tr>
-                            <td class="sticky-col first-col" style="background:#305313">
+                            <td class="sticky-col first-col" style="background:#133338">
                                 <img src="@Url.Action("GetImage", "Devotee", new { fileName = item.Code })"
                                      width="35" height="35" class="rounded-circle" />
                             </td>
-                            <td class="sticky-col second-col text-white" style="background:#305313">
+                            <td class="sticky-col second-col text-white" style="background:#133338">
                                 @if (!item.Closed)
                                 {
                                     <a asp-action="AddOrEdit" asp-route-id="@item.Id" class="devotee-link text-white">@item.Code</a>
@@ -131,7 +131,7 @@
                                 </span>
                             </td>
                             <td class="@rowClass">@item.NoOfPeople</td>
-                            <td class="sticky-col last-col" style="background:#305313">
+                            <td class="sticky-col last-col" style="background:#133338">
                                 <div class="btn-group">
                                     @if (!item.Closed)
                                     {
