@@ -363,3 +363,6 @@ MigrationBackup/
 FodyWeavers.xsd
 /Anandashram.UI.Tools/Core/Models/PageModel.cs
 /Anandashram.UI/Program.cs
+/Anandashram.UI/Controllers/AIController.cs
+/Anandashram.UI/Controllers/CheckoutController.cs
+/Anandashram.UI
