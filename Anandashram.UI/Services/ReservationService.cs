@@ -32,21 +32,38 @@ public class ReservationService : IReservationService
     {
         var list = await _reservationRepo.GetReservationsForChart(startDate, endDate);
 
-        return list.Select(r =>
-        {
-            var f = r.FromDate < startDate ? startDate : r.FromDate;
-            var t = r.ToDate > endDate ? endDate : r.ToDate;
-
-            return new TimelineDTO
+        return list
+            .Where(r => r.Closed == false)          // Only active
+            .Select(r =>
             {
-                RoomName = r.RoomName,
-                DevoteeName = r.DevoteeName,
-                DevoteeCode = r.DevoteeCode,
-                Allocated = r.Allocated,
-                FromDate = f,
-                ToDate = t
-            };
-        }).ToList();
+                DateTime f;
+                DateTime t;
+
+                // LEFT TRIM — only when reservation starts BEFORE selected range
+                if (r.FromDate < startDate)
+                    f = startDate;
+                else
+                    f = r.FromDate;  // No trimming (Case-2)
+
+                // RIGHT TRIM — only when reservation ends AFTER selected range
+                if (r.ToDate > endDate)
+                    t = endDate;
+                else
+                    t = r.ToDate;
+
+                return new TimelineDTO
+                {
+                    RoomName = r.RoomName,
+                    DevoteeName = r.DevoteeName,
+                    DevoteeCode = r.DevoteeCode,
+                    Allocated = r.Allocated,
+                    Capacity = r.Room.Capacity,
+                    FromDate = f,
+                    ToDate = t
+                };
+            })
+            .Where(r => r.FromDate <= r.ToDate)      // Filter situations where trimmed result is invalid
+            .ToList();
     }
 
 }
