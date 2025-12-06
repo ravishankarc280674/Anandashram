@@ -258,7 +258,7 @@ private async Task<IActionResult> RoomsAllocationDetailPdfPreviewAlloted(DateTim
             return View();
         else
         {
-            string Subject = $"Rooms Allocation " + reportformat + " Report (Up to {dateValue:dd - MMM - yyyy})";
+            string Subject = $"Rooms Allocation " + reportformat + " Report (Up to " + dateValue.Date.ToString("dd - MMM - yyyy") + ")" ;
             return reportformat switch
             {
                 "List" =>

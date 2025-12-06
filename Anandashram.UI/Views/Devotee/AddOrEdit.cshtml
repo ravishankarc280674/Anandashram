@@ -533,13 +533,21 @@
         }
         
         function AddItem() {
-                var table = document.getElementById('tableBody');
-                var rows = table.getElementsByTagName('tr');
-                 var rowOuterHtml = rows[0].outerHTML;
-                 var newRow = table.insertRow();
-                 newRow.classList.add("rowClass");
-                 newRow.innerHTML = rowOuterHtml; 
-        }
+                 var table = document.getElementById('tableBody');
+                // var rows = table.getElementsByTagName('tr');
+                //  var rowOuterHtml = rows[0].outerHTML;
+                //  var newRow = table.insertRow();
+                //  newRow.classList.add("rowClass");
+                //  newRow.innerHTML = rowOuterHtml;
+                             // Take the hidden template row (row 0)
+                var templateRow = table.rows[0];
+                // Clone deep copy of the template row
+                var newRow = templateRow.cloneNode(true);
+                // Unhide the cloned row
+                newRow.hidden = false;
+                // Insert at index 1 (top position after the hidden row)
+                table.insertBefore(newRow, table.rows[1]);
+            }
 
         function DeleteItem(btn) {
                    var table = document.getElementById('RegTable');
@@ -567,13 +575,18 @@
 
 
         function saveNewDetails(){
-            debugger;
             var table = document.getElementById('RegTable');
                 //var rows = table.getElementsByTagName('tr');
                  let reservationList=[];
                  let index=0;
                 var startDate =  document.getElementById("reg-start-date").value;
                 var endDate =  document.getElementById("reg-end-date").value;
+             const stDate = new Date(startDate);
+                const edDate = new Date(endDate);
+                if (stDate > edDate) {
+                    $.notify("Check-In date cannot be greater than Check-Out Date", { globalPosition: "top centre", className: "error" });
+                    return false;
+                }
                 var noOfDevotees =  document.getElementById("NoOfPeople").value;
                 let sumNewAllot=0;
                 let totalAllocated = 0;

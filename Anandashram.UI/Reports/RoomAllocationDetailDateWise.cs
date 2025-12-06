@@ -139,7 +139,8 @@ public class RoomAllocationDetailDateWise : IDocument
                             {
                                 r.RelativeItem().PaddingLeft(6).Text("Devotee Code").Bold();
                                 r.RelativeItem().Text("Devotee Name").Bold();
-                                r.RelativeItem().Text("From Date").Bold();
+                                r.RelativeItem().Text("Check-In Date").Bold();
+                                r.RelativeItem().Text("Check-Out Date").Bold();
                                 r.ConstantItem(60).AlignRight().Text("Alloc.").Bold();
                             });
 
@@ -154,6 +155,7 @@ public class RoomAllocationDetailDateWise : IDocument
                                         r.RelativeItem().PaddingLeft(6).Text(res.DevoteeCode);
                                         r.RelativeItem().Text(res.DevoteeName);
                                         r.RelativeItem().Text(res.FromDate.ToString("dd-MMM-yyyy"));
+                                        r.RelativeItem().Text(res.ToDate.ToString("dd-MMM-yyyy"));
                                         r.ConstantItem(60).AlignRight().Text(res.Allocated.ToString());
                                     });
                             }
@@ -182,84 +184,5 @@ public class RoomAllocationDetailDateWise : IDocument
                     r.RelativeItem().AlignCenter().Text($"Total Remaining: {totalRemaining}").Bold().FontSize(11);
                 });
         });
-    }
-
-    void TableHeader(QuestPDF.Infrastructure.IContainer container)
-    {
-        container
-            .Width(TableWidth)
-            .Background("#d1e7dd") // Bootstrap success-light
-            .Border(1).BorderColor("#0f5132")
-            .PaddingVertical(6)
-            .Element(x =>
-            {
-                x.Row(row =>
-                {
-                    row.ConstantItem(RoomColumnWidth)
-                        .AlignLeft().PaddingLeft(6)
-                        .Text("Room Name").Bold().FontSize(10).FontColor("#0f5132");
-
-                    row.ConstantItem(CapacityColumnWidth)
-                        .AlignRight().PaddingRight(6)
-                        .Text("Capacity").Bold().FontSize(10).FontColor("#0f5132");
-                    row.ConstantItem(CapacityColumnWidth)
-                       .AlignRight().PaddingRight(6)
-                       .Text("Allocated").Bold().FontSize(10).FontColor("#0f5132");
-                    row.ConstantItem(CapacityColumnWidth)
-                       .AlignRight().PaddingRight(6)
-                       .Text("Remaining").Bold().FontSize(10).FontColor("#0f5132");
-                });
-            });
-    }
-
-    void DrawRoomRow(QuestPDF.Infrastructure.IContainer container, RoomReportDTO room)
-    {
-        bool isEvenRow = (Rooms.IndexOf(room) % 2 == 0);
-
-        container
-            .Width(TableWidth)
-            .Background(isEvenRow ? Colors.White : "#e9f7ef") // success-very-light
-            .BorderBottom(1)
-            .BorderColor(Colors.Grey.Lighten3)
-            .PaddingVertical(4)
-            .Element(x =>
-            {
-                x.Row(row =>
-                {
-                    row.ConstantItem(RoomColumnWidth)
-                        .AlignLeft().PaddingLeft(6)
-                        .Text(room.RoomName);
-                    row.ConstantItem(CapacityColumnWidth)
-                        .AlignRight().PaddingRight(6)
-                        .Text(room.Capacity.ToString());
-                    row.ConstantItem(CapacityColumnWidth)
-                      .AlignRight().PaddingRight(6)
-                      .Text(room.TotalAllocated.ToString());
-                    row.ConstantItem(CapacityColumnWidth)
-                      .AlignRight().PaddingRight(6)
-                      .Text(room.TotalRemaining.ToString());
-                });
-            });
-
-    }
-
-    void DrawGroup(QuestPDF.Infrastructure.IContainer container, string building, string block, string floor)
-    {
-        container
-            .Width(TableWidth)
-            .PaddingVertical(6)
-            .Background(Colors.Grey.Lighten4)
-            .Border(1)
-            .BorderColor(Colors.Grey.Lighten2)
-            .Padding(4)
-            .Element(x =>
-            {
-                x.Row(row =>
-                {
-                    row.RelativeItem().Text($"Building: {building}").SemiBold().FontSize(10);
-                    row.RelativeItem().Text($"Block: {block}").SemiBold().FontSize(10).AlignCenter();
-                    row.RelativeItem().Text($"Floor: {floor}").SemiBold().FontSize(10).AlignRight();
-                });
-            });
     }
 }

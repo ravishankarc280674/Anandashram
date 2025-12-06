@@ -31,7 +31,7 @@ public class ReservationRepository : IReservation
                     CreatedDate = result.r.CreatedDate,
                     Room = result.r.Room,
                     Remaining = result.r.Room.Capacity - result.rss.Where(rs => rs.Closed == false).Sum(rs => rs.Allocated)
-                }).ToListAsync();
+                }).OrderByDescending(x => x.ToDate).ToListAsync();
         return reservations;
     }
     public Task<int> AddReservation([FromBody] List<Reservation> reservationList)

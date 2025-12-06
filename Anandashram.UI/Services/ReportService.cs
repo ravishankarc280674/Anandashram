@@ -429,12 +429,13 @@ public class ReportService : IReportService
         var ws = workbook.Worksheets.Add("Room Allocation");
 
         int currentRow = 1;
-        int totalColumns = 4;
+        int totalColumns = 5;
 
         ws.Column(1).Width = 25;
         ws.Column(2).Width = 15;
         ws.Column(3).Width = 15;
         ws.Column(4).Width = 15;
+        ws.Column(5).Width = 15;
 
         // ===== COMPANY HEADER =====
         ws.Range(currentRow, 1, currentRow, totalColumns).Merge().Value = company.Name;
@@ -520,8 +521,9 @@ public class ReportService : IReportService
                 // ⭐ NEW: Reservations header row
                 ws.Cell(currentRow, 1).Value = "Devotee Code";
                 ws.Cell(currentRow, 2).Value = "Devotee Name";
-                ws.Cell(currentRow, 3).Value = "From Date";
-                ws.Cell(currentRow, 4).Value = "Allocated";
+                ws.Cell(currentRow, 3).Value = "Check-In Date";
+                ws.Cell(currentRow, 4).Value = "Check-Out Date";
+                ws.Cell(currentRow, 5).Value = "Allocated";
 
                 ws.Range(currentRow, 1, currentRow, totalColumns).Style
                     .Font.SetBold()
@@ -547,7 +549,8 @@ public class ReportService : IReportService
                         ws.Cell(currentRow, 1).Value = res.DevoteeCode;
                         ws.Cell(currentRow, 2).Value = res.DevoteeName;
                         ws.Cell(currentRow, 3).Value = res.FromDate.ToString("dd-MMM-yyyy");
-                        ws.Cell(currentRow, 4).Value = res.Allocated;
+                        ws.Cell(currentRow, 4).Value = res.ToDate.ToString("dd-MMM-yyyy");
+                        ws.Cell(currentRow, 5).Value = res.Allocated;
 
                         ws.Range(currentRow, 1, currentRow, totalColumns).Style
                             .Fill.SetBackgroundColor(bg)
