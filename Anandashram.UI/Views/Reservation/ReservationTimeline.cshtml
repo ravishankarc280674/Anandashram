@@ -1,0 +1,32 @@
+﻿@{
+    ViewData["Title"] = "Reservation Timeline Chart";
+}
+
+<h3 class="fw-bold text-success mb-3">Reservation Timeline</h3>
+
+<div class="row mb-3">
+    <div class="col-md-3">
+        <label>Start Date</label>
+        <input type="date" id="startDate" class="form-control" />
+    </div>
+
+    <div class="col-md-3">
+        <label>End Date</label>
+        <input type="date" id="endDate" class="form-control" />
+    </div>
+
+    <div class="col-md-6 mt-4">
+        <button class="btn btn-success mt-2" onclick="loadTimeline()">Generate</button>
+        <button class="btn btn-primary mt-2" onclick="exportPdf()">Export PDF</button>
+        <button class="btn btn-warning mt-2" onclick="exportExcel()">Export Excel</button>
+    </div>
+</div>
+
+<hr />
+<div id="timelineWrapper" style="width:100%; height:1540px; overflow-x:auto;">
+    <canvas id="timelineChart"></canvas>
+</div>
+
+<script src="~/lib/chart.js/chart.umd.js"></script>
+<script src="~/js/chartjs-adapter-date-fns.umd.js"></script>
+<script src="/js/reservation-timeline.js"></script>
