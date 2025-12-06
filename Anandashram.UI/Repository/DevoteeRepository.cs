@@ -90,10 +90,7 @@ public class DevoteeRepository : IDevotee
         }
         else
         {
-            if (sortOrder == SortOrder.Ascending)
-                devotees = devotees.OrderBy(d => d.Description).ToList();
-            else
-                devotees = devotees.OrderByDescending(d => d.Description).ToList();
+            devotees = devotees.OrderByDescending(d => d.Id).ToList();
         }
 
         return devotees;
@@ -122,7 +119,7 @@ public class DevoteeRepository : IDevotee
     {
         if (!Checked)
         {
-            return await _context.Devotees.AsNoTracking().Include(d => d.DevoteeCategory).Where(n => n.Closed == false).ToListAsync();
+            return await _context.Devotees.AsNoTracking().Include(d => d.DevoteeCategory).Where(n => n.Closed == false).OrderByDescending(x => x.Id).ToListAsync();
         }
         else
         {

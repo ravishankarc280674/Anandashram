@@ -76,6 +76,19 @@
     .form-section {
         margin-top: 1.5rem;
     }
+
+    .round-btn {
+        width: 36px;
+        height: 36px;
+        border-radius: 50%;
+        padding: 0;
+        font-weight: 600;
+        font-size: 14px;
+        line-height: 36px;
+        text-align: center;
+        color: #fff;
+        transition: 0.2s ease-in-out;
+    }
 </style>
 
 <div class="container-fluid mt-3">
@@ -415,10 +428,25 @@
                                 <td class="text-end">
                                     @if (!Model.Reservations[i].Closed)
                                     {
-                                        <button type="button" class="btn btn-sm btn-outline-success"
-                                                onclick="return CloseItem(@Model.Reservations[i].Id, @Model.Reservations[i].DevoteeId)">
-                                            <i class="fa fa-lock"></i> Close
-                                        </button>
+                                        <div class="d-flex gap-2">
+                                            <button class="btn btn-danger round-btn btn-res-close"
+                                                    onclick="return CloseItem(@Model.Reservations[i].Id, @Model.Reservations[i].DevoteeId)"
+                                                    title="Close">
+                                                C
+                                            </button>
+
+                                            <button class="btn btn-success round-btn btn-extend"
+                                                    data-id="@Model.Reservations[i].Id"
+                                                    title="Extend">
+                                                E
+                                            </button>
+
+                                            <button class="btn btn-warning round-btn btn-partial" style="display:none"
+                                                    data-id="@Model.Reservations[i].Id"
+                                                    title="Partial Extend">
+                                                P
+                                            </button>
+                                        </div>
                                     }
                                     else
                                     {
@@ -438,7 +466,88 @@
                     </tfoot>
                 </table>
             </div>
+            <!-- copilot: Extend Modal -->
+            <div class="modal fade" id="extendModal" tabindex="-1">
+                <div class="modal-dialog">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title">Extend Reservation</h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                        </div>
 
+                        <div class="modal-body">
+                            <form id="extendForm">
+
+                                <input type="hidden" id="ExtendReservationId">
+
+                                <div class="mb-3">
+                                    <label>Room</label>
+                                    <select id="ExtendRoomId" class="form-select"></select>
+                                </div>
+
+                                <div class="mb-3">
+                                    <label>To Date</label>
+                                    <input type="date" id="ExtendToDate" class="form-control">
+                                </div>
+
+                            </form>
+                        </div>
+
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-success" id="btnSaveExtend">Save</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- copilot: Partial Extend Modal -->
+            <div class="modal fade" id="partialModal" tabindex="-1">
+                <div class="modal-dialog">
+                    <div class="modal-content">
+
+                        <div class="modal-header">
+                            <h5 class="modal-title">Partial Extend</h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                        </div>
+
+                        <div class="modal-body">
+                            <form id="partialForm">
+
+                                <input type="hidden" id="PartialReservationId">
+
+                                <div class="mb-3">
+                                    <label>Room</label>
+                                    <select id="PartialRoomId" class="form-select"></select>
+                                </div>
+
+                                <div class="mb-3">
+                                    <label>To Date</label>
+                                    <input type="date" id="PartialToDate" class="form-control">
+                                </div>
+
+                                <!-- Already Allotted (DISABLED) -->
+                                <div class="mb-3">
+                                    <label>Already Allotted</label>
+                                    <input type="number" id="PartialAlreadyAllotted"
+                                           class="form-control" disabled>
+                                </div>
+
+                                <!-- New Allocation (editable) -->
+                                <div class="mb-3">
+                                    <label>New Allocation</label>
+                                    <input type="number" id="PartialNewAllocation"
+                                           class="form-control" min="0" step="1">
+                                </div>
+
+                            </form>
+                        </div>
+
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-success" id="btnSavePartial">Save</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
             <!-- Save Button -->
             <div class="text-center mt-3">
                 <button type="button" class="btn btn-success px-4"
@@ -510,7 +619,7 @@
             });
         } 
 
-            function saveImage() {
+        function saveImage() {
             Webcam.snap(function (data_uri) {
                 var Id = document.getElementById('DevoteeId').value;
                 var Code = document.getElementById('DevoteeCode').value;
@@ -534,12 +643,7 @@
         
         function AddItem() {
                  var table = document.getElementById('tableBody');
-                // var rows = table.getElementsByTagName('tr');
-                //  var rowOuterHtml = rows[0].outerHTML;
-                //  var newRow = table.insertRow();
-                //  newRow.classList.add("rowClass");
-                //  newRow.innerHTML = rowOuterHtml;
-                             // Take the hidden template row (row 0)
+                // Take the hidden template row (row 0)
                 var templateRow = table.rows[0];
                 // Clone deep copy of the template row
                 var newRow = templateRow.cloneNode(true);
@@ -573,10 +677,8 @@
                 });
         }
 
-
         function saveNewDetails(){
             var table = document.getElementById('RegTable');
-                //var rows = table.getElementsByTagName('tr');
                  let reservationList=[];
                  let index=0;
                 var startDate =  document.getElementById("reg-start-date").value;
@@ -664,7 +766,7 @@
                    
           }
 
-          function CloseItem(id,devoteeId){
+        function CloseItem(id,devoteeId){
             $.ajax({
                     type: "POST",
                     url: '/Devotee/CloseReservation',
@@ -680,7 +782,8 @@
 
                 });
           }
-          function CloseReservations()
+        
+        function CloseReservations()
             {
                            var devoteeId = document.getElementById('DevoteeId').value;
                     $.ajax({
@@ -698,7 +801,8 @@
 
                         });
 }
-          function calculateTotal(){
+        
+        function calculateTotal(){
                 var table = document.getElementById('tableBody');
                 var rows = table.getElementsByTagName('tr');
                 
@@ -718,5 +822,65 @@
                 var col=rowFooter.cells[1];
                 col.textContent = sum;
           }
+
+        $(document).on("click", ".btn-extend", function () {
+            loadExtendPopup($(this).data("id"));
+        });
+
+        $(document).on("click", ".btn-partial", function () {
+            loadPartialExtendPopup($(this).data("id"));
+        });
+
+        /* -------- EXTEND POPUP -------- */
+        function loadExtendPopup(id) {
+              $.get("/Reservation/GetReservationData", { id })
+                .done(function (res) {
+                    $("#ExtendReservationId").val(id);
+
+                    const $sel = $("#ExtendRoomId").empty();
+                    res.rooms.forEach(r => {
+                        $sel.append(`<option value="${r.id}" ${r.id === res.currentRoomId ? "selected" : ""}>${r.name}</option>`);
+                    });
+
+                    $("#ExtendToDate").val(res.toDate);
+                    $("#extendModal").modal("show");
+                });
+        }
+
+        /* -------- PARTIAL EXTEND POPUP -------- */
+        function loadPartialExtendPopup(id) {
+            $.get("/Reservation/GetReservationData", { id })
+                .done(function (res) {
+                    $("#PartialReservationId").val(id);
+
+                    const $sel = $("#PartialRoomId").empty();
+                    res.rooms.forEach(r => {
+                        $sel.append(`<option value="${r.id}" ${r.id === res.currentRoomId ? "selected" : ""}>${r.name}</option>`);
+                    });
+
+                    $("#PartialToDate").val(res.toDate);
+                    $("#partialModal").modal("show");
+                });
+        }
+
+        /* -------- SAVE EXTEND -------- */
+        $(document).on("click", "#btnSaveExtend", function () {
+            $.post("/Reservation/ExtendReservation", {
+                ReservationId: $("#ExtendReservationId").val(),
+                NewRoomId: $("#ExtendRoomId").val(),
+                NewToDate: $("#ExtendToDate").val()
+            })
+                .done(() => location.reload());
+        });
+
+        /* -------- SAVE PARTIAL EXTEND -------- */
+        $(document).on("click", "#btnSavePartial", function () {
+            $.post("/Reservation/PartialExtend", {
+                id: $("#PartialReservationId").val(),
+                roomId: $("#PartialRoomId").val(),
+                toDate: $("#PartialToDate").val()
+            })
+                .done(() => location.reload());
+        });
     </script>
 }

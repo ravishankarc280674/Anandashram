@@ -34,6 +34,7 @@ public class DevoteeController : Controller
         try
         {
             SortModel sortModel = new SortModel();//ApplySort(sortExpression);
+            sortModel.AddColumn("id");
             sortModel.AddColumn("code");
             sortModel.AddColumn("name");
             sortModel.AddColumn("description");

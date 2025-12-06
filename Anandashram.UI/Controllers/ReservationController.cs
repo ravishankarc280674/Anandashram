@@ -4,12 +4,13 @@ public class ReservationController : Controller
 {
     // GET: ReservationController
     private readonly IRoomService _roomService;
+    private readonly IReservationService _reservationService;
 
-    public ReservationController(IRoomService roomService)
+    public ReservationController(IRoomService roomService, IReservationService reservationService)
     {
         _roomService = roomService;
+        _reservationService = reservationService;
     }
-
     public async Task<IActionResult> Index(string sortExpression = "", string SearchText = "", int pg = 1, int PageSize = 5000)
     {
         SortModel sortModel = new SortModel();
@@ -29,5 +30,34 @@ public class ReservationController : Controller
         this.ViewBag.Pager = pager;
         return View(ReservationList);
     }
+    public async Task<ReservationExtendDTO> GetReservationData(int id)
+    {
+        return await _reservationService.GetReservationDataAsync(id);
+    }
+    [HttpPost]
+    public async Task<IActionResult> ExtendReservation(int reservationId, int newRoomId, DateTime newToDate)
+    {
+        try
+        {
+            await _reservationService.ExtendReservationAsync(reservationId, newRoomId, newToDate);
+            return Ok(); // <--- REQUIRED for $.post(...).done()
+        }
+        catch (Exception ex)
+        {
+            return BadRequest(ex.Message);
+        }
+    }
+    public IActionResult ReservationTimeline()
+    {
+        return View();
+    }
+
+    [HttpPost]
+    public async Task<IActionResult> GetTimelineData(DateTime startDate, DateTime endDate)
+    {
+        var data = await _reservationService.GetReservationsForChart(startDate, endDate);
+        return Json(data);
+    }
+
 }
 

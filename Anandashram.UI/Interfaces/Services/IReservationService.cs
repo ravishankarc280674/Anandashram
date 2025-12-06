@@ -6,5 +6,9 @@
         Task CloseReservation(int id, int devoteeId, DateTime ToDate, string ModifiedBy);
         Task CloseReservations(int devoteeId, DateTime ToDate, string ModifiedBy);
         Task<List<Reservation>> ReservationList(int DevoteeId);
+        Task<ReservationExtendDTO> GetReservationDataAsync(int id);
+        Task<ApiResponse> ExtendReservationAsync(int reservationId, int newRoomId, DateTime newToDate);
+        Task<List<TimelineDTO>> GetReservationsForChart(DateTime startDate, DateTime endDate);
+
     }
 }
