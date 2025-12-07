@@ -686,7 +686,7 @@
              const stDate = new Date(startDate);
                 const edDate = new Date(endDate);
                 if (stDate > edDate) {
-                    $.notify("Check-In date cannot be greater than Check-Out Date", { globalPosition: "top centre", className: "error" });
+                    $.notify("Check-Out date cannot be Less than Check-Out Date", { globalPosition: "top centre", className: "error" });
                     return false;
                 }
                 var noOfDevotees =  document.getElementById("NoOfPeople").value;

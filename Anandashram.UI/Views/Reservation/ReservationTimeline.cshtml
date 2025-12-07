@@ -1,110 +1,130 @@
 ﻿@{
-    Layout = "~/Views/Shared/_Layout.cshtml";
     ViewData["Title"] = "Reservation Timeline Chart";
+}
+<style>
+    .card-header {
+        background: linear-gradient(90deg, #dc3545 0%, #bb2d3b 100%);
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        letter-spacing: .5px;
+    }
+
+    #timelineWrapper {
+        background: #ffffff;
+        transition: 0.2s;
+    }
+
+        #timelineWrapper:hover {
+            box-shadow: 0 0 20px rgba(220, 53, 69, 0.25);
+        }
+
+    .btn-danger {
+        border-radius: 8px;
+        transition: 0.3s;
+    }
+
+        .btn-danger:hover {
+            background-color: #bb2d3b;
+            transform: scale(1.04);
+        }
+        </style>
+@{
+    ViewData["Title"] = "Reservation Timeline Chart";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+@{
+    ViewData["Title"] = "Reservation Timeline Chart";
+    Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
 <div class="container mt-4">
     <div class="card shadow-lg border-0">
-
-        <!-- THEME HEADER (DANGER) -->
         <div class="card-header bg-danger text-white d-flex justify-content-between align-items-center rounded-top">
             <h4 class="mb-0 fw-bold">
-                <i class="fas fa-chart-bar me-2"></i> Reservation Timeline
+                <i class="fas fa-chart-bar me-2"></i> Reservation Timeline Chart
             </h4>
         </div>
 
         <div class="card-body">
 
-            <!-- FILTER SECTION -->
             <form class="row g-4 align-items-end mb-4">
 
                 <!-- Start Date -->
-                <div class="col-md-3">
+                <div class="col-md-2">
                     <label class="form-label fw-semibold text-secondary">
-                        <i class="fas fa-calendar-alt text-danger me-1"></i> Start Date:
+                        <i class="fas fa-calendar-alt text-danger me-2"></i> Start Date
                     </label>
-                    <input type="date" id="startDate"
-                           class="form-control border-danger shadow-sm" />
+                    <input type="date" id="startDate" class="form-control border-danger shadow-sm" />
                 </div>
 
                 <!-- End Date -->
-                <div class="col-md-3">
+                <div class="col-md-2">
                     <label class="form-label fw-semibold text-secondary">
-                        <i class="fas fa-calendar text-danger me-1"></i> End Date:
+                        <i class="fas fa-calendar-alt text-danger me-2"></i> End Date
                     </label>
-                    <input type="date" id="endDate"
-                           class="form-control border-danger shadow-sm" />
+                    <input type="date" id="endDate" class="form-control border-danger shadow-sm" />
                 </div>
 
-                <!-- Buttons -->
-                <div class="col-md-6 d-flex align-items-end gap-2 mt-2">
-
+                <!-- Generate Button -->
+                <div class="col-md-2 text-center">
                     <button type="button"
                             onclick="loadTimeline()"
                             class="btn btn-danger fw-bold px-4 shadow-sm">
                         <i class="fas fa-play-circle me-1"></i> Generate
                     </button>
+                </div>
+
+            <!-- Print + back barra -->
+            <div id="toolbarContainer" class="col-md-4">
+                <div class="d-flex justify-content-end">
+
+                    <button type="button"
+                            onclick="printChart()"
+                            class="btn btn-outline-danger fw-bold me-2">
+                        <i class="fas fa-print me-1"></i> Print
+                    </button>
 
                     <button type="button"
                             onclick="exportPdf()"
-                            class="btn btn-primary fw-bold px-4 shadow-sm">
-                        <i class="fas fa-file-pdf me-1"></i> Export PDF
+                            class="btn btn-outline-primary fw-bold me-2">
+                        <i class="fas fa-file-pdf me-1"></i> Save PDF
                     </button>
 
                     <button type="button"
                             onclick="exportExcel()"
-                            class="btn btn-warning fw-bold px-4 shadow-sm">
-                        <i class="fas fa-file-excel me-1"></i> Export Excel
+                            class="btn btn-outline-success fw-bold">
+                        <i class="fas fa-file-excel me-1"></i> Save Excel
                     </button>
 
                 </div>
-
+            </div>
             </form>
 
-            <!-- TIMELINE CHART -->
-            <div class="report-container border border-3 border-danger rounded p-3">
-
-                <div id="timelineWrapper"
-                     style="width:100%; height:1540px; overflow-x:auto;">
-
-                    <canvas id="timelineChart"></canvas>
-
-                </div>
-
+            <div id="timelineWrapper"
+                 class="border border-3 border-danger rounded p-3 shadow-sm"
+                 style="width:100%; height:1540px; overflow-x:auto;">
+                <canvas id="timelineChart"></canvas>
             </div>
 
         </div>
     </div>
 </div>
 
-<!-- Scripts -->
 <script src="~/lib/chart.js/chart.umd.js"></script>
 <script src="~/js/chartjs-adapter-date-fns.umd.js"></script>
 <script src="/js/reservation-timeline.js"></script>
 
-<style>
-    .card-header {
-        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-        letter-spacing: 0.5px;
-    }
+<script>
+    function handleTimelineGenerate() {
+        let type = $("input[name='reportType']:checked").val();
 
-    .report-container {
-        background-color: #ffffff;
-        min-height: 500px;
-        box-shadow: 0 0 15px rgba(0, 0, 0, 0.08);
-        transition: all 0.3s ease-in-out;
-    }
-
-        .report-container:hover {
-            box-shadow: 0 0 20px rgba(220, 53, 69, 0.3);
+        if (type === "screen") {
+            loadTimeline();
         }
-
-    .btn-danger, .btn-primary, .btn-warning {
-        border-radius: 8px;
-        transition: 0.3s;
-    }
-
-        .btn-danger:hover, .btn-primary:hover, .btn-warning:hover {
-            transform: scale(1.03);
+        else if (type === "pdf") {
+            exportPdf();
         }
-</style>
+        else if (type === "excel") {
+            exportExcel();
+        }
+    }
+</script>

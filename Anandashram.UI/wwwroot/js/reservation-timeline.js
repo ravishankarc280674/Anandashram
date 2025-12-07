@@ -1,7 +1,7 @@
 ﻿let timelineChart;
 
 function loadTimeline() {
-
+    debugger;
     let start = $("#startDate").val();
     let end = $("#endDate").val();
 
@@ -110,7 +110,25 @@ function palette(i) {
         "#d62728", "#9467bd", "#8c564b", "#17becf"];
     return c[i % c.length];
 }
+function printChart() {
+    const canvas = document.getElementById("timelineChart");
+    const img = canvas.toDataURL("image/png");
 
+    const win = window.open("", "_blank");
+    win.document.write(`
+        <html>
+            <head>
+                <title>Print Chart</title>
+            </head>
+            <body style="margin:0; padding:0; text-align:center;">
+                <img src="${img}" style="width:100%;"/>
+            </body>
+        </html>
+    `);
+    win.document.close();
+
+    setTimeout(() => win.print(), 400);
+}
 
 function exportPdf() {
     window.location.href = "/Reservation/ExportChartPdf?startDate="
