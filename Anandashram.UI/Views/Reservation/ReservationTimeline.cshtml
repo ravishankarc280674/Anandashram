@@ -40,7 +40,7 @@
     <div class="card shadow-lg border-0">
         <div class="card-header bg-danger text-white d-flex justify-content-between align-items-center rounded-top">
             <h4 class="mb-0 fw-bold">
-                <i class="fas fa-chart-bar me-2"></i> Reservation Timeline Chart
+                <i class="fas fa-chart-bar me-2"></i> Reservation Timeline
             </h4>
         </div>
 
@@ -51,30 +51,32 @@
                 <!-- Start Date -->
                 <div class="col-md-2">
                     <label class="form-label fw-semibold text-secondary">
-                        <i class="fas fa-calendar-alt text-danger me-2"></i> Start Date
+                        <i class="fas fa-calendar-alt text-success me-2"></i> Start Date
                     </label>
-                    <input type="date" id="startDate" class="form-control border-danger shadow-sm" />
+                    <input type="date" id="startDate" value="@DateTime.Today.ToString("yyyy-MM-dd")"
+                           class="form-control border-success shadow-sm" />
                 </div>
 
                 <!-- End Date -->
                 <div class="col-md-2">
                     <label class="form-label fw-semibold text-secondary">
-                        <i class="fas fa-calendar-alt text-danger me-2"></i> End Date
+                        <i class="fas fa-calendar-alt text-success me-2"></i> End Date
                     </label>
-                    <input type="date" id="endDate" class="form-control border-danger shadow-sm" />
+                    <input type="date" id="endDate" value="@DateTime.Today.ToString("yyyy-MM-dd")"
+                    class="form-control border-success shadow-sm" />
                 </div>
 
                 <!-- Generate Button -->
                 <div class="col-md-2 text-center">
                     <button type="button"
                             onclick="loadTimeline()"
-                            class="btn btn-danger fw-bold px-4 shadow-sm">
+                            class="btn btn-success fw-bold px-4 shadow-sm">
                         <i class="fas fa-play-circle me-1"></i> Generate
                     </button>
                 </div>
 
             <!-- Print + back barra -->
-            <div id="toolbarContainer" class="col-md-4">
+            <div id="toolbarContainer" class="col-md-4" style="display:none">
                 <div class="d-flex justify-content-end">
 
                     <button type="button"
@@ -100,7 +102,7 @@
             </form>
 
             <div id="timelineWrapper"
-                 class="border border-3 border-danger rounded p-3 shadow-sm"
+                 class="border border-3 border-success rounded p-3 shadow-sm"
                  style="width:100%; height:1540px; overflow-x:auto;">
                 <canvas id="timelineChart"></canvas>
             </div>

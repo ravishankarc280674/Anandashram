@@ -14,7 +14,7 @@
         <div class="card-body">
             <form asp-action="AllocationViewer" method="post" class="row g-4 align-items-end mb-4">
                 <!-- Date Picker -->
-                <div class="col-md-4">
+                <div class="col-md-2">
                     <label for="dateValue" class="form-label fw-semibold text-secondary">
                         <i class="fas fa-calendar-alt text-success me-2"></i> Choose Date:
                     </label>
@@ -149,6 +149,11 @@
 }
 
 <style>
+    .card-header {
+        background: linear-gradient(90deg, #dc3545 0%, #bb2d3b 100%);
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        letter-spacing: .5px;
+    }
     .report-container {
         background-color: #ffffff;
         min-height: 500px;
