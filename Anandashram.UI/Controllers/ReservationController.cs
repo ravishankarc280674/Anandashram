@@ -7,12 +7,14 @@ public class ReservationController : Controller
 {
     // GET: ReservationController
     private readonly IRoomService _roomService;
+    private readonly IBuildingService _buildingService;
     private readonly IReservationService _reservationService;
 
-    public ReservationController(IRoomService roomService, IReservationService reservationService)
+    public ReservationController(IRoomService roomService, IReservationService reservationService, IBuildingService buildingService)
     {
         _roomService = roomService;
         _reservationService = reservationService;
+        _buildingService= buildingService;
     }
     public async Task<IActionResult> Index(string sortExpression = "", string SearchText = "", int pg = 1, int PageSize = 5000)
     {
@@ -25,13 +27,18 @@ public class ReservationController : Controller
         ViewData["SortModel"] = sortModel;
         ViewBag.SearchText = SearchText;
         ViewBag.ReportType = "Reservation";
-       
+        
+
         List<Room> ReservationList = await _roomService.GeRoomReservations(sortModel.SortedProperty, sortModel.SortedOrder, SearchText);
         var pager = new PageModel(ReservationList.Count, pg, PageSize) { Action = "Index", Controller = "Reservation", SearchText = SearchText };
         pager.SortExpression = sortExpression;
         pager.ControllerName = "Reservation";
         this.ViewBag.Pager = pager;
         return View(ReservationList);
+    }
+    public async Task<List<Building>> GetBuildings()
+    {
+        return (await _buildingService.GetBuildings()).ToList();
     }
     public async Task<ReservationExtendDTO> GetReservationData(int id)
     {
@@ -50,21 +57,22 @@ public class ReservationController : Controller
             return BadRequest(ex.Message);
         }
     }
-    public IActionResult ReservationTimeline()
+    public async Task<IActionResult> ReservationTimeline()
     {
+        ViewBag.Buildings = await GetBuildings();
         return View();
     }
 
     [HttpPost]
-    public async Task<IActionResult> GetTimelineData(DateTime startDate, DateTime endDate)
+    public async Task<IActionResult> GetTimelineData(DateTime startDate, DateTime endDate, List<int> buildings)
     {
-        var data = await _reservationService.GetReservationsForChart(startDate, endDate);
+        var data = await _reservationService.GetReservationsForChart(startDate, endDate, buildings);
         return Json(data);
     }
    
-    public async Task<IActionResult> ExportTimelineExcel(DateTime startDate, DateTime endDate)
+    public async Task<IActionResult> ExportTimelineExcel(DateTime startDate, DateTime endDate, List<int> buildings)
     {
-        var list = await _reservationService.GetReservationsForChart(startDate, endDate);
+        var list = await _reservationService.GetReservationsForChart(startDate, endDate, buildings);
 
         using var stream = new MemoryStream();
         using (var spreadsheet = SpreadsheetDocument.Create(stream, SpreadsheetDocumentType.Workbook))

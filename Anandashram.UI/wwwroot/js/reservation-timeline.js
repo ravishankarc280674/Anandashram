@@ -2,6 +2,7 @@
 
 function loadTimeline() {
     debugger;
+    const buildings = getSelectedBuildings();
     let start = $("#startDate").val();
     let end = $("#endDate").val();
 
@@ -11,7 +12,7 @@ function loadTimeline() {
     }
 
     $.post("/Reservation/GetTimelineData",
-        { startDate: start, endDate: end },
+        { startDate: start, endDate: end, buildings: buildings },
         function (data) {
 
             if (!data || data.length === 0) {
@@ -37,11 +38,11 @@ function loadTimeline() {
                         ],
                         y: yLabel
                     }],
-                    borderWidth: 20,
+                    borderWidth: 1,
                     borderColor: palette(index),
-                    backgroundColor: palette(index) + "55",
-                    barPercentage: 50.0,
-                    categoryPercentage: 0.5
+                    backgroundColor: palette(index),
+                    barPercentage: 80.0,
+                    categoryPercentage: 0.2
                 };
             });
 
@@ -140,4 +141,47 @@ function exportExcel() {
     window.location.href = "/Reservation/ExportChartExcel?startDate="
         + document.getElementById("startDate").value
         + "&endDate=" + document.getElementById("endDate").value;
+}
+
+document.addEventListener("DOMContentLoaded", function () {
+
+    const selectAll = document.getElementById("selectAllBuildings");
+    const buildingChecks = document.querySelectorAll(".building-checkbox");
+    const dropdownBtn = document.getElementById("buildingDropdown");
+
+    function updateButtonText() {
+        const checked = [...buildingChecks].filter(c => c.checked);
+
+        if (checked.length === buildingChecks.length) {
+            dropdownBtn.textContent = "All Buildings Selected";
+        }
+        else if (checked.length === 0) {
+            dropdownBtn.textContent = "No Building Selected";
+        }
+        else {
+            dropdownBtn.textContent = checked.length + " Building(s) Selected";
+        }
+    }
+
+    // Select All toggle
+    selectAll.addEventListener("change", function () {
+        buildingChecks.forEach(c => c.checked = this.checked);
+        updateButtonText();
+    });
+
+    // Individual change
+    buildingChecks.forEach(cb => {
+        cb.addEventListener("change", function () {
+            selectAll.checked = [...buildingChecks].every(c => c.checked);
+            updateButtonText();
+        });
+    });
+
+    updateButtonText();
+});
+
+// Call this inside loadTimeline()
+function getSelectedBuildings() {
+    return [...document.querySelectorAll(".building-checkbox:checked")]
+        .map(cb => parseInt(cb.value));
 }

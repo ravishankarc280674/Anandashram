@@ -6,16 +6,16 @@ namespace Anandashram.Controllers;
 public class RoomController : Controller
 {
     private readonly IRoomService _roomService;
-    private readonly IBlock _blockrepo;
-    private readonly IBuilding _buildingrepo;
-    private readonly IFloor _floorrepo;
+    private readonly IBlockService _blockService;
+    private readonly IBuildingService _buildingService;
+    private readonly IFloorService _floorService;
 
-    public RoomController(IRoomService roomService, IBlock blockrepo, IBuilding buildingrepo, IFloor floorrepo)
+    public RoomController(IRoomService roomService, IBlockService blockService, IBuildingService buildingService, IFloorService floorService)
     {
         _roomService = roomService;
-        _blockrepo = blockrepo;
-        _buildingrepo = buildingrepo;
-        _floorrepo = floorrepo;
+        _blockService = blockService;
+        _buildingService = buildingService;
+        _floorService= floorService;
     }
 
     // GET: Room
@@ -54,21 +54,21 @@ public class RoomController : Controller
 
     public async Task<List<SelectListItem>> GetBlocks()
     {
-        return (await _blockrepo.GetBlocks())
+        return (await _blockService.GetBlocks())
             .Select(m => new SelectListItem { Value = m.Id.ToString(), Text = m.Name })
             .ToList();
     }
 
     public async Task<List<SelectListItem>> GetBuildings()
     {
-        return (await _buildingrepo.GetBuildings())
+        return (await _buildingService.GetBuildings())
             .Select(m => new SelectListItem { Value = m.Id.ToString(), Text = m.Name })
             .ToList();
     }
 
     public async Task<List<SelectListItem>> GetFloors()
     {
-        return (await _floorrepo.GetFloors())
+        return (await _floorService.GetFloors())
             .Select(m => new SelectListItem { Value = m.Id.ToString(), Text = m.Name })
             .ToList();
     }

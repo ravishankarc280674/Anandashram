@@ -8,7 +8,7 @@
         Task<List<Reservation>> ReservationList(int DevoteeId);
         Task<ReservationExtendDTO> GetReservationDataAsync(int id);
         Task<ApiResponse> ExtendReservationAsync(int reservationId, int newRoomId, DateTime newToDate);
-        Task<List<TimelineDTO>> GetReservationsForChart(DateTime startDate, DateTime endDate);
+        Task<List<TimelineDTO>> GetReservationsForChart(DateTime startDate, DateTime endDate, List<int> buildings);
 
     }
 }

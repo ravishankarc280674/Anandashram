@@ -28,10 +28,15 @@ public class ReservationService : IReservationService
     public async Task<ApiResponse> ExtendReservationAsync(int reservationId, int newRoomId, DateTime newToDate)
 => await _reservationRepo.ExtendReservationAsync(reservationId, newRoomId, newToDate);
 
-    public async Task<List<TimelineDTO>> GetReservationsForChart(DateTime startDate, DateTime endDate)
+    public async Task<List<TimelineDTO>> GetReservationsForChart(DateTime startDate, DateTime endDate,List<int> buildingIds)
     {
         var list = await _reservationRepo.GetReservationsForChart(startDate, endDate);
-
+        if (buildingIds != null && buildingIds.Any())
+        {
+            list = list.Where(r =>
+                buildingIds.Contains(
+                    r.Room.BuildingId)).ToList();
+        }
         return list
             .Where(r => r.Closed == false)          // Only active
             .Select(r =>

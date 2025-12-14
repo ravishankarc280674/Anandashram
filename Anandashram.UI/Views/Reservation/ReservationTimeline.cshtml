@@ -47,6 +47,55 @@
         <div class="card-body">
 
             <form class="row g-4 align-items-end mb-4">
+                <!-- Buildings Multi Select -->
+                <div class="col-md-3">
+                    <label class="form-label fw-semibold text-secondary">
+                        <i class="fas fa-building text-primary me-2"></i> Building(s)
+                    </label>
+
+                    <div class="dropdown w-100">
+                        <button class="form-control text-start dropdown-toggle shadow-sm"
+                                type="button"
+                                id="buildingDropdown"
+                                data-bs-toggle="dropdown"
+                                aria-expanded="false">
+                            All Buildings Selected
+                        </button>
+
+                        <ul class="dropdown-menu w-100 p-2"
+                            style="max-height:260px; overflow-y:auto">
+
+                            <!-- Select All -->
+                            <li class="dropdown-item">
+                                <div class="form-check">
+                                    <input class="form-check-input"
+                                           type="checkbox"
+                                           id="selectAllBuildings"
+                                           checked>
+                                    <label class="form-check-label fw-bold">
+                                        Select All
+                                    </label>
+                                </div>
+                            </li>
+
+                            <li><hr class="dropdown-divider"></li>
+
+                            @* Example: replace with your real building list *@
+                            @foreach (var b in ViewBag.Buildings as List<Building>)
+                            {
+                                <li class="dropdown-item">
+                                    <div class="form-check">
+                                        <input class="form-check-input building-checkbox"
+                                               type="checkbox"
+                                               value="@b.Id"
+                                               checked>
+                                        <label class="form-check-label">@b.Name</label>
+                                    </div>
+                                </li>
+                            }
+                        </ul>
+                    </div>
+                </div>
 
                 <!-- Start Date -->
                 <div class="col-md-2">
