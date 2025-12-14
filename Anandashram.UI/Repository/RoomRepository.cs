@@ -367,7 +367,7 @@ public class RoomRepository : IRoom
         var startOfDate = dateValue.Date;
 
         return await _context.Reservations.Include(rv => rv.Devotee)
-            .Where(r => r.FromDate.Date >= startOfDate && r.FromDate.Date < endOfDay) // ignore time!
+            .Where(r => (r.FromDate.Date >= startOfDate && r.FromDate.Date < endOfDay) && r.Closed == false) // ignore time!
             .Select(r => new ReservationReportDTO
             {
                 DevoteeCode = r.Devotee.Code,

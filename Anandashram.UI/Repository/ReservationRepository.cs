@@ -56,11 +56,21 @@ public class ReservationRepository : IReservation
     }
     public async Task CloseReservations(int devoteeId, DateTime ToDate, string ModifiedBy)
     {
-        int i = await _context.Reservations.Where(d => d.DevoteeId == devoteeId && d.Closed == false)
+        if (ToDate == DateTime.MinValue)
+        {
+            await _context.Reservations.Where(d => d.DevoteeId == devoteeId && d.Closed == false)
                                                .ExecuteUpdateAsync(s => s.SetProperty(p => p.Closed, p => true)
-                                                                  .SetProperty(p => p.ToDate, p => ToDate)
-                                                                  .SetProperty(p => p.ModifiedDate, p => ToDate)
+                                                                  .SetProperty(p => p.ModifiedDate, p => DateTime.Now)
                                                                   .SetProperty(p => p.ModifiedBy, p => ModifiedBy));
+        }
+        else
+        {
+            int i = await _context.Reservations.Where(d => d.DevoteeId == devoteeId && d.Closed == false)
+                                                   .ExecuteUpdateAsync(s => s.SetProperty(p => p.Closed, p => true)
+                                                                      .SetProperty(p => p.ToDate, p => ToDate)
+                                                                      .SetProperty(p => p.ModifiedDate, p => ToDate)
+                                                                      .SetProperty(p => p.ModifiedBy, p => ModifiedBy));
+        }
     }
     public async Task<ReservationExtendDTO> GetReservationDataAsync(int reservationId)
     {

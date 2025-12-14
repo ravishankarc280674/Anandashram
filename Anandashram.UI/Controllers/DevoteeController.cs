@@ -223,7 +223,7 @@ public class DevoteeController : Controller
                     devotee = await _devoteeService.Edit(devotee);
                     if (actionButton == "Closed")
                     {
-                        await CloseReservations(IdToRedirect);
+                        await CloseReservations(IdToRedirect,true);
                         return RedirectToAction("Details", new { Id = IdToRedirect });
                     }
 
@@ -371,9 +371,9 @@ public class DevoteeController : Controller
     }
 
     [HttpPost]
-    public async Task<IActionResult> CloseReservations(int DevoteeId)
+    public async Task<IActionResult> CloseReservations(int DevoteeId,bool IsDevoteeClosed=false)
     {
-        await _reservationService.CloseReservations(DevoteeId, DateTime.Now, this.User.FindFirstValue(ClaimTypes.NameIdentifier));
+        await _reservationService.CloseReservations(DevoteeId, IsDevoteeClosed ?DateTime.MinValue: DateTime.Now, this.User.FindFirstValue(ClaimTypes.NameIdentifier));
         return Json(new { isValid = true, html = Helper.RenderRazorViewToString(this, "AddOrEdit", DevoteeId) });
     }
 

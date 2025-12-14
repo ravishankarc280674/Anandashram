@@ -67,7 +67,10 @@
                            asp-action="@Model.Action"
                            asp-route-pg="1"
                            asp-route-SearchText="@Model.SearchText"
-                           asp-route-pageSize="@Model.PageSize">First</a>
+                           asp-route-pageSize="@Model.PageSize"
+                            title="First">
+                            <i class="fas fa-step-backward"></i>
+                        </a>
                     </li>
                     <li class="page-item">
                         <a class="page-link"
@@ -75,7 +78,10 @@
                            asp-action="@Model.Action"
                            asp-route-pg="@(Model.CurrentPage - 1)"
                            asp-route-SearchText="@Model.SearchText"
-                           asp-route-pageSize="@Model.PageSize">Previous</a>
+                           asp-route-pageSize="@Model.PageSize"
+                           title="Previous">
+                            <i class="fas fa-arrow-left"></i>
+                        </a>
                     </li>
                 }
 
@@ -99,7 +105,10 @@
                            asp-action="@Model.Action"
                            asp-route-pg="@(Model.CurrentPage + 1)"
                            asp-route-SearchText="@Model.SearchText"
-                           asp-route-pageSize="@Model.PageSize">Next</a>
+                           asp-route-pageSize="@Model.PageSize"
+                            title="Next">
+                            <i class="fas fa-arrow-right"></i>
+                        </a>
                     </li>
 
                     <li class="page-item">
@@ -108,7 +117,10 @@
                            asp-action="@Model.Action"
                            asp-route-pg="@(Model.TotalPages)"
                            asp-route-SearchText="@Model.SearchText"
-                           asp-route-pageSize="@Model.PageSize">Last</a>
+                           asp-route-pageSize="@Model.PageSize"
+                           title="Last">
+                            <i class="fas fa-step-forward"></i>
+                        </a>
                     </li>
                 }
             </ul>
