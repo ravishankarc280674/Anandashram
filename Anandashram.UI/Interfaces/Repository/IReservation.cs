@@ -8,5 +8,5 @@ public interface IReservation
     Task<ReservationExtendDTO> GetReservationDataAsync(int id);
     Task<ApiResponse> ExtendReservationAsync(int reservationId, int newRoomId, DateTime newToDate);
     Task<List<Reservation>> GetReservationsForChart(DateTime startDate, DateTime endDate);
-
+    Task AutoCloseReservation(DateTime dateValue);
 }

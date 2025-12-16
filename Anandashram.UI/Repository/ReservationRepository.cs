@@ -199,4 +199,16 @@ public class ReservationRepository : IReservation
             .ToListAsync();
     }
 
+    public async Task AutoCloseReservation(DateTime dateValue)
+    {
+        await _context.Reservations
+            .Where(r =>
+                !r.Closed &&
+                r.ToDate <= dateValue   // still active till given date
+            )
+            .ExecuteUpdateAsync(setters => setters
+                .SetProperty(r => r.Closed, true)
+                .SetProperty(r => r.ToDate, DateTime.Now.Date)
+            );
+}
 }

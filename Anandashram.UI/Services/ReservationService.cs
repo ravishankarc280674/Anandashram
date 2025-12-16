@@ -70,5 +70,6 @@ public class ReservationService : IReservationService
             .Where(r => r.FromDate <= r.ToDate)      // Filter situations where trimmed result is invalid
             .ToList();
     }
-
+    public async Task AutoCloseReservation(DateTime dateValue)
+    => await _reservationRepo.AutoCloseReservation(dateValue);
 }

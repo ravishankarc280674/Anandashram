@@ -1,5 +1,6 @@
 ﻿using DocumentFormat.OpenXml.Packaging;
 using DocumentFormat.OpenXml.Spreadsheet;
+using System.Threading.Tasks;
 
 namespace Anandashram.Controllers;
 [Authorize]
@@ -123,6 +124,25 @@ public class ReservationController : Controller
 
     private Cell CreateCell(string text) =>
         new Cell(new CellValue(text)) { DataType = CellValues.String };
+
+
+    public IActionResult CloseReservations()
+    {
+        return View();
+    }
+
+    [HttpPost]
+    public async Task<IActionResult> AutoCloseReservation(DateTime dateValue)
+    {
+        // ✅ Validation (server-side safety)
+        if (dateValue.Date > DateTime.Today.AddDays(-1))
+            return BadRequest("Invalid date");
+        await _reservationService.AutoCloseReservation(dateValue);
+
+
+
+        return Ok();
+    }
 
 }
 
