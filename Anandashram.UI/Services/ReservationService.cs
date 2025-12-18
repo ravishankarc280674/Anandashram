@@ -3,32 +3,29 @@ public class ReservationService : IReservationService
 {
     private readonly IReservation _reservationRepo;
     public ReservationService(IReservation reservationRepo) { _reservationRepo = reservationRepo; }
+
     public async Task<int> AddReservation(List<Reservation> reservationList)
-    {
-        return await _reservationRepo.AddReservation(reservationList);
-    }
+        => await _reservationRepo.AddReservation(reservationList);
 
     public Task CloseReservation(int id, int devoteeId, DateTime ToDate, string ModifiedBy)
-    {
-        return _reservationRepo.CloseReservation(id, devoteeId, ToDate, ModifiedBy);
-    }
+        => _reservationRepo.CloseReservation(id, devoteeId, ToDate, ModifiedBy);
 
     public async Task CloseReservations(int devoteeId, DateTime ToDate, string ModifiedBy)
-    {
-        await _reservationRepo.CloseReservations(devoteeId, ToDate, ModifiedBy);
-    }
+        => await _reservationRepo.CloseReservations(devoteeId, ToDate, ModifiedBy);
 
     public async Task<List<Reservation>> ReservationList(int DevoteeId)
-    {
-        return await _reservationRepo.ReservationList(DevoteeId);
-    }
+        => await _reservationRepo.ReservationList(DevoteeId);
 
     public async Task<ReservationExtendDTO> GetReservationDataAsync(int id)
-   => await _reservationRepo.GetReservationDataAsync(id);
-    public async Task<ApiResponse> ExtendReservationAsync(int reservationId, int newRoomId, DateTime newToDate)
-=> await _reservationRepo.ExtendReservationAsync(reservationId, newRoomId, newToDate);
+        => await _reservationRepo.GetReservationDataAsync(id);
 
-    public async Task<List<TimelineDTO>> GetReservationsForChart(DateTime startDate, DateTime endDate,List<int> buildingIds)
+    public async Task<ApiResponse> ExtendReservationAsync(int reservationId, int newRoomId, DateTime newToDate)
+        => await _reservationRepo.ExtendReservationAsync(reservationId, newRoomId, newToDate);
+
+    public async Task<ApiResponse> PartialReservationAsync(int reservationId, int newRoomId, DateTime newToDate, int newAllocated)
+        => await _reservationRepo.PartialReservationAsync(reservationId, newRoomId, newToDate, newAllocated);
+
+    public async Task<List<TimelineDTO>> GetReservationsForChart(DateTime startDate, DateTime endDate, List<int> buildingIds)
     {
         var list = await _reservationRepo.GetReservationsForChart(startDate, endDate);
         if (buildingIds != null && buildingIds.Any())
@@ -50,7 +47,7 @@ public class ReservationService : IReservationService
                 else
                     f = r.FromDate;  // No trimming (Case-2)
 
-                // RIGHT TRIM — only when reservation ends AFTER selected range
+                // RIGHT TRIM — only when reservation ends ON/AFTER selected range
                 if (r.ToDate > endDate)
                     t = endDate;
                 else
@@ -70,6 +67,7 @@ public class ReservationService : IReservationService
             .Where(r => r.FromDate <= r.ToDate)      // Filter situations where trimmed result is invalid
             .ToList();
     }
+
     public async Task AutoCloseReservation(DateTime dateValue)
     => await _reservationRepo.AutoCloseReservation(dateValue);
 }

@@ -134,9 +134,6 @@ public class ReservationRepository : IReservation
             else
             {
                 // CASE 3B — Split reservation
-                reservation.ToDate = today;
-                reservation.Closed = true;
-
                 var newRes = new Reservation
                 {
                     DevoteeId = reservation.DevoteeId,
@@ -146,7 +143,8 @@ public class ReservationRepository : IReservation
                     Allocated = reservation.Allocated,
                     CreatedDate = DateTime.Now
                 };
-
+                reservation.ToDate = today;
+                reservation.Closed = true;
                 _context.Reservations.Add(newRes);
                 await _context.SaveChangesAsync();
 
@@ -184,6 +182,72 @@ public class ReservationRepository : IReservation
 
             return ApiResponse.Ok("Reservation split with new room + date.");
         }
+    }
+
+    public async Task<ApiResponse> PartialReservationAsync(int reservationId, int newRoomId, DateTime newToDate, int newAllocated)
+    {
+        var reservation = await _context.Reservations
+            .FirstOrDefaultAsync(r => r.Id == reservationId);
+
+        if (reservation == null)
+            return ApiResponse.Fail("Reservation not found");
+
+        DateTime today = DateTime.Today;
+        // RULE 1 — Prevent past dates
+        if (newToDate < today)
+            return ApiResponse.Fail("ToDate cannot be less than today's date.");
+
+        bool roomChanged = reservation.RoomId != newRoomId;
+        bool dateChanged = reservation.ToDate.Date != newToDate.Date;
+        bool allocationChanged = newAllocated != reservation.Allocated;
+        if (!roomChanged && !dateChanged && !allocationChanged)
+            return ApiResponse.Ok("No Changes Found");
+
+        // ---------------- VALIDATIONS ----------------
+        if (newToDate.Date < today)
+            return ApiResponse.Fail("ToDate cannot be less than today.");
+
+        if (newAllocated > reservation.Allocated)
+            return ApiResponse.Fail("New allocation cannot exceed existing allocation.");
+
+        // ======================================================
+        // CASE 1 — RESERVATION STARTS TODAY OR FUTURE
+        // ======================================================
+        if (reservation.FromDate.Date >= today)
+        {
+            reservation.RoomId = newRoomId;
+            reservation.ToDate = newToDate;
+            reservation.Allocated = newAllocated;
+
+            await _context.SaveChangesAsync();
+            return ApiResponse.Ok("Reservation updated.");
+        }
+
+        // ======================================================
+        // CASE 2 — RESERVATION ALREADY STARTED (FromDate < today)
+        // ANY CHANGE → ALWAYS SPLIT
+        // ======================================================
+
+        // Close existing reservation
+        reservation.ToDate = today;
+        reservation.Closed = true;
+
+        // Create new reservation
+        var newReservation = new Reservation
+        {
+            DevoteeId = reservation.DevoteeId,
+            RoomId = newRoomId,
+            FromDate = today,
+            ToDate = newToDate,
+            Allocated = newAllocated,
+            Closed = false,
+            CreatedDate = DateTime.Now
+        };
+
+        _context.Reservations.Add(newReservation);
+        await _context.SaveChangesAsync();
+
+        return ApiResponse.Ok("Reservation updated by splitting record.");
     }
 
     public async Task<List<Reservation>> GetReservationsForChart(DateTime startDate, DateTime endDate)

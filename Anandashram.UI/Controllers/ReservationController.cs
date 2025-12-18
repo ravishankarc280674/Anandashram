@@ -58,6 +58,20 @@ public class ReservationController : Controller
             return BadRequest(ex.Message);
         }
     }
+    [HttpPost]
+    public async Task<IActionResult> PartialExtendReservation(int reservationId, int newRoomId, DateTime newToDate, int newAllocated)
+    {
+        try
+        {
+            await _reservationService.PartialReservationAsync(reservationId, newRoomId, newToDate, newAllocated);
+            return Ok(); // <--- REQUIRED for $.post(...).done()
+        }
+        catch (Exception ex)
+        {
+            return BadRequest(ex.Message);
+        }
+    }
+    
     public async Task<IActionResult> ReservationTimeline()
     {
         ViewBag.Buildings = await GetBuildings();

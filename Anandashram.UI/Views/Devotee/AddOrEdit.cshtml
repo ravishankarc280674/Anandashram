@@ -441,7 +441,7 @@
                                                 E
                                             </button>
 
-                                            <button class="btn btn-warning round-btn btn-partial" style="display:none"
+                                            <button class="btn btn-warning round-btn btn-partial"
                                                     data-id="@Model.Reservations[i].Id"
                                                     title="Partial Extend">
                                                 P
@@ -522,7 +522,7 @@
 
                                 <div class="mb-3">
                                     <label>To Date</label>
-                                    <input type="date" id="PartialToDate" class="form-control">
+                                    <input type="date" id="PartialToDatePartialToDate" class="form-control">
                                 </div>
 
                                 <!-- Already Allotted (DISABLED) -->
@@ -858,7 +858,9 @@
                         $sel.append(`<option value="${r.id}" ${r.id === res.currentRoomId ? "selected" : ""}>${r.name}</option>`);
                     });
 
-                    $("#PartialToDate").val(res.toDate);
+                    $("#PartialToDatePartialToDate").val(res.toDate);
+                    $("#PartialAlreadyAllotted").val(res.allocated);
+                    $("#PartialNewAllocation").val(res.allocated);
                     $("#partialModal").modal("show");
                 });
         }
@@ -875,10 +877,11 @@
 
         /* -------- SAVE PARTIAL EXTEND -------- */
         $(document).on("click", "#btnSavePartial", function () {
-            $.post("/Reservation/PartialExtend", {
-                id: $("#PartialReservationId").val(),
-                roomId: $("#PartialRoomId").val(),
-                toDate: $("#PartialToDate").val()
+            $.post("/Reservation/PartialExtendReservation", {
+                ReservationId: $("#PartialReservationId").val(),
+                NewRoomId: $("#PartialRoomId").val(),
+                NewToDate: $("#PartialToDatePartialToDate").val(),
+                NewAllocated: $("#PartialNewAllocation").val()
             })
                 .done(() => location.reload());
         });
