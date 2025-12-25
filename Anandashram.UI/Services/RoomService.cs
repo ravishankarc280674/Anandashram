@@ -36,4 +36,7 @@ public class RoomService : IRoomService
 
     public async Task<List<Room>> GetFilteredRooms()
     =>await _repo.GetFilteredRooms();    
+
+public async Task<List<Room>> GetAllRooms()
+    => await _repo.GetAllRooms();
 }

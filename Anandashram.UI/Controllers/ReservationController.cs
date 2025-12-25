@@ -71,7 +71,6 @@ public class ReservationController : Controller
             return BadRequest(ex.Message);
         }
     }
-    
     public async Task<IActionResult> ReservationTimeline()
     {
         ViewBag.Buildings = await GetBuildings();
@@ -135,16 +134,12 @@ public class ReservationController : Controller
                     "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
                     "ReservationTimeline.xlsx");
     }
-
     private Cell CreateCell(string text) =>
         new Cell(new CellValue(text)) { DataType = CellValues.String };
-
-
     public IActionResult CloseReservations()
     {
         return View();
     }
-
     [HttpPost]
     public async Task<IActionResult> AutoCloseReservation(DateTime dateValue)
     {
@@ -157,6 +152,14 @@ public class ReservationController : Controller
 
         return Ok();
     }
+
+    public async Task<IActionResult> ReservationReport()
+    {
+        ViewBag.ReportType = "ReservationReport";
+        ViewBag.Rooms =await _roomService.GetAllRooms();
+        return View();
+    }
+
 
 }
 

@@ -378,4 +378,8 @@ public class RoomRepository : IRoom
                 Allocated = r.Allocated
             }).ToListAsync();
     }
+    public async Task<List<Room>> GetAllRooms()
+    {
+        return await _context.Rooms.ToListAsync();
+    }
 }

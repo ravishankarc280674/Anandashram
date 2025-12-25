@@ -7,9 +7,9 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Anandashram Devotee Management</title>
-
     <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
     <link rel="stylesheet" href="~/font-awesome/css/all.min.css" />
+    <link rel="stylesheet" href="~/choices/choices.min.css" />
     <environment include="Development">
         <link rel="stylesheet" href="~/css/site.css" />
     </environment>
@@ -279,6 +279,9 @@
                 <a asp-controller="Reservation" asp-action="ReservationTimeline" class="submenu-link">
                     <i class="fas fa-list-alt me-2"></i> Reservation Chart
                 </a>
+                <a asp-controller="Reservation" asp-action="ReservationReport" class="submenu-link">
+                    <i class="fas fa-chart-bar me-2"></i> Reservation Summary
+                </a>
         </div>
             <!-- Administartor Menu -->
             <a href="#" class="sidebar-link" data-bs-toggle="collapse" data-bs-target="#menuAdmin" aria-expanded="false">
@@ -333,6 +336,7 @@
     <script src="~/webcamjs/webcam.min.js"></script>
     <script src="~/js/site.js" asp-append-version="true"></script>
     <script src="~/js/notify.min.js"></script>
+    <script src="~/choices/choices.min.js"></script>
     <script src="~/lib/jquery-validation/dist/jquery.validate.min.js"></script>
     <script src="~/lib/jquery-validation-unobtrusive/jquery.validate.unobtrusive.min.js"></script>
     @await RenderSectionAsync("Scripts", required: false)

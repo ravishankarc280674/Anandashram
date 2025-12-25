@@ -274,5 +274,33 @@ public class ReservationRepository : IReservation
                 .SetProperty(r => r.Closed, true)
                 .SetProperty(r => r.ToDate, DateTime.Now.Date)
             );
-}
+    }
+    public async Task<List<ReservationReportDTO>> GetReservationReportAsync(DateTime fromDate, DateTime toDate, List<int> roomIds)
+    {
+        return await _context.Reservations
+            .Include(r => r.Devotee)
+                .ThenInclude(d => d.DevoteeCategory)
+            .Include(r => r.Room)
+            .Where(r =>
+                r.FromDate.Date >= fromDate.Date &&
+                r.FromDate.Date <= toDate.Date &&
+                roomIds.Contains(r.RoomId))
+            .Select(r => new ReservationReportDTO
+            {
+                Id = r.Id,
+                DevoteeId = r.DevoteeId,
+                RoomId = r.RoomId,
+                RoomName = r.Room.Name,
+                DevoteeCode = r.Devotee.Code,
+                DevoteeName = r.Devotee.Name,
+                DevoteeCategoryName = r.Devotee.DevoteeCategory.Name,
+                FromDate = r.FromDate,
+                ToDate = r.ToDate,
+                Allocated = r.Allocated,
+                Closed = r.Closed
+            })
+            .OrderBy(r => r.RoomName)
+            .ThenByDescending(r => r.FromDate)
+            .ToListAsync();
+    }
 }

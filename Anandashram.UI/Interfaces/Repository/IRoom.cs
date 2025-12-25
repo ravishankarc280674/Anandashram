@@ -17,4 +17,6 @@ public interface IRoom
     Task<List<RoomDTO>> GetRooms();
     Task<List<ReservationReportDTO>> GetCheckInDetailsReportAsync(DateTime dateValue);
     Task<List<Room>> GetRoomsList(string SearchText);
+    Task<List<Room>> GetAllRooms();
+
 }

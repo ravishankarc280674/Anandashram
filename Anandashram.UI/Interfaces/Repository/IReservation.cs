@@ -10,4 +10,5 @@ public interface IReservation
     Task<ApiResponse> PartialReservationAsync(int reservationId, int newRoomId, DateTime newToDate, int newAllocated);
     Task<List<Reservation>> GetReservationsForChart(DateTime startDate, DateTime endDate);
     Task AutoCloseReservation(DateTime dateValue);
+    Task<List<ReservationReportDTO>> GetReservationReportAsync(DateTime fromDate, DateTime toDate, List<int> roomIds);
 }

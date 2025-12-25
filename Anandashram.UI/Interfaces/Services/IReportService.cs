@@ -24,5 +24,6 @@ public interface IReportService
     Task<byte[]> DevoteeDetailToPdf(int Id);
     Task<byte[]> DevoteeListtoPdf(List<DevoteeReportDTO> devotees);
     Task<byte[]> RoomsListToPdf(string subject);
-
+    Task<byte[]> GetReservationReportPdfAsync(DateTime fromDate, DateTime toDate, List<int> roomIds, string Subject);
+    Task<MemoryStream> GetReservationReportExcelAsync(DateTime fromDate, DateTime toDate, List<int> roomIds, string Subject);
 }

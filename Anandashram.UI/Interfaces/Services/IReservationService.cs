@@ -11,5 +11,6 @@
         Task<ApiResponse> PartialReservationAsync(int reservationId, int newRoomId, DateTime newToDate, int newAllocated);
         Task<List<TimelineDTO>> GetReservationsForChart(DateTime startDate, DateTime endDate, List<int> buildings);
         Task AutoCloseReservation(DateTime dateValue);
+       
     }
 }

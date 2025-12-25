@@ -3,6 +3,7 @@ using AspNetCoreGeneratedDocument;
 using ClosedXML.Excel;
 using DocumentFormat.OpenXml;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
+using OfficeOpenXml.Table.PivotTable;
 using QuestPDF.Fluent;
 using System.IO;
 using System.Threading.Tasks;
@@ -337,7 +338,40 @@ private async Task<IActionResult> RoomsAllocationDetailPdfPreviewAlloted(DateTim
             "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
             "RoomAllocationDateWise.xlsx");
     }
-    
+
     #endregion
+
+    [HttpPost]
+    public async Task<IActionResult> ReservationReport(DateTime fromDate, DateTime toDate, List<int> roomIds, string typeofreport)
+    {
+        string Subject = $"Rooms Reservation Report (From {fromDate:dd - MMM - yyyy} To {toDate:dd - MMM - yyyy}) for Selected Rooms";
+        return typeofreport switch
+        {
+            "Screen" => await ReservationReportPdfPreview(fromDate, toDate, roomIds, Subject, string.Empty),
+            "Pdf" => await ReservationReportPdfPreview(fromDate, toDate, roomIds, Subject, "Room Allocation List"),
+            "Excel" => await ReservationReportToExcel(fromDate, toDate, roomIds, Subject),
+            _ => Ok()
+        };
+    }
+
+    private async Task<IActionResult> ReservationReportToExcel(DateTime fromDate, DateTime toDate, List<int> roomIds, string Subject)
+    {
+        
+            var stream = await _reportService.GetReservationReportExcelAsync(fromDate, toDate, roomIds, Subject);
+            return File(stream,
+                "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+                "RoomAllocationDateWise.xlsx");
+        
+    }
+
+    private async Task<IActionResult> ReservationReportPdfPreview(DateTime fromDate, DateTime toDate, List<int> roomIds, string Subject, string fileName)
+    {
+        var pdfBytes = await _reportService.GetReservationReportPdfAsync(fromDate, toDate, roomIds, Subject);
+        if (fileName == string.Empty)
+            return File(pdfBytes, "application/pdf");
+        else
+            return File(pdfBytes, "application/pdf", fileName + ".pdf");
+    }
+     
 }
 

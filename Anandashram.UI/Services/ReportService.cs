@@ -1,5 +1,9 @@
 ﻿using Anandashram.DTO;
 using Anandashram.Interfaces.Services;
+using DocumentFormat.OpenXml;
+using DocumentFormat.OpenXml.Office2010.Excel;
+using DocumentFormat.OpenXml.Packaging;
+using DocumentFormat.OpenXml.Spreadsheet;
 
 namespace Anandashram.Services;
 
@@ -81,7 +85,6 @@ public class ReportService : IReportService
             _ => new(),
         };
     }
-
     public async Task<MemoryStream> ExportRoomAllocationDateWiseToExcel(DateTime dateValue, string subject)
     {
         Company company = _companyrepo.CompanyDetails();
@@ -268,7 +271,6 @@ public class ReportService : IReportService
         var pdfBytes = doc.GeneratePdf();
         return pdfBytes;
     }
-    
     public async Task<byte[]> RoomsAllocationDetailPdfPreview(DateTime dateValue)
     {
         string Subject = string.Empty;
@@ -306,7 +308,6 @@ public class ReportService : IReportService
             Message = "Success"
         };
     }
-
     public async Task<byte[]> DevoteeDetailToPdf(int Id)
     {
         var DevoteeDetail = await _devoteerepo.GetDevoteeWithReservations(Id);
@@ -419,7 +420,6 @@ public class ReportService : IReportService
         var doc = new DevoteeListReport(company, devotees, "Devotee List - Filtered");
         return doc.GeneratePdf();
     }
-
     public async Task<MemoryStream> ExportRoomAllocationDetailDateWiseToExcel(DateTime dateValue, string subject)
     {
         Company company = _companyrepo.CompanyDetails();
@@ -616,7 +616,6 @@ public class ReportService : IReportService
         stream.Position = 0;
         return stream;
     }
-
     public async Task<byte[]> RoomsListToPdf(string subject)
     {
         var roomList =await _roomRepo.GetRooms();
@@ -1216,6 +1215,167 @@ public class ReportService : IReportService
             Message = "Success"
         };
     }
+    public async Task<byte[]> GetReservationReportPreviewAsync(DateTime fromDate, DateTime toDate, List<int> roomIds)
+    {
+        var DevoteeDetail = await _devoteerepo.GetDevoteeWithReservations(0);
+        var company = _companyrepo.CompanyDetails();
+        var detail = new DevoteeDetailReport(company, DevoteeDetail, "Devotee Detail");
+        var pbytes = detail.GeneratePdf();
+        return pbytes;
+    }
+    public async Task<byte[]> GetReservationReportPdfAsync(DateTime fromDate, DateTime toDate, List<int> roomIds, string Subject)
+    {
+        var ReservationDetail = await _reservationrepo.GetReservationReportAsync(fromDate, toDate, roomIds);
+        var company = _companyrepo.CompanyDetails();
+        var doc = new RoomAllocationDateWiseReport(
+            company,
+            ReservationDetail,
+            "Room Allocation Date Wise(Selected Rooms)",
+            fromDate,
+            toDate
+        );
 
+        var pbytes = doc.GeneratePdf();
+        return pbytes;
+    }
+    public async Task<MemoryStream> GetReservationReportExcelAsync(DateTime fromDate, DateTime toDate, List<int> roomIds, string Subject)
+    {
+        var company = _companyrepo.CompanyDetails(); // your company details
+        var ReservationDetail = await _reservationrepo.GetReservationReportAsync(fromDate, toDate, roomIds);
+        var stream = new MemoryStream();
+        using var workbook = new XLWorkbook();
+        var ws = workbook.Worksheets.Add("Room Allocation-Datewise");
+
+        int currentRow = 1;
+        int totalColumns = 5; 
+
+        // ===== COMPANY HEADER =====
+        ws.Range(currentRow, 1, currentRow, totalColumns).Merge().Value = company.Name;
+
+        ws.Range(currentRow, 1, currentRow, totalColumns).Style
+            .Font.SetBold().Font.SetFontSize(14)
+            .Alignment.SetHorizontal(XLAlignmentHorizontalValues.Center);
+        currentRow++;
+
+        ws.Range(currentRow, 1, currentRow, totalColumns).Merge()
+            .Value = $"{company.AddressLine1} {company.AddressLine2}".Trim();
+        ws.Range(currentRow, 1, currentRow, totalColumns).Style
+            .Alignment.SetHorizontal(XLAlignmentHorizontalValues.Center);
+        currentRow++;
+
+        ws.Range(currentRow, 1, currentRow, totalColumns).Merge()
+            .Value = $"{company.State}, {company.Country} - {company.PinCode}".Trim();
+        ws.Range(currentRow, 1, currentRow, totalColumns).Style
+            .Alignment.SetHorizontal(XLAlignmentHorizontalValues.Center);
+        currentRow++;
+
+        ws.Range(currentRow, 1, currentRow, totalColumns).Merge()
+            .Value = $"Mobile: {company.Mobile} | Email: {company.Email}";
+        ws.Range(currentRow, 1, currentRow, totalColumns).Style
+            .Alignment.SetHorizontal(XLAlignmentHorizontalValues.Center);
+        currentRow++;
+
+        if (!string.IsNullOrWhiteSpace(company.Website))
+        {
+            ws.Range(currentRow, 1, currentRow, totalColumns).Merge().Value = company.Website;
+            ws.Range(currentRow, 1, currentRow, totalColumns).Style
+                .Font.SetUnderline()
+                .Font.SetFontColor(XLColor.Blue)
+                .Alignment.SetHorizontal(XLAlignmentHorizontalValues.Center);
+            currentRow++;
+        }
+
+        currentRow++;
+
+        // ===== SUBJECT =====
+        ws.Range(currentRow, 1, currentRow, totalColumns).Merge().Value = Subject;
+        ws.Range(currentRow, 1, currentRow, totalColumns).Style
+            .Font.SetBold().Font.SetFontSize(12)
+            .Fill.SetBackgroundColor(XLColor.FromArgb(34, 139, 34))
+            .Font.SetFontColor(XLColor.White)
+            .Alignment.SetHorizontal(XLAlignmentHorizontalValues.Center);
+        currentRow++;
+
+        var grouped = ReservationDetail
+            .OrderBy(r => r.RoomId)
+            .ThenByDescending(r => r.FromDate)
+            .GroupBy(g => new { g.RoomId,g.RoomName});
+
+        int headerRow = 0;
+
+        foreach (var group in grouped)
+        {
+            // Group Header
+            ws.Range(currentRow, 1, currentRow, totalColumns).Merge()
+                .Value = $"Room: {group.Key.RoomName}";
+            ws.Range(currentRow, 1, currentRow, totalColumns).Style
+                .Font.SetBold()
+                .Fill.SetBackgroundColor(XLColor.LightGray)
+                .Alignment.SetHorizontal(XLAlignmentHorizontalValues.Left);
+            currentRow++;
+
+            // ===== TABLE HEADER =====
+            ws.Cell(currentRow, 1).Value = "Devotee";
+            ws.Cell(currentRow, 2).Value = "From Date";
+            ws.Cell(currentRow, 3).Value = "To Date";
+            ws.Cell(currentRow, 4).Value = "Allocated";
+            ws.Cell(currentRow, 5).Value = "Closed";
+
+            ws.Range(currentRow, 1, currentRow, totalColumns).Style
+                .Font.SetBold()
+                .Fill.SetBackgroundColor(XLColor.DarkGreen)
+                .Font.SetFontColor(XLColor.White)
+                .Alignment.SetHorizontal(XLAlignmentHorizontalValues.Center)
+                .Alignment.SetVertical(XLAlignmentVerticalValues.Center)
+                .Border.SetOutsideBorder(XLBorderStyleValues.Thin);
+
+            if (headerRow == 0)
+                headerRow = currentRow;
+
+            currentRow++;
+
+            // ===== DATA ROWS =====
+            bool isEven = true;
+            foreach (var reservation in group)
+            {
+                var bg = isEven ? XLColor.White : XLColor.LightGray;
+                isEven = !isEven;
+
+                ws.Cell(currentRow, 1).Value = reservation.DevoteeCode + " - " + reservation.DevoteeName;
+                ws.Cell(currentRow, 2).Value = reservation.FromDate.ToString("dd/MM/yyyy");
+                ws.Cell(currentRow, 3).Value = reservation.ToDate.ToString("dd/MM/yyyy");
+                ws.Cell(currentRow, 4).Value = reservation.Allocated;
+                ws.Cell(currentRow, 5).Value = reservation.Closed;
+
+                ws.Range(currentRow, 1, currentRow, totalColumns).Style
+                    .Fill.SetBackgroundColor(bg)
+                    .Border.SetOutsideBorder(XLBorderStyleValues.Thin)
+                    .Alignment.SetWrapText(true);
+
+                currentRow++;
+            }
+        }
+        // ===== FOOTER =====
+        currentRow++;
+        ws.Range(currentRow, 1, currentRow, totalColumns).Merge()
+            .Value = $"Printed On: {DateTime.Now:dd-MMM-yyyy hh:mm tt}";
+        ws.Range(currentRow, 1, currentRow, totalColumns).Style
+            .Font.SetItalic()
+            .Alignment.SetHorizontal(XLAlignmentHorizontalValues.Left);
+
+        // ===== FORMATTING =====
+        ws.Range(headerRow, 1, currentRow, totalColumns).SetAutoFilter();
+        ws.SheetView.FreezeRows(headerRow);
+        ws.Columns().AdjustToContents();
+
+        workbook.SaveAs(stream);
+        stream.Position = 0;
+        // Formatting
+        ws.Range(headerRow, 1, currentRow, totalColumns).SetAutoFilter();
+        ws.SheetView.FreezeRows(headerRow);
+        // Optional: Auto adjust row heights if wrapping is enabled
+        ws.Rows().AdjustToContents();
+        return stream;
+    }
 }
 

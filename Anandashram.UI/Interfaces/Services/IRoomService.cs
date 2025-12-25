@@ -12,4 +12,5 @@ public interface IRoomService
     Task<List<Room>> GetFilteredRooms();
 
     Task<List<Room>> GeRoomReservations(string SortProperty, SortOrder sortOrder, string SearchText = "");
+    Task<List<Room>> GetAllRooms();
 }

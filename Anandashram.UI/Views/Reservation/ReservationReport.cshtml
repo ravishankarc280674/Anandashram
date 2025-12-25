@@ -1,159 +1,266 @@
 ﻿@{
-    ViewData["Title"] = "Reservation Report";
     Layout = "~/Views/Shared/_Layout.cshtml";
+    ViewData["Title"] = "Reservation Summary";
 }
 
 <div class="container mt-4">
     <div class="card shadow-lg border-0">
-        <!-- HEADER (Green / can change to danger anywhere) -->
-        <div class="card-header bg-success text-white d-flex align-items-center">
+
+        <!-- HEADER -->
+        <div class="card-header bg-danger text-white d-flex justify-content-between align-items-center">
             <h4 class="mb-0 fw-bold">
-                <i class="fas fa-chart-bar me-2"></i> Reservation Report
+                <i class="fas fa-chart-bar me-2"></i> Reservation Summary
             </h4>
+
+            <button id="btnToggleSearch"
+                    class="btn btn-light btn-sm fw-bold d-none">
+                <i class="fas fa-filter me-1"></i> Change Filters
+            </button>
         </div>
 
         <div class="card-body">
-            <form id="reportForm" class="row g-4 align-items-end mb-4">
 
-                <!-- From Date -->
-                <div class="col-md-3">
-                    <label class="form-label fw-semibold text-secondary">
-                        <i class="fas fa-calendar text-success me-1"></i> From Date
-                    </label>
-                    <input type="date" id="fromDate" class="form-control border-success shadow-sm" />
-                </div>
+            <!-- SEARCH PANEL -->
+            <div id="searchPanel">
 
-                <!-- To Date -->
-                <div class="col-md-3">
-                    <label class="form-label fw-semibold text-secondary">
-                        <i class="fas fa-calendar text-success me-1"></i> To Date
-                    </label>
-                    <input type="date" id="toDate" class="form-control border-success shadow-sm" />
-                </div>
+                <div class="row g-4 align-items-end mb-4">
+                    <!-- From Date -->
+                    <div class="col-md-3">
+                        <label class="form-label fw-semibold text-secondary">
+                            <i class="fas fa-calendar-alt text-success me-2"></i> From Date
+                        </label>
+                        <input type="date"
+                               id="fromDate"
+                               class="form-control border-success shadow-sm"
+                               value="@DateTime.Today.ToString("yyyy-MM-dd")" />
+                    </div>
 
-                <!-- Rooms Multi Select -->
-                <div class="col-md-4">
-                    <label class="form-label fw-semibold text-secondary">
-                        <i class="fas fa-bed text-success me-1"></i> Rooms
-                    </label>
-                    <select id="roomIds" class="form-control" multiple>
-                        @foreach (var r in ViewBag.Rooms)
-                        {
-                            <option value="@r.Id">@r.Name</option>
-                        }
-                    </select>
-                </div>
-
+                    <!-- To Date -->
+                    <div class="col-md-3">
+                        <label class="form-label fw-semibold text-secondary">
+                            <i class="fas fa-calendar-check text-success me-2"></i> To Date
+                        </label>
+                        <input type="date"
+                               id="toDate"
+                               class="form-control border-success shadow-sm"
+                               value="@DateTime.Today.ToString("yyyy-MM-dd")" />
+                    </div>
                 <!-- Report Type -->
                 <div class="col-md-4">
                     <label class="form-label fw-semibold text-secondary d-block">
-                        <i class="fas fa-file-alt text-success me-2"></i> Report Type
+                        <i class="fas fa-file-alt text-success me-2"></i> Choose Report Type:
                     </label>
-
                     <div class="form-check form-check-inline">
-                        <input class="form-check-input" type="radio" name="reportType" value="screen" checked />
-                        <label class="form-check-label fw-bold">
-                            <i class="fas fa-desktop text-success"></i> Screen
+                        <input class="form-check-input" type="radio" id="reportScreen" name="typeofreport" value="Screen" checked />
+                        <label class="form-check-label fw-bold" for="reportScreen">
+                            <i class="fas fa-desktop text-success me-1"></i> Screen
                         </label>
                     </div>
-
                     <div class="form-check form-check-inline">
-                        <input class="form-check-input" type="radio" name="reportType" value="pdf" />
-                        <label class="form-check-label fw-bold">
-                            <i class="fas fa-file-pdf text-danger"></i> PDF
+                        <input class="form-check-input" type="radio" id="reportPdf" name="typeofreport" value="Pdf" />
+                        <label class="form-check-label fw-bold" for="reportPdf">
+                            <i class="fas fa-file-pdf text-danger me-1"></i> PDF
                         </label>
                     </div>
-
                     <div class="form-check form-check-inline">
-                        <input class="form-check-input" type="radio" name="reportType" value="excel" />
-                        <label class="form-check-label fw-bold">
-                            <i class="fas fa-file-excel text-success"></i> Excel
+                        <input class="form-check-input" type="radio" id="reportExcel" name="typeofreport" value="Excel" />
+                        <label class="form-check-label fw-bold" for="reportExcel">
+                            <i class="fas fa-file-excel text-success me-1"></i> Excel
                         </label>
                     </div>
                 </div>
-
                 <!-- Generate -->
                 <div class="col-md-2 text-center">
-                    <button type="button" id="btnGenerate"
+                    <button id="btnGenerate"
                             class="btn btn-success fw-bold px-4 shadow-sm">
-                        <i class="fas fa-play-circle me-1"></i> Generate
+                        <i class="fas fa-play-circle me-2"></i> Generate
                     </button>
                 </div>
+                </div>
 
-            </form>
+                <!-- Rooms -->
+                <div class="col-md-4">
+                    <label class="form-label fw-semibold text-secondary">
+                        <i class="fas fa-bed text-success me-2"></i> Rooms
+                    </label>
 
-            <!-- Screen Report -->
-            <div id="screenResult" class="table-responsive d-none">
-                <table class="table table-bordered table-striped">
-                    <thead class="table-success">
-                        <tr>
-                            <th>Devotee</th>
-                            <th>Category</th>
-                            <th>Room</th>
-                            <th>From</th>
-                            <th>To</th>
-                            <th>Allocated</th>
-                        </tr>
-                    </thead>
-                    <tbody id="reportBody"></tbody>
-                </table>
+                    <div class="form-check mb-1">
+                        <input class="form-check-input" type="checkbox" id="selectAllRooms">
+                        <label class="form-check-label fw-semibold" for="selectAllRooms">
+                            Select All Rooms
+                        </label>
+                    </div>
+
+                    <!-- Rooms Select -->
+                    <div class="room-select-wrapper">
+                        <select id="roomIds" class="form-control" multiple>
+                            @foreach (var r in ViewBag.Rooms as List<Room>)
+                            {
+                                <option value="@r.Id">@r.Name</option>
+                            }
+                        </select>
+                    </div>
+                </div>
+                <hr />
             </div>
 
+            <!-- REPORT DISPLAY -->
+            <div class="report-container border border-3 border-success rounded p-3">
+                <div id="pdfViewer" style="height: 750px; display:none;">
+                    <iframe id="frmPdf" width="100%" height="100%"></iframe>
+                </div>
+            </div>
         </div>
     </div>
 </div>
 
 @section Scripts {
-    <script src="~/lib/choices/choices.min.js"></script>
 
     <script>
-        const roomSelect = new Choices('#roomIds', {
-            removeItemButton: true,
-            searchEnabled: true,
-            shouldSort: false
-        });
+        let roomChoices;
 
-        $("#btnGenerate").click(function () {
+        $(document).ready(function () {
 
-            const data = {
-                fromDate: $("#fromDate").val(),
-                toDate: $("#toDate").val(),
-                roomIds: $("#roomIds").val(),
-                reportType: $("input[name='reportType']:checked").val()
-            };
+            // Initialize searchable multi-select
+            roomChoices = new Choices('#roomIds', {
+                removeItemButton: true,
+                searchEnabled: true,
+                shouldSort: false,
+                placeholderValue: 'Select Rooms'
+            });
+            $("#roomIds").on("change", function () {
+                const total = $("#roomIds option").length;
+                const selected = roomChoices.getValue(true).length;
 
-            if (!data.fromDate || !data.toDate) {
-                alert("Select date range");
-                return;
-            }
-
-            if (data.reportType === "screen") {
-                $.post("/ReservationReport/Screen", data, function (res) {
-                    $("#reportBody").empty();
-                    $("#screenResult").removeClass("d-none");
-
-                    res.forEach(r => {
-                        $("#reportBody").append(`
-                            <tr>
-                                <td>${r.devoteeCode} - ${r.devoteeName}</td>
-                                <td>${r.devoteeCategoryName}</td>
-                                <td>${r.roomName}</td>
-                                <td>${r.fromDate}</td>
-                                <td>${r.toDate}</td>
-                                <td>${r.allocated}</td>
-                            </tr>
-                        `);
-                    });
+                $("#selectAllRooms").prop("checked", total === selected);
+            });
+            $("#selectAllRooms").on("change", function () {
+            if (this.checked) {
+                // Select all options
+                const allValues = [];
+                $("#roomIds option").each(function () {
+                    allValues.push(this.value);
                 });
+                roomChoices.setChoiceByValue(allValues);
+            } else {
+                 // Safely remove only selected items (do NOT destroy choices)
+                roomChoices.removeActiveItems();
             }
-            else {
-                const url = data.reportType === "pdf"
-                    ? "/ReservationReport/Pdf"
-                    : "/ReservationReport/Excel";
+        });
+            $("#btnGenerate").click(function () {
 
-                window.location.href = url +
-                    `?fromDate=${data.fromDate}&toDate=${data.toDate}&roomIds=${data.roomIds.join(",")}`;
-            }
+                const fromDate = $("#fromDate").val();
+                const toDate = $("#toDate").val();
+                const rooms = roomChoices.getValue(true);
+                const reportType = $("input[name='typeofreport']:checked").val();
+
+                if (!fromDate || !toDate) {
+                    alert("Please select date range");
+                    return;
+                }
+                if (fromDate > toDate) {
+                    alert("From Date Cannot be greater than To Date");
+                    return;
+                }
+                if (rooms.length === 0) {
+                    alert("Please select at least one room");
+                    return;
+                }
+
+                // Hide search panel
+                $("#searchPanel").slideUp();
+                $("#btnToggleSearch").removeClass("d-none");
+
+                const formData = new FormData();
+                formData.append("fromDate", fromDate);
+                formData.append("toDate", toDate);
+                rooms.forEach(r => formData.append("roomIds", r));
+                formData.append("typeofreport", reportType);
+
+                $.ajax({
+                    url: "/Report/ReservationReport",
+                    type: "POST",
+                    data: formData,
+                    contentType: false,
+                    processData: false,
+                    xhrFields: { responseType: 'blob' },
+                    success: function (data, status, xhr) {
+
+                        const blob = new Blob([data],
+                            { type: xhr.getResponseHeader("Content-Type") });
+
+                        if (reportType === "Screen") {
+                            const url = URL.createObjectURL(blob);
+                            $("#frmPdf").attr("src", url);
+                            $("#pdfViewer").show();
+                        } else {
+                            var downloadUrl = URL.createObjectURL(blob);
+                            var a = document.createElement("a");
+                            a.href = downloadUrl;
+                            a.download = xhr.getResponseHeader("FileName") || "Report";
+                            document.body.appendChild(a);
+                            a.click();
+                            a.remove();
+                            URL.revokeObjectURL(downloadUrl);
+                        }
+                    }
+                });
+            });
+
+            $("#btnToggleSearch").click(function () {
+                $("#searchPanel").slideDown();
+                $(this).addClass("d-none");
+            });
         });
     </script>
 }
+
+<style>
+    .choices__inner {
+        border-color: #198754;
+        min-height: 38px;
+    }
+
+    .choices__list--multiple .choices__item {
+        background-color: #198754;
+        border-color: #198754;
+        color: #fff;
+        font-weight: 600;
+    }
+
+    .choices__button {
+        filter: brightness(0) invert(1);
+    }
+
+    .card-header {
+        background: linear-gradient(90deg, #dc3545 0%, #bb2d3b 100%);
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        letter-spacing: .5px;
+    }
+
+    .report-container {
+        background-color: #ffffff;
+        min-height: 500px;
+        box-shadow: 0 0 15px rgba(0, 0, 0, 0.08);
+        transition: all 0.3s ease-in-out;
+    }
+
+        .report-container:hover {
+            box-shadow: 0 0 20px rgba(25, 135, 84, 0.3);
+        }
+
+    .btn-success {
+        border-radius: 8px;
+        transition: 0.3s;
+    }
+
+        .btn-success:hover {
+            background-color: #157347;
+            transform: scale(1.03);
+        }
+
+    label {
+        font-size: 0.95rem;
+    }
+
+</style>

@@ -1,4 +1,6 @@
-﻿using QuestPDF.Fluent;
+﻿using DocumentFormat.OpenXml.Wordprocessing;
+using Humanizer;
+using QuestPDF.Fluent;
 using QuestPDF.Helpers;
 using QuestPDF.Infrastructure;
 
@@ -6,144 +8,145 @@ namespace Anandashram.Reports;
 
 public class RoomAllocationDateWiseReport : IDocument
 {
-    private readonly Company _company;
-    private readonly List<ReservationReportDTO> _data;
-    private readonly string _subject;
-    private readonly DateTime _from;
-    private readonly DateTime _to;
-
-    public RoomAllocationDateWiseReport(
-        Company company,
-        List<ReservationReportDTO> data,
-        string subject,
-        DateTime from,
-        DateTime to)
+    public Company Company { get; }
+    public List<ReservationReportDTO> Reservations { get; }
+    public string Subject { get; }
+    private readonly DateTime From;
+    private readonly DateTime To;
+    public RoomAllocationDateWiseReport(Company company, List<ReservationReportDTO> reservations, string subject,DateTime fromDate,DateTime toDate)
     {
-        _company = company ?? new Company();
-        _data = data;
-        _subject = subject;
-        _from = from;
-        _to = to;
+        Company = company ?? new Company();
+        Reservations = reservations ?? new List<ReservationReportDTO>();
+        Subject = subject;
+        From = fromDate;
+        To = toDate;
     }
-
     public DocumentMetadata GetMetadata() => DocumentMetadata.Default;
-
     public void Compose(IDocumentContainer container)
-    {
+    { 
         container.Page(page =>
         {
+            page.Size(PageSizes.A4);
             page.Margin(20);
-            page.Size(PageSizes.A4.Landscape());
+            page.PageColor(Colors.White);
 
-            page.Header().Element(ComposeHeader);
-            page.Content().Element(ComposeTable);
-            page.Footer().AlignCenter().Text(x =>
+            // D) Arial Narrow for more room-name capacity
+            page.DefaultTextStyle(x => x.FontSize(10).FontFamily("Arial Narrow"));
+            //page.Header().Element(Header);
+            page.Header().Column(header =>
             {
-                x.Span("Page ");
-                x.CurrentPageNumber();
-                x.Span(" / ");
-                x.TotalPages();
+                header.Item().ShowOnce().Element(Header);
             });
+            var groupedRooms = Reservations
+          .GroupBy(x => x.RoomName)
+          .OrderBy(x => x.Key)
+          .ToList();
+            // A) Professional green border with rounded edges
+            const float TableWidth = 555;
+            page.Content().Column(col =>
+            {
+                foreach (var roomGroup in groupedRooms)
+                {
+                    col.Item().PaddingTop(10)
+                    .Element(c => DrawGroup(
+                        c,
+                        roomGroup.Key
+                    ));
+                    col.Item().Element(c => RoomTable(c, roomGroup.ToList()));
+
+                }
+            });
+            
+            void DrawGroup(QuestPDF.Infrastructure.IContainer container, string Room)
+            {
+                container
+                    .Width(TableWidth)
+                    .PaddingVertical(6)
+                    .Background(Colors.Grey.Lighten1)
+                    .Border(1)
+                    .BorderColor(Colors.Grey.Medium)
+                    .Padding(4)
+                    .Element(x =>
+                    {
+                        x.Row(row =>
+                        {
+                            row.RelativeItem().Text($"Room: {Room}").SemiBold().FontSize(12);
+                        });
+                    });
+            }
+
+            page.Footer().AlignRight().Text(text =>
+            {
+                text.Span("Page ").FontSize(9);
+                text.CurrentPageNumber().FontSize(9).Bold();
+                text.Span(" of ").FontSize(9);
+                text.TotalPages().FontSize(9);
+            });
+
         });
     }
 
-    // ================= HEADER =================
-    private void ComposeHeader(QuestPDF.Infrastructure.IContainer container)
+    void Header(QuestPDF.Infrastructure.IContainer header)
     {
-        container.Column(col =>
+        header.PaddingBottom(6).Column(col =>
         {
-            // Company Name
-            col.Item().AlignCenter().Text(_company.Name)
-                .FontSize(18)
-                .Bold()
-                .FontColor(Colors.Green.Darken3);
+            col.Item().AlignCenter().Text(Company.Name ?? "").FontSize(14).Bold();
+            col.Item().AlignCenter().Text($"{Company.AddressLine1} {Company.AddressLine2}".Trim()).FontSize(9);
+            col.Item().AlignCenter().Text($"{Company.State}, {Company.Country} - {Company.PinCode}".Trim()).FontSize(9);
+            col.Item().AlignCenter().Text($"Mobile: {Company.Mobile} | Email: {Company.Email}").FontSize(9);
+            col.Item().AlignCenter().Hyperlink($"https://{Company.Website}")
+                .Text($"{Company.Website}").FontSize(9).Underline().FontColor(Colors.Blue.Medium);
 
-            // Address
-            col.Item().AlignCenter().Text(_company.AddressLine1)
-                .FontSize(10)
+            col.Item().PaddingVertical(6)
+                .BorderTop(1).BorderBottom(2)
+                .BorderColor(Colors.Green.Darken2)
+                .AlignCenter()
+                .Text(Subject).FontSize(12).Bold().FontColor(Colors.Green.Darken3);
+
+            col.Item().AlignCenter()
+                .Text($"From {From:dd/MM/yyyy} To {To:dd/MM/yyyy}")
+                .FontSize(9)
                 .FontColor(Colors.Grey.Darken1);
-
-            col.Item().PaddingVertical(5).LineHorizontal(1);
-
-            // Subject
-            col.Item().AlignCenter().Text(_subject)
-                .FontSize(14)
-                .Bold()
-                .FontColor(Colors.Green.Darken2);
-
-            // Date Range
-            col.Item().AlignCenter().Text($"From {_from:dd/MM/yyyy} To {_to:dd/MM/yyyy}")
-                .FontSize(11)
-                .FontColor(Colors.Grey.Darken1);
-
-            col.Item().PaddingTop(5).LineHorizontal(1);
         });
     }
-
     // ================= TABLE =================
-    private void ComposeTable(QuestPDF.Infrastructure.IContainer container)
+    void RoomTable(QuestPDF.Infrastructure.IContainer container, List<ReservationReportDTO> rows)
     {
-        container.PaddingTop(10).Table(table =>
+        container.Border(1).Table(table =>
         {
-            table.ColumnsDefinition(columns =>
+            var headerBackground = Colors.Green.Darken2;
+
+            table.ColumnsDefinition(cols =>
             {
-                columns.RelativeColumn(2); // Devotee
-                columns.RelativeColumn(2); // Category
-                columns.RelativeColumn(2); // Room
-                columns.RelativeColumn(1); // From
-                columns.RelativeColumn(1); // To
-                columns.RelativeColumn(1); // Allocated
+                cols.RelativeColumn(2);  // Devotee Code & Name
+                cols.ConstantColumn(70);   // From Date
+                cols.ConstantColumn(70);   // To Date
+                cols.ConstantColumn(60);  // Allocated
+                cols.ConstantColumn(50);  // Closed
             });
 
-            // Header Row
+
             table.Header(header =>
             {
-                header.Cell().Element(HeaderCell).Text("Devotee");
-                header.Cell().Element(HeaderCell).Text("Category");
-                header.Cell().Element(HeaderCell).Text("Room");
-                header.Cell().Element(HeaderCell).Text("From");
-                header.Cell().Element(HeaderCell).Text("To");
-                header.Cell().Element(HeaderCell).AlignRight().Text("Allocated");
+                header.Cell().Background(headerBackground).Padding(5).Text("Devotee").FontColor(Colors.White).Bold();
+                header.Cell().Background(headerBackground).Padding(5).Text("From Date").FontColor(Colors.White).Bold();
+                header.Cell().Background(headerBackground).Padding(5).Text("To Date").FontColor(Colors.White).Bold();
+                header.Cell().Background(headerBackground).Padding(5).Text("Allocated").FontColor(Colors.White).Bold();
+                header.Cell().Background(headerBackground).Padding(5).Text("Closed").FontColor(Colors.White).Bold();
             });
 
+            // BODY
             bool even = true;
-
-            foreach (var r in _data)
+            foreach (var r in rows)
             {
-                var bg = even ? Colors.Grey.Lighten4 : Colors.White;
-
-                table.Cell().Background(bg).Padding(4)
-                    .Text($"{r.DevoteeCode} - {r.DevoteeName}");
-
-                table.Cell().Background(bg).Padding(4)
-                    .Text(r.DevoteeCategoryName);
-
-                table.Cell().Background(bg).Padding(4)
-                    .Text(r.RoomName);
-
-                table.Cell().Background(bg).Padding(4)
-                    .Text(r.FromDate.ToString("dd/MM/yyyy"));
-
-                table.Cell().Background(bg).Padding(4)
-                    .Text(r.ToDate.ToString("dd/MM/yyyy"));
-
-                table.Cell().Background(bg).Padding(4)
-                    .AlignRight()
-                    .Text(r.Allocated.ToString());
-
+                var bg = even ? Colors.Grey.Lighten3 : Colors.White;
+                table.Cell().Background(bg).Padding(4).Text($"{r.DevoteeCode} - {r.DevoteeName}");
+                table.Cell().Background(bg).Padding(4).Text(r.FromDate.ToString("dd/MM/yyyy"));
+                table.Cell().Background(bg).Padding(4).Text(r.ToDate.ToString("dd/MM/yyyy"));
+                table.Cell().Background(bg).Padding(4).AlignCenter().Text(r.Allocated.ToString());
+                table.Cell().Background(bg).Padding(4).AlignCenter().Text(r.Closed ? "☑" : "☐");
                 even = !even;
             }
         });
-    }
-
-    // ================= STYLES =================
-    private static QuestPDF.Infrastructure.IContainer HeaderCell(QuestPDF.Infrastructure.IContainer container)
-    {
-        return container
-            .Padding(5)
-            .Background(Colors.Green.Lighten4)
-            .Border(1)
-            .BorderColor(Colors.Green.Darken1)
-            .DefaultTextStyle(x => x.Bold());
     }
 }
