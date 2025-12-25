@@ -1,0 +1,101 @@
+﻿@{
+    ViewData["Title"] = "Close Previous Reservations";
+}
+
+<div class="container mt-4">
+    <div class="card shadow border-0">
+        <div class="card-header bg-danger text-white fw-bold">
+            Close Previous Reservations
+        </div>
+
+        <div class="card-body">
+            <!-- AUTH SECTION -->
+            <div id="authSection">
+                <div class="mb-3">
+                    <label class="form-label fw-semibold">Authentication Code</label>
+                    <input type="password"
+                           id="authText"
+                           class="form-control"
+                           placeholder="Enter authentication code" />
+                </div>
+
+                <button class="btn btn-danger fw-bold"
+                        onclick="authenticate()">
+                    Authenticate
+                </button>
+            </div>
+
+            <!-- DATE SECTION -->
+            <div id="dateSection" style="display:none;">
+                <div class="mb-3">
+                    <label class="form-label fw-semibold">Select Date</label>
+                    <input type="date"
+                           id="selectedDate"
+                           class="form-control" />
+                </div>
+
+                <button class="btn btn-success fw-bold"
+                        onclick="submitDate()">
+                    Close Reservations
+                </button>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        const HARD_CODED_KEY = "Ashram@1931"; // 🔐 change as needed
+
+        function authenticate() {
+            const entered = document.getElementById("authText").value;
+
+            if (entered !== HARD_CODED_KEY) {
+                alert("Invalid authentication code");
+                return;
+            }
+
+            // Hide auth, show date section
+            document.getElementById("authSection").style.display = "none";
+            document.getElementById("dateSection").style.display = "block";
+
+            // Set date = today - 1
+            const today = new Date();
+            today.setDate(today.getDate() - 1);
+
+            document.getElementById("selectedDate").value =
+                today.toISOString().split("T")[0];
+        }
+
+        function submitDate() {
+            const selected = document.getElementById("selectedDate").value;
+            if (!selected) {
+                alert("Please select a date");
+                return;
+            }
+
+            const selectedDate = new Date(selected);
+            const maxDate = new Date();
+            maxDate.setDate(maxDate.getDate() - 1);
+
+            if (selectedDate > maxDate) {
+                alert("Date cannot be greater than yesterday");
+                return;
+            }
+
+            $.ajax({
+                url: "/Reservation/AutoCloseReservation",
+                type: "POST",
+                data: { dateValue: selected },
+                success: function () {
+                    alert("Reservations updated successfully");
+                    window.location.href = '/Home/Index'; 
+                },
+                error: function () {
+                    alert("Failed to update date");
+                }
+            });
+        }
+    </script>
+}

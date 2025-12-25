@@ -1,0 +1,159 @@
+﻿@{
+    ViewData["Title"] = "Reservation Report";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="container mt-4">
+    <div class="card shadow-lg border-0">
+        <!-- HEADER (Green / can change to danger anywhere) -->
+        <div class="card-header bg-success text-white d-flex align-items-center">
+            <h4 class="mb-0 fw-bold">
+                <i class="fas fa-chart-bar me-2"></i> Reservation Report
+            </h4>
+        </div>
+
+        <div class="card-body">
+            <form id="reportForm" class="row g-4 align-items-end mb-4">
+
+                <!-- From Date -->
+                <div class="col-md-3">
+                    <label class="form-label fw-semibold text-secondary">
+                        <i class="fas fa-calendar text-success me-1"></i> From Date
+                    </label>
+                    <input type="date" id="fromDate" class="form-control border-success shadow-sm" />
+                </div>
+
+                <!-- To Date -->
+                <div class="col-md-3">
+                    <label class="form-label fw-semibold text-secondary">
+                        <i class="fas fa-calendar text-success me-1"></i> To Date
+                    </label>
+                    <input type="date" id="toDate" class="form-control border-success shadow-sm" />
+                </div>
+
+                <!-- Rooms Multi Select -->
+                <div class="col-md-4">
+                    <label class="form-label fw-semibold text-secondary">
+                        <i class="fas fa-bed text-success me-1"></i> Rooms
+                    </label>
+                    <select id="roomIds" class="form-control" multiple>
+                        @foreach (var r in ViewBag.Rooms)
+                        {
+                            <option value="@r.Id">@r.Name</option>
+                        }
+                    </select>
+                </div>
+
+                <!-- Report Type -->
+                <div class="col-md-4">
+                    <label class="form-label fw-semibold text-secondary d-block">
+                        <i class="fas fa-file-alt text-success me-2"></i> Report Type
+                    </label>
+
+                    <div class="form-check form-check-inline">
+                        <input class="form-check-input" type="radio" name="reportType" value="screen" checked />
+                        <label class="form-check-label fw-bold">
+                            <i class="fas fa-desktop text-success"></i> Screen
+                        </label>
+                    </div>
+
+                    <div class="form-check form-check-inline">
+                        <input class="form-check-input" type="radio" name="reportType" value="pdf" />
+                        <label class="form-check-label fw-bold">
+                            <i class="fas fa-file-pdf text-danger"></i> PDF
+                        </label>
+                    </div>
+
+                    <div class="form-check form-check-inline">
+                        <input class="form-check-input" type="radio" name="reportType" value="excel" />
+                        <label class="form-check-label fw-bold">
+                            <i class="fas fa-file-excel text-success"></i> Excel
+                        </label>
+                    </div>
+                </div>
+
+                <!-- Generate -->
+                <div class="col-md-2 text-center">
+                    <button type="button" id="btnGenerate"
+                            class="btn btn-success fw-bold px-4 shadow-sm">
+                        <i class="fas fa-play-circle me-1"></i> Generate
+                    </button>
+                </div>
+
+            </form>
+
+            <!-- Screen Report -->
+            <div id="screenResult" class="table-responsive d-none">
+                <table class="table table-bordered table-striped">
+                    <thead class="table-success">
+                        <tr>
+                            <th>Devotee</th>
+                            <th>Category</th>
+                            <th>Room</th>
+                            <th>From</th>
+                            <th>To</th>
+                            <th>Allocated</th>
+                        </tr>
+                    </thead>
+                    <tbody id="reportBody"></tbody>
+                </table>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script src="~/lib/choices/choices.min.js"></script>
+
+    <script>
+        const roomSelect = new Choices('#roomIds', {
+            removeItemButton: true,
+            searchEnabled: true,
+            shouldSort: false
+        });
+
+        $("#btnGenerate").click(function () {
+
+            const data = {
+                fromDate: $("#fromDate").val(),
+                toDate: $("#toDate").val(),
+                roomIds: $("#roomIds").val(),
+                reportType: $("input[name='reportType']:checked").val()
+            };
+
+            if (!data.fromDate || !data.toDate) {
+                alert("Select date range");
+                return;
+            }
+
+            if (data.reportType === "screen") {
+                $.post("/ReservationReport/Screen", data, function (res) {
+                    $("#reportBody").empty();
+                    $("#screenResult").removeClass("d-none");
+
+                    res.forEach(r => {
+                        $("#reportBody").append(`
+                            <tr>
+                                <td>${r.devoteeCode} - ${r.devoteeName}</td>
+                                <td>${r.devoteeCategoryName}</td>
+                                <td>${r.roomName}</td>
+                                <td>${r.fromDate}</td>
+                                <td>${r.toDate}</td>
+                                <td>${r.allocated}</td>
+                            </tr>
+                        `);
+                    });
+                });
+            }
+            else {
+                const url = data.reportType === "pdf"
+                    ? "/ReservationReport/Pdf"
+                    : "/ReservationReport/Excel";
+
+                window.location.href = url +
+                    `?fromDate=${data.fromDate}&toDate=${data.toDate}&roomIds=${data.roomIds.join(",")}`;
+            }
+        });
+    </script>
+}
