@@ -38,7 +38,10 @@ builder.Services.AddDbContext<ApplicationDbContext>(options =>
     options.UseSqlServer(connectionString));
 
 builder.Services.AddDatabaseDeveloperPageExceptionFilter();
+builder.Services.Configure<BackupSettings>(
+    builder.Configuration.GetSection("BackupSettings"));
 
+builder.Services.AddHostedService<BackupHostedService>();
 // Identity
 builder.Services.AddDefaultIdentity<IdentityUser>(options =>
 {
