@@ -9,7 +9,7 @@ function SaveCForm() {
 
         FirstName: $('#FirstName').val(),
         LastName: $('#LastName').val(),
-        Sex: nullIfEmpty($('Sex').val()),
+        Sex: nullIfEmpty($('#Sex').val()),
         DOB: nullIfEmpty($('#DOB').val()),
         DurationOfStay: nullIfEmpty($('#DurationOfStay').val()),
         IsEmployedInIndia: nullIfEmpty($('#IsEmployedInIndia').val()),

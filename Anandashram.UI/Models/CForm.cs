@@ -19,8 +19,8 @@ namespace Anandashram.Models;
 
         public SexTypeEnum? Sex { get; set; }
 
-        [DataType(DataType.Date)]
-        public DateTime? DOB { get; set; }
+    [DisplayFormat(DataFormatString = "{0:dd/MM/yyyy}")]
+    public DateTime? DOB { get; set; }
 
         public SpecialCategoryTypeEnum? SpecialCategory { get; set; }
 
