@@ -73,6 +73,11 @@ builder.Services.AddControllersWithViews(options =>
         .Build();
     options.Filters.Add(new AuthorizeFilter(policy));
 })
+  .AddJsonOptions(options =>
+  {
+      options.JsonSerializerOptions.Converters.Add(
+          new System.Text.Json.Serialization.JsonStringEnumConverter());
+  })
 .AddRazorPagesOptions(options =>
 {
     // Allow anonymous access to login and register pages only
@@ -107,7 +112,8 @@ builder.Services.AddScoped<IDevoteeService, DevoteeService>();
 builder.Services.AddScoped<ICompanyService, CompanyService>();
 builder.Services.AddScoped<IReservationService, ReservationService>();
 builder.Services.AddScoped<IReportService, ReportService>();
-
+builder.Services.AddScoped<ICFormService, CFormService>();
+builder.Services.AddScoped<ICForm, CFormRepository>();
 var app = builder.Build();
 
 // Pipeline

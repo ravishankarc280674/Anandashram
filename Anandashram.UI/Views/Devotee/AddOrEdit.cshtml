@@ -109,7 +109,20 @@
 
 </div>
 
+    @if (TempData["Errors"] != null)
+    {
+        <div class="alert alert-danger alert-dismissible fade show">
+            <strong>Missing Required C-Form Details:</strong>
+            <ul class="mb-0 mt-2">
+                @foreach (var error in (List<string>)TempData["Errors"])
+                {
+                    <li>@error</li>
+                }
+            </ul>
 
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+    }
     <div class="card p-4">
         <form asp-action="AddOrEdit">
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
@@ -127,7 +140,28 @@
             @if (Model.Id != 0)
             {
                 <div class="section-card">
-                    <div class="section-header">Profile Overview</div>
+                    <div class="section-header d-flex justify-content-between align-items-center">
+
+                        <span>Profile Overview</span>
+
+                        @if (Model.Id != 0)
+                        {
+                            <div class="d-flex gap-2">
+
+                                <span id="cformStatusBadge"
+                                      class="badge bg-danger align-self-center">
+                                    C-Form Incomplete
+                                </span>
+
+                                <button type="button"
+                                        class="btn btn-primary"
+                                        onclick="OpenCForm(@Model.Id)">
+                                    <i class="fas fa-file-alt"></i> Forms
+                                </button>
+                            </div>
+                        }
+
+                    </div>
                     <div class="p-3 row">
                         <div class="col-md-5 d-flex">
                             <img id="profilePic"
@@ -548,6 +582,9 @@
                     </div>
                 </div>
             </div>
+            <!-- CForm Modal -->
+            <partial name="_CFormModal" />
+
             <!-- Save Button -->
             <div class="text-center mt-3">
                 <button type="button" class="btn btn-success px-4"
@@ -562,6 +599,12 @@
         await Html.RenderPartialAsync("_ValidationScriptsPartial");
     }
     <script>
+                        document.addEventListener("DOMContentLoaded", function () {
+                        var modal = document.getElementById('cformModal');
+                        modal.addEventListener('shown.bs.modal', function () {
+                        LoadCForm();
+                        });
+                        });
         document.addEventListener("DOMContentLoaded",calculateTotal);
         // $(document).ready(function () {
            $(document).on('change', '.dropdown',function () {
@@ -885,5 +928,16 @@
             })
                 .done(() => location.reload());
         });
+
+                        function OpenCForm(devoteeId) {
+
+                    $('#CFormDevoteeId').val(devoteeId);
+
+                    var modal = new bootstrap.Modal(document.getElementById('cformModal'));
+
+                    modal.show();
+
+                    LoadCForm();
+                }
     </script>
 }

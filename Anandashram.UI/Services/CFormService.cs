@@ -11,16 +11,7 @@ public class CFormService : ICFormService
     }
     public async Task SaveAsync(CForm model)
     {
-        var existing = await _repo.GetByDevoteeIdAsync(model.DevoteeId);
-
-        if (existing == null)
-            await _repo.InsertAsync(model);
-        else
-        {
-            model.Id = existing.Id;
-            await _repo.UpdateAsync(model);
-        }
-
+        await _repo.SaveAsync(model);
     }
     public async Task<CForm?> GetAsync(int devoteeId)
     {
@@ -29,9 +20,7 @@ public class CFormService : ICFormService
         if (cform != null)
             return cform;
 
-
         // If CForm not exists create new
-
         var devotee = await _repo.GetDevoteeAsync(devoteeId);
 
         cform = new CForm

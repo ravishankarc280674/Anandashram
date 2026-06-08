@@ -13,5 +13,6 @@ public class ApplicationDbContext : IdentityDbContext
     public virtual DbSet<Devotee> Devotees { get; set; }
     public virtual DbSet<Reservation> Reservations { get; set; }
     public virtual DbSet<Company> Company { get; set; }
+    public virtual DbSet<CForm> CForms { get; set; }
 
 }

@@ -46,7 +46,8 @@ public class ReservationRepository : IReservation
         if (reservation != null)
         {
             reservation.Closed = true;
-            reservation.ToDate = ToDate;
+            
+            reservation.ToDate = (ToDate < reservation.FromDate)? reservation.FromDate: ToDate;
             reservation.ModifiedBy = ModifiedBy;
             reservation.ModifiedDate = ToDate;
             _context.Reservations.Update(reservation);
@@ -67,7 +68,7 @@ public class ReservationRepository : IReservation
         {
             int i = await _context.Reservations.Where(d => d.DevoteeId == devoteeId && d.Closed == false)
                                                    .ExecuteUpdateAsync(s => s.SetProperty(p => p.Closed, p => true)
-                                                                      .SetProperty(p => p.ToDate, p => ToDate)
+                                                                      .SetProperty(p => p.ToDate, p => p.FromDate < DateTime.Now ? ToDate : p.FromDate)
                                                                       .SetProperty(p => p.ModifiedDate, p => ToDate)
                                                                       .SetProperty(p => p.ModifiedBy, p => ModifiedBy));
         }

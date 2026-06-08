@@ -11,14 +11,27 @@ public class CFormRepository : ICForm
         => await _context.Devotees.FirstOrDefaultAsync(x => x.Id == devoteeId);
     public async Task<CForm?> GetByDevoteeIdAsync(int devoteeId)
         => await _context.CForms.FirstOrDefaultAsync(x => x.DevoteeId == devoteeId);
-    public async Task InsertAsync(CForm model)
+    
+    public async Task<CForm> SaveAsync(CForm model)
     {
-        _context.CForms.Add(model);
-        await _context.SaveChangesAsync();
-    }
+        var existing = await _context.CForms
+            .FirstOrDefaultAsync(x => x.DevoteeId == model.DevoteeId);
 
-    public Task UpdateAsync(CForm model)
-    {
-        throw new NotImplementedException();
+        if (existing == null)
+        {
+            model.CreatedDate = DateTime.Now;
+            await _context.CForms.AddAsync(model);
+        }
+        else
+        {
+            // Preserve existing record identity
+            model.Id = existing.Id;
+
+            _context.Entry(existing).CurrentValues.SetValues(model);
+        }
+
+        await _context.SaveChangesAsync();
+
+        return model;
     }
 }

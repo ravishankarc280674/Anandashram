@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Authorization;
+﻿using Anandashram.UI.Tools.Core.Enums;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.Extensions.Options;
 using System.Threading.Tasks;
 namespace Anandashram.Controllers;
@@ -138,6 +139,31 @@ public class DevoteeController : Controller
         Devotee devotee = new Devotee();
         ViewBag.ValidateRoomCapacity = _validationSettings.ValidateRoomCapacity;
         ViewBag.DevoteeCategoryId =await GetDevoteeCategories();
+
+        var sexList = EnumHelper.GetEnumList<SexTypeEnum>();
+        ViewBag.SexList = sexList
+            .Select(x => new SelectListItem
+            {
+                Text = x.Text,
+                Value = x.Value
+            }).ToList();
+
+        var specialCategoryList = EnumHelper.GetEnumList<SpecialCategoryTypeEnum>();
+        ViewBag.SpecialCategoryList = specialCategoryList
+            .Select(x => new SelectListItem
+            {
+                Text = x.Text,
+                Value = x.Value
+            }).ToList();
+
+        var nextDestinationList = EnumHelper.GetEnumList<NextDestinationTypeEnum>();
+        ViewBag.NextDestinationList = nextDestinationList
+            .Select(x => new SelectListItem
+            {
+                Text = x.Text,
+                Value = x.Value
+            }).ToList();
+
         if (Id == 0)
         {
             devotee.CreatedBy = this.User.FindFirstValue(ClaimTypes.NameIdentifier);

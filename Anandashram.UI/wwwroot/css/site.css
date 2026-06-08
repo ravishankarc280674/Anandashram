@@ -774,9 +774,9 @@ a.devotee-link {
     a.devotee-link:hover {
         color: #0d47a1;
         text-decoration: underline;
+    }
         .reservation-container
-
-{
+    {
     background-color: #f6fff7;
     border-radius: 10px;
     padding: 15px;
