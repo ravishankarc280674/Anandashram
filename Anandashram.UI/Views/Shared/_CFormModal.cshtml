@@ -1,0 +1,336 @@
+﻿<div class="modal fade" id="cformModal" tabindex="-1">
+    <div class="modal-dialog modal-xl">
+        <div class="modal-content">
+
+            <div class="modal-header">
+                <h5 class="modal-title">C-Form</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+
+            <div class="modal-body">
+
+                <!-- Tabs here -->
+                <ul class="nav nav-tabs mb-3" id="cformTabs" role="tablist">
+
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link active fw-bold text-success"
+                                id="personal-tab"
+                                data-bs-toggle="tab"
+                                data-bs-target="#personal"
+                                type="button"
+                                role="tab">
+                            Personal
+                        </button>
+                    </li>
+
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link fw-bold text-primary"
+                                id="passport-tab"
+                                data-bs-toggle="tab"
+                                data-bs-target="#passport"
+                                type="button"
+                                role="tab">
+                            Passport & Visa
+                        </button>
+                    </li>
+
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link fw-bold text-warning"
+                                id="arrival-tab"
+                                data-bs-toggle="tab"
+                                data-bs-target="#arrival"
+                                type="button"
+                                role="tab">
+                            Arrival & Departure
+                        </button>
+                    </li>
+
+                </ul>
+                <div class="tab-content" id="cformTabsContent">
+                    <div class="tab-pane fade show active" id="personal">
+
+                        <div class="row">
+
+                            <div class="col-md-4 mb-3">
+                                <label>First Name</label>
+                                <input id="FirstName" class="form-control" />
+                            </div>
+
+                            <div class="col-md-4 mb-3">
+                                <label>Last Name</label>
+                                <input id="LastName" class="form-control" />
+                            </div>
+
+                            <div class="col-md-4 mb-3">
+                                <label>Sex</label>
+                                <select id="SexList" class="form-select"
+                                        asp-items="ViewBag.SexList">
+                                    <option value="">Select</option>
+                                </select>
+                            </div>
+
+                            <div class="col-md-4 mb-3">
+                                <label>DOB</label>
+                                <input type="date" id="DOB" class="form-control" />
+                            </div>
+
+                            <div class="col-md-4 mb-3">
+                                <label>Special Category</label>
+                                <select id="SpecialCategoryList" class="form-select"
+                                        asp-items="ViewBag.SpecialCategoryList">
+                                    <option value="">Select</option>
+                                </select>
+                            </div>
+
+                            <div class="col-md-4 mb-3">
+                                <label>Nationality</label>
+                                <input id="Nationality" class="form-control" />
+                            </div>
+
+                            <div class="col-md-12 mb-3">
+                                <label>Address</label>
+                                <textarea id="Address" class="form-control"></textarea>
+                            </div>
+
+                            <div class="col-md-4 mb-3">
+                                <label>City</label>
+                                <input id="City" class="form-control" />
+                            </div>
+
+                            <div class="col-md-4 mb-3">
+                                <label>Country</label>
+                                <input id="Country" class="form-control" />
+                            </div>
+
+                            <hr />
+
+                            <h6 class="fw-bold text-success">Reference Address</h6>
+
+                            <div class="col-md-12 mb-3">
+                                <label>Reference Address</label>
+                                <textarea id="ReferenceAddress" class="form-control"></textarea>
+                            </div>
+
+                            <div class="col-md-4 mb-3">
+                                <label>State</label>
+                                <input id="ReferenceState" class="form-control" />
+                            </div>
+
+                            <div class="col-md-4 mb-3">
+                                <label>City / District</label>
+                                <input id="ReferenceCity" class="form-control" />
+                            </div>
+
+                            <div class="col-md-4 mb-3">
+                                <label>Pincode</label>
+                                <input id="ReferencePincode" class="form-control" />
+                            </div>
+
+                        </div>
+                    </div>
+                    <div class="tab-pane fade" id="passport">
+
+                        <div class="row">
+
+                            <h6 class="fw-bold text-primary">Passport Details</h6>
+
+                            <div class="col-md-4 mb-3">
+                                <label>Passport No</label>
+                                <input id="PassportNo" class="form-control" />
+                            </div>
+
+                            <div class="col-md-4 mb-3">
+                                <label>Date Of Issue</label>
+                                <input type="date" id="PassportDateOfIssue" class="form-control" />
+                            </div>
+
+                            <div class="col-md-4 mb-3">
+                                <label>Date Of Expiry</label>
+                                <input type="date" id="PassportDateOfExpiry" class="form-control" />
+                            </div>
+
+                            <hr />
+
+                            <h6 class="fw-bold text-primary">Visa Details</h6>
+
+                            <div class="col-md-4 mb-3">
+                                <label>Visa Number</label>
+                                <input id="VisaNumber" class="form-control" />
+                            </div>
+
+                            <div class="col-md-4 mb-3">
+                                <label>Visa Type</label>
+                                <input id="VisaType" class="form-control" />
+                            </div>
+
+                            <div class="col-md-4 mb-3">
+                                <label>Visa Sub Type</label>
+                                <input id="VisaSubType" class="form-control" />
+                            </div>
+
+                            <div class="col-md-4 mb-3">
+                                <label>Visa City</label>
+                                <input id="VisaCity" class="form-control" />
+                            </div>
+
+                            <div class="col-md-4 mb-3">
+                                <label>Visa Country</label>
+                                <input id="VisaCountry" class="form-control" />
+                            </div>
+
+                            <div class="col-md-4 mb-3">
+                                <label>Date Of Issue</label>
+                                <input type="date" id="VisaDateOfIssue" class="form-control" />
+                            </div>
+
+                            <div class="col-md-4 mb-3">
+                                <label>Date Of Expiry</label>
+                                <input type="date" id="VisaDateOfExpiry" class="form-control" />
+                            </div>
+
+                        </div>
+                    </div>
+                    <div class="tab-pane fade" id="arrival">
+
+                        <div class="row">
+
+                            <h6 class="fw-bold text-warning">Arrival Details</h6>
+
+                            <div class="col-md-4 mb-3">
+                                <label>Arrived From Country</label>
+                                <input id="ArrivedFromCountry" class="form-control" />
+                            </div>
+
+                            <div class="col-md-4 mb-3">
+                                <label>Arrived From City</label>
+                                <input id="ArrivedFromCity" class="form-control" />
+                            </div>
+
+                            <div class="col-md-4 mb-3">
+                                <label>Date Of Arrival In India</label>
+                                <input type="date" id="DateOfArrivalInIndia" class="form-control" />
+                            </div>
+
+                            <div class="col-md-4 mb-3">
+                                <label>Arrived From Place In India</label>
+                                <input id="ArrivedFromPlaceInIndia" class="form-control" />
+                            </div>
+
+                            <div class="col-md-4 mb-3">
+                                <label>Date Of Arrival In AnandAshram</label>
+                                <input type="date" id="DateOfArrivalInAnandAshram" class="form-control" />
+                            </div>
+
+                            <div class="col-md-4 mb-3">
+                                <label>Time Of Arrival</label>
+                                <input type="time" id="TimeOfArrivalInAnandAshram" class="form-control" />
+                            </div>
+
+                            <div class="col-md-4 mb-3">
+                                <label>Duration Of Stay</label>
+                                <input type="number" id="DurationOfStay" class="form-control" />
+                            </div>
+
+                            <div class="col-md-4 mb-3">
+                                <label>Employed In India</label>
+                                <select id="IsEmployedInIndia" class="form-control">
+                                    <option value="">Select</option>
+                                    <option value="true">Yes</option>
+                                    <option value="false">No</option>
+                                </select>
+                            </div>
+
+                            <div class="col-md-12 mb-3">
+                                <label>Purpose Of Visit</label>
+                                <textarea id="PurposeOfVisit" class="form-control"></textarea>
+                            </div>
+
+                            <hr />
+
+                            <h6 class="fw-bold text-warning">Next Destination</h6>
+
+                            <div class="col-md-4 mb-3">
+                                <label>Next Destination</label>
+                                <select id="NextDestination" class="form-select"
+                                        asp-items="ViewBag.NextDestinationList">
+                                    <option value="">Select</option>
+                                </select>
+                            </div>
+
+                            <div class="col-md-4 mb-3">
+                                <label>Destination Country</label>
+                                <input id="DestinationCountry" class="form-control" />
+                            </div>
+
+                            <div class="col-md-4 mb-3">
+                                <label>Destination State</label>
+                                <input id="DestinationState" class="form-control" />
+                            </div>
+
+                            <div class="col-md-4 mb-3">
+                                <label>Destination City</label>
+                                <input id="DestinationCity" class="form-control" />
+                            </div>
+
+                            <div class="col-md-4 mb-3">
+                                <label>Place</label>
+                                <input id="Place" class="form-control" />
+                            </div>
+
+                            <hr />
+
+                            <h6 class="fw-bold text-warning">Contact Details</h6>
+
+                            <div class="col-md-4 mb-3">
+                                <label>Contact Phone</label>
+                                <input id="ContactPhoneNumber" class="form-control" />
+                            </div>
+
+                            <div class="col-md-4 mb-3">
+                                <label>Mobile</label>
+                                <input id="MobileNumber" class="form-control" />
+                            </div>
+
+                            <div class="col-md-4 mb-3">
+                                <label>Permanent Country Phone</label>
+                                <input id="PermanentCountryPhone" class="form-control" />
+                            </div>
+
+                            <div class="col-md-4 mb-3">
+                                <label>Permanent Country Mobile</label>
+                                <input id="PermanentCountryMobile" class="form-control" />
+                            </div>
+
+                            <div class="col-md-12 mb-3">
+                                <label>Remarks</label>
+                                <textarea id="Remarks" class="form-control"></textarea>
+                            </div>
+
+                        </div>
+                    </div>
+                    </div>
+            </div>
+
+            <div class="modal-footer">
+
+                <button class="btn btn-success" onclick="SaveCForm()">Save</button>
+
+                <button class="btn btn-primary" onclick="PrintCForm()">C-Form</button>
+
+                <button class="btn btn-warning" onclick="PrintBForm()">B-Form</button>
+
+                <button class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+
+            </div>
+
+        </div>
+    </div>
+</div>
+<script src="~/js/cform.js"></script>
+<script>
+
+    function SaveCForm(){
+       // your code
+    }
+
+</script>
