@@ -19,7 +19,6 @@ public class CFormRepository : ICForm
 
         if (existing == null)
         {
-            model.CreatedDate = DateTime.Now;
             await _context.CForms.AddAsync(model);
         }
         else
