@@ -22,48 +22,37 @@ function SaveCForm() {
         ReferenceCity: $('#ReferenceCity').val(),
         ReferencePincode: $('#ReferencePincode').val(),
 
-        // DurationOfStay: nullIfEmpty($('#DurationOfStay').val()),
-        // IsEmployedInIndia: nullIfEmpty($('#IsEmployedInIndia').val()),
-        // NextDestination: nullIfEmpty($('#NextDestination').val()),
-        // DateOfArrivalInIndia: nullIfEmpty($('#DateOfArrivalInIndia').val()),
-        // DateOfArrivalInAnandAshram: nullIfEmpty($('#DateOfArrivalInAnandAshram').val()),
-        // TimeOfArrivalInAnandAshram: nullIfEmpty($('#TimeOfArrivalInAnandAshram').val()),
-        // PassportDateOfIssue: nullIfEmpty($('#PassportDateOfIssue').val()),
-        // PassportDateOfExpiry: nullIfEmpty($('#PassportDateOfExpiry').val()),
 
-        // VisaDateOfIssue: nullIfEmpty($('#VisaDateOfIssue').val()),
-
-        // VisaDateOfExpiry: nullIfEmpty($('#VisaDateOfExpiry').val()),
-
-
-        // PassportNo: $('#PassportNo').val(),
-
-        // VisaNumber: $('#VisaNumber').val(),
-        // VisaCity: $('#VisaCity').val(),
-        // VisaCountry: $('#VisaCountry').val(),
-        // VisaType: $('#VisaType').val(),
-        // VisaSubType: $('#VisaSubType').val(),
-
-        // ArrivedFromCountry: $('#ArrivedFromCountry').val(),
-        // ArrivedFromCity: $('#ArrivedFromCity').val(),
-
-        // ArrivedFromPlaceInIndia: $('#ArrivedFromPlaceInIndia').val(),
-
-        // PurposeOfVisit: $('#PurposeOfVisit').val(),
-
-        // DestinationCountry: $('#DestinationCountry').val(),
-        // DestinationState: $('#DestinationState').val(),
-        // DestinationCity: $('#DestinationCity').val(),
-
-        // Place: $('#Place').val(),
-
-        // ContactPhoneNumber: $('#ContactPhoneNumber').val(),
-        // MobileNumber: $('#MobileNumber').val(),
-
-        // PermanentCountryPhone: $('#PermanentCountryPhone').val(),
-        // PermanentCountryMobile: $('#PermanentCountryMobile').val(),
-
-        // Remarks: $('#Remarks').val()
+        PassportNo: $('#PassportNo').val(),
+        PassportDateOfIssue: nullIfEmpty($('#PassportDateOfIssue').val()),
+        PassportDateOfExpiry: nullIfEmpty($('#PassportDateOfExpiry').val()),
+        VisaNumber: $('#VisaNumber').val(),
+        VisaType: $('#VisaType').val(),
+        VisaSubType: $('#VisaSubType').val(),
+        VisaCity: $('#VisaCity').val(),
+        VisaCountry: $('#VisaCountry').val(),
+        VisaDateOfIssue: nullIfEmpty($('#VisaDateOfIssue').val()),
+        VisaDateOfExpiry: nullIfEmpty($('#VisaDateOfExpiry').val()),
+         
+        DurationOfStay: nullIfEmpty($('#DurationOfStay').val()),
+        IsEmployedInIndia: $('#IsEmployedInIndia').val() === "" ? null : $('#IsEmployedInIndia').val() === "true",
+        NextDestination: nullIfEmpty($('#NextDestination').val()),
+        DateOfArrivalInIndia: nullIfEmpty($('#DateOfArrivalInIndia').val()),
+        DateOfArrivalInAnandAshram: nullIfEmpty($('#DateOfArrivalInAnandAshram').val()),
+        TimeOfArrivalInAnandAshram: nullIfEmpty($('#TimeOfArrivalInAnandAshram').val()),
+        ArrivedFromCountry: $('#ArrivedFromCountry').val(),
+        ArrivedFromCity: $('#ArrivedFromCity').val(),
+        ArrivedFromPlaceInIndia: $('#ArrivedFromPlaceInIndia').val(),
+        PurposeOfVisit: $('#PurposeOfVisit').val(),
+        DestinationCountry: $('#DestinationCountry').val(),
+        DestinationState: $('#DestinationState').val(),
+        DestinationCity: $('#DestinationCity').val(),
+        Place: $('#DestinationPlace').val(),
+        ContactPhoneNumber: $('#ContactPhoneNumber').val(),
+        MobileNumber: $('#MobileNumber').val(),
+        PermanentCountryPhone: $('#PermanentCountryPhone').val(),
+        PermanentCountryMobile: $('#PermanentCountryMobile').val(),
+        Remarks: $('#Remarks').val()
     };
     debugger;
     $.ajax({
@@ -89,14 +78,16 @@ function LoadCForm() {
 
     $.get('/CForm/Get?devoteeId=' + $('#CFormDevoteeId').val(),
         function (data) {
-
+           
             if (!data)
                 return;
-
+ console.log("Sex =", data.sex);
+            console.log("SpecialCategory =", data.specialCategory);
+            console.log("NextDestination =", data.nextDestination);
             $('#FirstName').val(data.firstName);
             $('#LastName').val(data.lastName);
             $('#Sex').val(data.sex);
-            $('#DOB').val(data.dob);
+            $('#DOB').val(data.dob?.substring(0, 10));
             $('#SpecialCategory').val(data.specialCategory);
             $('#Nationality').val(data.nationality);
             $('#Address').val(data.address);
@@ -107,53 +98,53 @@ function LoadCForm() {
             $('#ReferenceCity').val(data.referenceCity);
             $('#ReferencePincode').val(data.referencePincode);
 
-            // $('#DurationOfStay').val(data.durationOfStay);
-            // $('#IsEmployedInIndia').val(data.isEmployedInIndia);
-            // $('#NextDestination').val(data.nextDestination);
+            $('#DurationOfStay').val(data.durationOfStay);
+            if (data.isEmployedInIndia === true)
+                $('#IsEmployedInIndia').val('true');
+            else if (data.isEmployedInIndia === false)
+                $('#IsEmployedInIndia').val('false');
+            else
+                $('#IsEmployedInIndia').val('');
+            $('#NextDestination').val(data.nextDestination);
 
-            // $('#DateOfArrivalInIndia').val(data.dateOfArrivalInIndia?.substring(0, 10));
-            // $('#DateOfArrivalInAnandAshram').val(data.dateOfArrivalInAnandAshram?.substring(0, 10));
+            $('#DateOfArrivalInIndia').val(data.dateOfArrivalInIndia?.substring(0, 10));
+            $('#DateOfArrivalInAnandAshram').val(data.dateOfArrivalInAnandAshram?.substring(0, 10));
 
-            // $('#TimeOfArrivalInAnandAshram').val(data.timeOfArrivalInAnandAshram);
+            $('#TimeOfArrivalInAnandAshram').val(data.timeOfArrivalInAnandAshram);
 
-            // $('#PassportDateOfIssue').val(data.passportDateOfIssue?.substring(0, 10));
-            // $('#PassportDateOfExpiry').val(data.passportDateOfExpiry?.substring(0, 10));
+            $('#PassportDateOfIssue').val(data.passportDateOfIssue?.substring(0, 10));
+            $('#PassportDateOfExpiry').val(data.passportDateOfExpiry?.substring(0, 10));
 
-            // $('#VisaDateOfIssue').val(data.visaDateOfIssue?.substring(0, 10));
-            // $('#VisaDateOfExpiry').val(data.visaDateOfExpiry?.substring(0, 10));
+            $('#VisaDateOfIssue').val(data.visaDateOfIssue?.substring(0, 10));
+            $('#VisaDateOfExpiry').val(data.visaDateOfExpiry?.substring(0, 10));
 
-           
+            $('#PassportNo').val(data.passportNo);
+            $('#VisaNumber').val(data.visaNumber);
+            $('#VisaCity').val(data.visaCity);
+            $('#VisaCountry').val(data.visaCountry);
+            $('#VisaType').val(data.visaType);
+            $('#VisaSubType').val(data.visaSubType);
 
-            
+            $('#ArrivedFromCountry').val(data.arrivedFromCountry);
+            $('#ArrivedFromCity').val(data.arrivedFromCity);
 
-            // $('#PassportNo').val(data.passportNo);
+            $('#ArrivedFromPlaceInIndia').val(data.arrivedFromPlaceInIndia);
 
-            // $('#VisaNumber').val(data.visaNumber);
-            // $('#VisaCity').val(data.visaCity);
-            // $('#VisaCountry').val(data.visaCountry);
-            // $('#VisaType').val(data.visaType);
-            // $('#VisaSubType').val(data.visaSubType);
+            $('#PurposeOfVisit').val(data.purposeOfVisit);
 
-            // $('#ArrivedFromCountry').val(data.arrivedFromCountry);
-            // $('#ArrivedFromCity').val(data.arrivedFromCity);
+            $('#DestinationCountry').val(data.destinationCountry);
+            $('#DestinationState').val(data.destinationState);
+            $('#DestinationCity').val(data.destinationCity);
 
-            // $('#ArrivedFromPlaceInIndia').val(data.arrivedFromPlaceInIndia);
+            $('#DestinationPlace').val(data.place);
 
-            // $('#PurposeOfVisit').val(data.purposeOfVisit);
+            $('#ContactPhoneNumber').val(data.contactPhoneNumber);
+            $('#MobileNumber').val(data.mobileNumber);
 
-            // $('#DestinationCountry').val(data.destinationCountry);
-            // $('#DestinationState').val(data.destinationState);
-            // $('#DestinationCity').val(data.destinationCity);
+            $('#PermanentCountryPhone').val(data.permanentCountryPhone);
+            $('#PermanentCountryMobile').val(data.permanentCountryMobile);
 
-            // $('#Place').val(data.place);
-
-            // $('#ContactPhoneNumber').val(data.contactPhoneNumber);
-            // $('#MobileNumber').val(data.mobileNumber);
-
-            // $('#PermanentCountryPhone').val(data.permanentCountryPhone);
-            // $('#PermanentCountryMobile').val(data.permanentCountryMobile);
-
-            // $('#Remarks').val(data.remarks);
+            $('#Remarks').val(data.remarks);
         });
 }
 
@@ -194,7 +185,6 @@ function ValidateCForm() {
     addError(passportErrors, '#PassportNo', 'Passport Number');
     addError(passportErrors, '#PassportDateOfIssue', 'Passport Date Of Issue');
     addError(passportErrors, '#PassportDateOfExpiry', 'Passport Date Of Expiry');
-
     addError(passportErrors, '#VisaNumber', 'Visa Number');
     addError(passportErrors, '#VisaCity', 'Visa City');
     addError(passportErrors, '#VisaCountry', 'Visa Country');
@@ -206,31 +196,20 @@ function ValidateCForm() {
 
     addError(arrivalErrors, '#ArrivedFromCountry', 'Arrived From Country');
     addError(arrivalErrors, '#ArrivedFromCity', 'Arrived From City');
-
     addError(arrivalErrors, '#DateOfArrivalInIndia', 'Date Of Arrival In India');
-
     addError(arrivalErrors, '#ArrivedFromPlaceInIndia', 'Arrived From Place In India');
-
     addError(arrivalErrors, '#DateOfArrivalInAnandAshram', 'Date Of Arrival In Anand Ashram');
     addError(arrivalErrors, '#TimeOfArrivalInAnandAshram', 'Time Of Arrival In Anand Ashram');
-
     addError(arrivalErrors, '#DurationOfStay', 'Duration Of Stay');
-
     addError(arrivalErrors, '#IsEmployedInIndia', 'Employment Status');
-
     addError(arrivalErrors, '#PurposeOfVisit', 'Purpose Of Visit');
-
     addError(arrivalErrors, '#NextDestination', 'Next Destination');
-
     addError(arrivalErrors, '#DestinationCountry', 'Destination Country');
     addError(arrivalErrors, '#DestinationState', 'Destination State');
     addError(arrivalErrors, '#DestinationCity', 'Destination City');
-
-    addError(arrivalErrors, '#Place', 'Place');
-
+    addError(arrivalErrors, '#DestinationPlace', 'Destination Place');
     addError(arrivalErrors, '#ContactPhoneNumber', 'Contact Phone');
     addError(arrivalErrors, '#MobileNumber', 'Mobile Number');
-
     addError(arrivalErrors, '#PermanentCountryPhone', 'Permanent Country Phone');
     addError(arrivalErrors, '#PermanentCountryMobile', 'Permanent Country Mobile');
 
