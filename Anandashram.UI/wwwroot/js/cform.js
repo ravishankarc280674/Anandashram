@@ -1,7 +1,7 @@
 ﻿function nullIfEmpty(value) {
     return value === "" ? null : value;
 }
-function SaveCForm() {
+function SaveCForm(callback) {
     debugger;
     //alert('Country=[' + $('#CountryName').val() + ']');
     var model = {
@@ -63,7 +63,13 @@ function SaveCForm() {
         data: JSON.stringify(model),
 
         success: function () {
-            alert("Saved successfully");
+
+            if (callback)
+                callback();
+            else
+                alert("Saved successfully");
+            //$.notify("Submitted Successfully", { globalPosition: "bottom centre", className: "Success" });
+
         },
 
         error: function (err) {
@@ -76,19 +82,18 @@ function SaveCForm() {
 
 function LoadCForm() {
 
+
     $.get('/CForm/Get?devoteeId=' + $('#CFormDevoteeId').val(),
         function (data) {
            
             if (!data)
                 return;
- console.log("Sex =", data.sex);
-            console.log("SpecialCategory =", data.specialCategory);
-            console.log("NextDestination =", data.nextDestination);
+ 
             $('#FirstName').val(data.firstName);
             $('#LastName').val(data.lastName);
-            $('#Sex').val(data.sex);
+            
             $('#DOB').val(data.dob?.substring(0, 10));
-            $('#SpecialCategory').val(data.specialCategory);
+            
             $('#Nationality').val(data.nationality);
             $('#Address').val(data.address);
             $('#CFormCity').val(data.city);
@@ -98,6 +103,10 @@ function LoadCForm() {
             $('#ReferenceCity').val(data.referenceCity);
             $('#ReferencePincode').val(data.referencePincode);
 
+            $('#Sex').val(data.sexValue);
+            $('#SpecialCategory').val(data.specialCategoryValue);
+            $('#NextDestination').val(data.nextDestinationValue);
+
             $('#DurationOfStay').val(data.durationOfStay);
             if (data.isEmployedInIndia === true)
                 $('#IsEmployedInIndia').val('true');
@@ -105,8 +114,7 @@ function LoadCForm() {
                 $('#IsEmployedInIndia').val('false');
             else
                 $('#IsEmployedInIndia').val('');
-            $('#NextDestination').val(data.nextDestination);
-
+           
             $('#DateOfArrivalInIndia').val(data.dateOfArrivalInIndia?.substring(0, 10));
             $('#DateOfArrivalInAnandAshram').val(data.dateOfArrivalInAnandAshram?.substring(0, 10));
 
@@ -165,7 +173,7 @@ function ValidateCForm() {
 
     addError(personalErrors, '#FirstName', 'First Name');
     addError(personalErrors, '#LastName', 'Last Name');
-    addError(personalErrors, '#SexList', 'Sex');
+    addError(personalErrors, '#Sex', 'Sex');
     addError(personalErrors, '#DOB', 'Date of Birth');
     addError(personalErrors, '#SpecialCategory', 'Special Category');
     addError(personalErrors, '#Nationality', 'Nationality');
@@ -198,8 +206,8 @@ function ValidateCForm() {
     addError(arrivalErrors, '#ArrivedFromCity', 'Arrived From City');
     addError(arrivalErrors, '#DateOfArrivalInIndia', 'Date Of Arrival In India');
     addError(arrivalErrors, '#ArrivedFromPlaceInIndia', 'Arrived From Place In India');
-    addError(arrivalErrors, '#DateOfArrivalInAnandAshram', 'Date Of Arrival In Anand Ashram');
-    addError(arrivalErrors, '#TimeOfArrivalInAnandAshram', 'Time Of Arrival In Anand Ashram');
+    addError(arrivalErrors, '#DateOfArrivalInAnandAshram', 'Date Of Arrival In Anandashram');
+    addError(arrivalErrors, '#TimeOfArrivalInAnandAshram', 'Time Of Arrival In Anandashram');
     addError(arrivalErrors, '#DurationOfStay', 'Duration Of Stay');
     addError(arrivalErrors, '#IsEmployedInIndia', 'Employment Status');
     addError(arrivalErrors, '#PurposeOfVisit', 'Purpose Of Visit');
@@ -224,82 +232,47 @@ function ValidateCForm() {
 
 function PrintCForm() {
 
-    var validation = ValidateCForm();
+    SaveCForm(function () {
 
-    var html = '';
+        var validation = ValidateCForm();
 
-    if (validation.personal.length > 0) {
-
-        html += '<b>Personal Tab</b><ul>';
-
-        validation.personal.forEach(function (e) {
-            html += '<li>' + e + '</li>';
-        });
-
-        html += '</ul>';
-    }
-
-    if (validation.passport.length > 0) {
-
-        html += '<b>Passport & Visa Tab</b><ul>';
-
-        validation.passport.forEach(function (e) {
-            html += '<li>' + e + '</li>';
-        });
-
-        html += '</ul>';
-    }
-
-    if (validation.arrival.length > 0) {
-
-        html += '<b>Arrival & Departure Tab</b><ul>';
-
-        validation.arrival.forEach(function (e) {
-            html += '<li>' + e + '</li>';
-        });
-
-        html += '</ul>';
-    }
-
-    if (html !== '') {
-
-        Swal.fire({
-            icon: 'error',
-            title: 'Missing Fields',
-            html: html
-        });
-
-        // Move user to first invalid tab
+        var html = '';
 
         if (validation.personal.length > 0) {
 
-            bootstrap.Tab.getOrCreateInstance(
-                document.getElementById('personal-tab')
-            ).show();
-
-        }
-        else if (validation.passport.length > 0) {
-
-            bootstrap.Tab.getOrCreateInstance(
-                document.getElementById('passport-tab')
-            ).show();
-
-        }
-        else {
-
-            bootstrap.Tab.getOrCreateInstance(
-                document.getElementById('arrival-tab')
-            ).show();
-
+            html += '<b>Personal Details</b><br/>';
+            html += validation.personal.join('<br/>');
+            html += '<br/><br/>';
         }
 
-        return;
-    }
+        if (validation.passport.length > 0) {
 
-    SaveCForm();
+            html += '<b>Passport & Visa Details</b><br/>';
+            html += validation.passport.join('<br/>');
+            html += '<br/><br/>';
+        }
 
-    window.open(
-        '/CForm/Print?devoteeId=' + $('#CFormDevoteeId').val(),
-        '_blank'
-    );
+        if (validation.arrival.length > 0) {
+
+            html += '<b>Arrival Details</b><br/>';
+            html += validation.arrival.join('<br/>');
+        }
+
+        if (html !== '') {
+
+            Swal.fire({
+                icon: 'warning',
+                title: 'C-Form Incomplete',
+                html: html
+            });
+
+            return;
+        }
+
+        window.open(
+            '/CForm/Print?devoteeId=' + $('#CFormDevoteeId').val(),
+            '_blank'
+        );
+
+    });
 }
