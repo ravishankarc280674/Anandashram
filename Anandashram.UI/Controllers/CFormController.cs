@@ -31,6 +31,15 @@ namespace Anandashram.Controllers
 
             return Json(true);
         }
-       
+        public async Task<IActionResult> Print(int devoteeId)
+        {
+            var dto = await _cformService.GetCFormForPrint(devoteeId);
+
+            var report = new CFormReport(dto);
+
+            var pdf = report.GeneratePdf();
+
+            return File(pdf, "application/pdf");
+        }
     }
 }
