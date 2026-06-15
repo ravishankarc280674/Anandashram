@@ -1,6 +1,13 @@
-﻿using QuestPDF.Fluent;
+﻿using DocumentFormat.OpenXml.Bibliography;
+using DocumentFormat.OpenXml.Presentation;
+using Humanizer;
+using Microsoft.VisualStudio.Web.CodeGenerators.Mvc.Templates.Blazor;
+using QuestPDF.Fluent;
 using QuestPDF.Helpers;
 using QuestPDF.Infrastructure;
+using System.Diagnostics.Metrics;
+using static QuestPDF.Helpers.Colors;
+using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace Anandashram.Reports;
 
@@ -24,17 +31,44 @@ namespace Anandashram.Reports;
         container.Page(page =>
         {
             page.Margin(20);
+            page.MarginTop(30);
+            page.MarginBottom(25);
+            page.DefaultTextStyle(x => x
+                .FontSize(10)
+                .FontFamily("Arial Narrow"));
+            page.PageColor(Colors.White);
 
             page.Header()
-                .Text("ARRIVAL REPORT OF FOREIGNER")
-                .Bold()
-                .FontSize(18)
-                .AlignCenter();
+                .ShowOnce()
+                .Element(container =>
+                {
+                    container
+                        .Border(1)
+                        .Background(Colors.Blue.Lighten4)
+                        .CornerRadius(8)
+                        .Padding(10)
+                        .Column(col =>
+                        {
+                            col.Item()
+                                .Text("FORM 'C'")
+                                .Bold()
+                                .FontSize(16)
+                                .AlignCenter();
+
+                            col.Item()
+                                .PaddingTop(2)
+                                .Text("ARRIVAL REPORT OF FOREIGNER IN ANANDASHRAM")
+                                .SemiBold()
+                                .FontSize(14)
+                                .AlignCenter();
+                        });
+                });
 
             page.Content()
                 .Column(col =>
                 {
-                    Section(col, "Personnel Details", section =>
+                    //1.PERSONAL DETAILS(+Photo)
+                    Section(col, "Personel Details", section =>
                     {
                         section.Item().Row(row =>
                         {
@@ -47,29 +81,184 @@ namespace Anandashram.Reports;
                                     AddField(details, "Date of Birth as in Passport", _dto.DOB);
                                     AddField(details, "Special Category", _dto.SpecialCategory);
                                     AddField(details, "Nationality", _dto.Nationality);
-                                    AddField(details, "Address in country where residing permanently", _dto.Address);
+                                    AddField(details, "Address in permanently residing Country", _dto.Address);
+                                    AddField(details, "City", _dto.City);
+                                    AddField(details, "Country", _dto.Country);
                                 });
 
                             row.ConstantItem(160)
-                            .Height(150)
+                            .Height(120)
                             .Border(1)
                             .Padding(2)
                             .Image(_dto.PhotoBytes, ImageScaling.FitArea);
 
-                            // FIT THE FRAME
-                           // row.ConstantItem(160)
-                           //.Height(190)
-                           //.Border(1)
-                           //.Padding(2)
-                           //.Image(_dto.PhotoBytes, ImageScaling.Resize);
                         });
                     });
 
+                    //2.REFERENCE DETAILS IN INDIA
+                    Section(col, "Address / Reference Details in India", section =>
+                    {
+                        section.Item().Row(row =>
+                        {
+                            row.RelativeItem()
+                                .Column(details =>
+                                {
+                                    AddField(details, "Reference Address(If Any)", _dto.ReferenceAddress);
+                                    AddField(details, "Reference State", _dto.ReferenceState);
+                                    AddField(details, "Reference City/District", _dto.ReferenceCity);
+                                    AddField(details, "Reference Pincode", _dto.ReferencePincode);
+                                });
+                        });
+                    });
+                    
+                    //3.PASSPORT DETAILS
+                    Section(col, "Passport Details", section =>
+                    {
+                        section.Item().Row(row =>
+                        {
+                            row.RelativeItem()
+                                .Column(details =>
+                                {
+                                    AddField(details, "Passport Number", _dto.PassportNo);
+                                    AddField(details, "Passport Date of Issue", _dto.PassportDateOfIssue);
+                                    AddField(details, "Passport Date of Expiry", _dto.PassportDateOfExpiry);
+                                });
+
+                        });
+                    });
+
+                    
+                    //4.VISA DETAILS
+                    Section(col, "Visa Details", section =>
+                    {
+                        section.Item().Row(row =>
+                        {
+                            row.RelativeItem()
+                                .Column(details =>
+                                {
+                                    AddField(details, "Visa Number", _dto.VisaNumber);
+                                    AddField(details, "Place Of Issue", $"{_dto.VisaCity}, {_dto.VisaCountry}");
+                                    AddField(details, "Visa Date of Issue", _dto.VisaDateOfIssue);
+                                    AddField(details, "Visa Date of Expiry", _dto.VisaDateOfExpiry);
+                                    AddField(details, "Visa Type", _dto.VisaType);
+                                    AddField(details, "Visa Sub Type", _dto.VisaSubType);
+                                    AddField(details, "Arrived from Country", _dto.ArrivedFromCountry);
+                                    AddField(details, "Arrived from City", _dto.ArrivedFromCity);
+                                    AddField(details, "Date of Arrival in India", _dto.DateOfArrivalInIndia);
+                                    AddField(details, "Arrived from Place in India", _dto.ArrivedFromPlaceInIndia);
+                                    AddField(details, "Date of Arrival in Anandashram", _dto.DateOfArrivalInAnandAshram);
+                                    AddField(details, "Time of Arrival in Anandashram", _dto.TimeOfArrivalInAnandAshram);
+                                });
+                        });
+                    });
+
+                    col.Item().PageBreak();
+
+                    //5.ARRIVAL DETAILS
+                    Section(col, "Arrival Details", section =>
+                    {
+                        section.Item().Row(row =>
+                        {
+                            row.RelativeItem()
+                                .Column(details =>
+                                {
+                                    AddField(details, "Arrived from Country", _dto.ArrivedFromCountry);
+                                    AddField(details, "Arrived from City", _dto.ArrivedFromCity);
+                                    AddField(details, "Date of Arrival in India", _dto.DateOfArrivalInIndia);
+                                    AddField(details, "Arrived from Place in India", _dto.ArrivedFromPlaceInIndia);
+                                    AddField(details, "Date of Arrival in Anandashram", _dto.DateOfArrivalInAnandAshram);
+                                    AddField(details, "Time of Arrival in Anandashram", _dto.TimeOfArrivalInAnandAshram);
+                                    AddField(details, "Duration Of Stay", _dto.DurationOfStay.ToString());
+                                });
+                        });
+                    });
+
+                    //6.EMPLOYMENT & VISIT DETAILS
+                    Section(col, "Employment & Visit Details", section =>
+                    {
+                        section.Item().Row(row =>
+                        {
+                            row.RelativeItem()
+                                .Column(details =>
+                                {
+                                    AddField(details, "Is Employed In India", _dto.IsEmployedInIndia);
+                                    AddField(details, "Purpose Of Visit", _dto.PurposeOfVisit);
+                                });
+                        });
+
+                    });
+
+                    //7.DESTINATION DETAILS
+                    Section(col, "Destination Details", section =>
+                    {
+                        section.Item().Row(row =>
+                        {
+                            row.RelativeItem()
+                                .Column(details =>
+                                {
+                                    AddField(details, "Next Destination", _dto.NextDestination);
+                                    AddField(details, "Destination Country", _dto.DestinationCountry);
+                                    AddField(details, "Destination State", _dto.DestinationState);
+                                    AddField(details, "Destination City", _dto.DestinationCity);
+                                    AddField(details, "Destination Place", _dto.Place);
+                                });
+                        });
+
+                    });
+
+                    //8.CONTACT DETAILS
+                    Section(col, "Contact Details", section =>
+                    {
+                        section.Item().Row(row =>
+                        {
+                            row.RelativeItem()
+                                .Column(details =>
+                                {
+                                    AddField(details, "Contact Phone Number", _dto.ContactPhoneNumber);
+                                    AddField(details, "Mobile Number", _dto.MobileNumber);
+                                    AddField(details, "Permanent Country Phone Number", _dto.PermanentCountryPhone);
+                                    AddField(details, "Permanent Country Mobile Number", _dto.PermanentCountryMobile);
+                                });
+                        });
+
+                    });
+
+                    //9.REMARKS
+                    Section(col, "Remarks", section =>
+                    {
+                        section.Item().Row(row =>
+                        {
+                            row.RelativeItem()
+                                .Column(details =>
+                                {
+                                    AddField(details, "Remarks(If any)", _dto.Remarks);
+                                });
+                        });
+
+                    });
                 });
+            page.Footer()
+    .Column(col =>
+    {
+        col.Item()
+            .AlignCenter()
+            .Text(text =>
+            {
+                text.Span("Page ");
+                text.CurrentPageNumber();
+                text.Span(" of ");
+                text.TotalPages();
+            });
+
+        col.Item()
+            .AlignRight()
+            .Text($"Ref: {_dto.DevoteeId}")
+            .FontSize(8);
+    });
         });
     }
 
-    private void Section(
+    private static void Section(
     ColumnDescriptor col,
     string title,
     Action<ColumnDescriptor> content)
@@ -77,28 +266,34 @@ namespace Anandashram.Reports;
         col.Item().PaddingTop(10);
 
         col.Item()
+            .Border(1)
+            .Background(Colors.Grey.Lighten2)
+            .PaddingVertical(3)
             .Text(title)
             .Bold()
-            .FontSize(14);
+            .FontSize(14)
+            .AlignCenter();
 
         col.Item()
             .Border(1)
-            .Padding(5)
+            .Padding(10)
             .Column(content);
     }
 
-    private void AddField(
+    private static void AddField(
     ColumnDescriptor col,
     string label,
     string value)
     {
         col.Item().Row(row =>
         {
-            row.ConstantItem(250)
-                .Text(label);
+            row.ConstantItem(200)
+               .Text(label)
+               .SemiBold();
 
             row.RelativeItem()
                 .Text(value ?? "");
         });
     }
+
 }
