@@ -141,6 +141,16 @@
                             </div>
 
                             <div class="col-md-4 mb-3">
+                                <label>Issue City</label>
+                                <input id="PassportIssueCity" class="form-control" />
+                            </div>
+
+                            <div class="col-md-4 mb-3">
+                                <label>Issue Country</label>
+                                <input id="PassportIssueCountry" class="form-control" />
+                            </div>
+
+                            <div class="col-md-4 mb-3">
                                 <label>Date Of Issue</label>
                                 <input type="date" id="PassportDateOfIssue" class="form-control" />
                             </div>
@@ -327,11 +337,7 @@
         </div>
     </div>
 </div>
-<script src="~/js/cform.js"></script>
- <script>
-
-    // function SaveCForm(){
-    //    // your code
-    // }
-
-</script> 
+ @section Scripts
+{
+    <script src="~/js/cform.js" asp-append-version="true"></script>
+}

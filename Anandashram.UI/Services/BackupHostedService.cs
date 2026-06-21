@@ -23,9 +23,31 @@ public class BackupHostedService : IHostedService
     public async Task StartAsync(CancellationToken cancellationToken)
     {
         // Run ONLY on Sunday
-        if (DateTime.Today.DayOfWeek != DayOfWeek.Sunday)
-            return;
+        //if (DateTime.Today.DayOfWeek != DayOfWeek.Sunday)
+        //    return;
 
+        _ = Task.Run(async () =>
+        {
+            string dateFolder = DateTime.Today.ToString("dd-MMM-yyyy");
+
+            if (Directory.Exists(Path.Combine(_settings.BackupRootPath, dateFolder)))
+            {
+                _logger.LogInformation("Sunday backup already completed");
+                return;
+            }
+
+            if (!await WaitForSqlServerAsync())
+            {
+                _logger.LogWarning("SQL Server not available");
+                return;
+            }
+
+            await RunSundayBackupAsync();
+        });
+    }
+
+    private async Task RunSundayBackupAsync()
+    {
         try
         {
             string dateFolder = DateTime.Today.ToString("dd-MMM-yyyy");
@@ -39,15 +61,39 @@ public class BackupHostedService : IHostedService
 
             await BackupDatabaseAsync(dbBackupPath);
             BackupFiles(filesBackupPath);
+
+            _logger.LogInformation("Sunday backup completed successfully.");
         }
         catch (Exception ex)
         {
-            File.AppendAllText(Path.Combine(_settings.BackupRootPath, "backup-errors.log"),
-                $"{DateTime.Now}: {ex}\n");
+            File.AppendAllText(
+                Path.Combine(_settings.BackupRootPath, "backup-errors.log"),
+                $"{DateTime.Now}: {ex}{Environment.NewLine}");
+
             _logger.LogError(ex, "Sunday backup failed");
         }
     }
+    private async Task<bool> WaitForSqlServerAsync()
+    {
+        for (int i = 0; i < 10; i++)
+        {
+            try
+            {
+                using var connection =
+                    new SqlConnection(_configuration.GetConnectionString("AnandashramDBConnection"));
 
+                await connection.OpenAsync();
+
+                return true;
+            }
+            catch
+            {
+                await Task.Delay(30000); // wait 30 sec
+            }
+        }
+
+        return false;
+    }
     private async Task BackupDatabaseAsync(string dbBackupPath)
     {
         var connectionString = _configuration.GetConnectionString("AnandashramDBConnection");

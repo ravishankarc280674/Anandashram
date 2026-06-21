@@ -21,6 +21,8 @@ public class CFormDTO
     public string ReferencePincode { get; set; }
 
     public string PassportNo { get; set; }
+    public string PassportIssueCity { get; set; }
+    public string PassportIssueCountry { get; set; }
     public string PassportDateOfIssue { get; set; }
     public string PassportDateOfExpiry { get; set; }
 

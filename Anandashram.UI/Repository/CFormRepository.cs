@@ -75,6 +75,8 @@ public class CFormRepository : ICForm
             PassportDateOfExpiry = cFormModel.PassportDateOfExpiry?.ToString("dd-MMM-yyyy"),
             PassportDateOfIssue = cFormModel.PassportDateOfIssue?.ToString("dd-MMM-yyyy"),
             PassportNo = cFormModel.PassportNo,
+            PassportIssueCity = cFormModel.PassportIssueCity,
+            PassportIssueCountry = cFormModel.PassportIssueCountry,
             PermanentCountryMobile = cFormModel.PermanentCountryMobile,
             PermanentCountryPhone = cFormModel.PermanentCountryPhone,
             Place = cFormModel.Place,

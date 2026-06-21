@@ -68,7 +68,7 @@ namespace Anandashram.Reports;
                 .Column(col =>
                 {
                     //1.PERSONAL DETAILS(+Photo)
-                    Section(col, "Personel Details", section =>
+                    Section(col, "PERSONEL DETAILS", section =>
                     {
                         section.Item().Row(row =>
                         {
@@ -96,7 +96,7 @@ namespace Anandashram.Reports;
                     });
 
                     //2.REFERENCE DETAILS IN INDIA
-                    Section(col, "Address / Reference Details in India", section =>
+                    Section(col, "ADDRESS / REFERENCE DETAILS IN INDIA", section =>
                     {
                         section.Item().Row(row =>
                         {
@@ -112,7 +112,7 @@ namespace Anandashram.Reports;
                     });
                     
                     //3.PASSPORT DETAILS
-                    Section(col, "Passport Details", section =>
+                    Section(col, "PASSPORT DETAILS", section =>
                     {
                         section.Item().Row(row =>
                         {
@@ -120,6 +120,8 @@ namespace Anandashram.Reports;
                                 .Column(details =>
                                 {
                                     AddField(details, "Passport Number", _dto.PassportNo);
+                                    AddField(details, "Passport Issue City", _dto.PassportIssueCity);
+                                    AddField(details, "Passport Issue Country", _dto.PassportIssueCountry);
                                     AddField(details, "Passport Date of Issue", _dto.PassportDateOfIssue);
                                     AddField(details, "Passport Date of Expiry", _dto.PassportDateOfExpiry);
                                 });
@@ -129,7 +131,7 @@ namespace Anandashram.Reports;
 
                     
                     //4.VISA DETAILS
-                    Section(col, "Visa Details", section =>
+                    Section(col, "VISA DETAILS", section =>
                     {
                         section.Item().Row(row =>
                         {
@@ -155,7 +157,7 @@ namespace Anandashram.Reports;
                     col.Item().PageBreak();
 
                     //5.ARRIVAL DETAILS
-                    Section(col, "Arrival Details", section =>
+                    Section(col, "ARRIVAL DETAILS", section =>
                     {
                         section.Item().Row(row =>
                         {
@@ -174,7 +176,7 @@ namespace Anandashram.Reports;
                     });
 
                     //6.EMPLOYMENT & VISIT DETAILS
-                    Section(col, "Employment & Visit Details", section =>
+                    Section(col, "EMPLOYMENT & VISIT DETAILS", section =>
                     {
                         section.Item().Row(row =>
                         {
@@ -189,7 +191,7 @@ namespace Anandashram.Reports;
                     });
 
                     //7.DESTINATION DETAILS
-                    Section(col, "Destination Details", section =>
+                    Section(col, "DESTINATION DETAILS", section =>
                     {
                         section.Item().Row(row =>
                         {
@@ -207,7 +209,7 @@ namespace Anandashram.Reports;
                     });
 
                     //8.CONTACT DETAILS
-                    Section(col, "Contact Details", section =>
+                    Section(col, "CONTACT DETAILS", section =>
                     {
                         section.Item().Row(row =>
                         {
@@ -224,7 +226,7 @@ namespace Anandashram.Reports;
                     });
 
                     //9.REMARKS
-                    Section(col, "Remarks", section =>
+                    Section(col, "REMARKS", section =>
                     {
                         section.Item().Row(row =>
                         {

@@ -24,6 +24,8 @@ function SaveCForm(callback) {
 
 
         PassportNo: $('#PassportNo').val(),
+        PassportIssueCity: $('#PassportIssueCity').val(),
+        PassportIssueCountry: $('#PassportIssueCountry').val(),
         PassportDateOfIssue: nullIfEmpty($('#PassportDateOfIssue').val()),
         PassportDateOfExpiry: nullIfEmpty($('#PassportDateOfExpiry').val()),
         VisaNumber: $('#VisaNumber').val(),
@@ -127,6 +129,8 @@ function LoadCForm() {
             $('#VisaDateOfExpiry').val(data.visaDateOfExpiry?.substring(0, 10));
 
             $('#PassportNo').val(data.passportNo);
+            $('#PassportIssueCity').val(data.passportIssueCity);
+            $('#PassportIssueCountry').val(data.passportIssueCountry);
             $('#VisaNumber').val(data.visaNumber);
             $('#VisaCity').val(data.visaCity);
             $('#VisaCountry').val(data.visaCountry);
@@ -191,6 +195,8 @@ function ValidateCForm() {
     // PASSPORT TAB
 
     addError(passportErrors, '#PassportNo', 'Passport Number');
+    addError(passportErrors, '#PassportIssueCity', 'Passport Issue City');
+    addError(passportErrors, '#PassportIssueCountry', 'Passport Issue Country');
     addError(passportErrors, '#PassportDateOfIssue', 'Passport Date Of Issue');
     addError(passportErrors, '#PassportDateOfExpiry', 'Passport Date Of Expiry');
     addError(passportErrors, '#VisaNumber', 'Visa Number');

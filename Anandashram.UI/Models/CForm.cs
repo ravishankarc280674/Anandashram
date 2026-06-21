@@ -32,6 +32,9 @@ public class CForm
     public string ReferenceCity { get; set; }
     public string ReferencePincode { get; set; }
     public string PassportNo { get; set; }
+    public string PassportIssueCity { get; set; }
+    public string PassportIssueCountry { get; set; }
+
     [DataType(DataType.Date)]
     public DateTime? PassportDateOfIssue { get; set; }
     [DataType(DataType.Date)]
