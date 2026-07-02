@@ -148,17 +148,19 @@
                         {
                             <div class="d-flex gap-2">
 
-                                <span id="cformStatusBadge"
+                               @*  <span id="cformStatusBadge"
                                       class="badge bg-danger align-self-center">
                                     C-Form Incomplete
-                                </span>
-
-                                <button type="button"
+                                </span> *@
+                                    @if (Model.DevoteeCategoryId == 7)
+                                    {
+                                        <button type="button"
                                         class="btn btn-primary"
                                         onclick="OpenCForm(@Model.Id)">
-                                    <i class="fas fa-file-alt"></i> Forms
-                                </button>
-                            </div>
+                                            <i class="fas fa-file-alt"></i> Forms
+                                        </button>
+                                    }
+                                </div>
                         }
 
                     </div>
@@ -673,7 +675,16 @@
                     url: '/Devotee/SaveImage',
                     data: {data:data_uri,Id:Id,Code:Code},
                     success: function (response) {
-                      $.notify("Submitted Successfully", { globalPosition: "top centre", className:"Success" });
+                            Swal.fire({
+                                toast: true,
+                                position: 'top-end',
+                                icon: 'success',
+                                title: 'Submitted Successfully',
+                                showConfirmButton: false,
+                                timer: 2000,
+                                timerProgressBar: true
+                            });
+                      // $.notify("Submitted Successfully", { globalPosition: "top centre", className:"Success" });
                         window.location.reload();
                     },
                     error: function () {
@@ -729,7 +740,12 @@
              const stDate = new Date(startDate);
                 const edDate = new Date(endDate);
                 if (stDate > edDate) {
-                    $.notify("Check-Out date cannot be Less than Check-Out Date", { globalPosition: "top centre", className: "error" });
+                            Swal.fire({
+                                icon: 'warning',
+                                title: 'Validation Failed',
+                                text: 'Check-Out date cannot be less than Check-In date.'
+                            });
+                    //$.notify("Check-Out date cannot be Less than Check-Out Date", { globalPosition: "top centre", className: "error" });
                     return false;
                 }
                 var noOfDevotees =  document.getElementById("NoOfPeople").value;
@@ -753,13 +769,23 @@
                                 {
                                   if(Number(allot) > Number(remaining))
                                    {
-                                        $.notify("Room: \""  + roomSelectedText + "\"  -  New Allotment: " + allot +" cannot be greater than Remaining: " + remaining, { globalPosition: "top centre", className:"error" });
+                                        Swal.fire({
+                                            icon: 'warning',
+                                            title: 'Invalid Allotment',
+                                            text: `For Room "${roomSelectedText}", the new allotment (${allot}) exceeds the remaining capacity (${remaining}).`
+                                        });
+                                        //$.notify("Room: \""  + roomSelectedText + "\"  -  New Allotment: " + allot +" cannot be greater than Remaining: " + remaining, { globalPosition: "top centre", className:"error" });
                                         return false;
                                    }
                                 }
                               if(reservationList.some(reservation => reservation.RoomId === roomSelected)) // true
                                {
-                                    $.notify("Room: \""  + roomSelectedText + " has been selected more than once", { globalPosition: "top centre", className:"error" });
+                                    Swal.fire({
+                                        icon: 'warning',
+                                        title: 'Duplicate Room Selection',
+                                        text: `Please select each room only once. Room "${roomSelectedText}" has already been selected.`
+                                    });
+                                    // $.notify("Room: \""  + roomSelectedText + " has been selected more than once", { globalPosition: "top centre", className:"error" });
                                     return false;
                                }
                             reservationList[index++] = {
@@ -781,7 +807,12 @@
                         totalAllocated =  col.textContent;
                         if(noOfDevotees - sumNewAllot -totalAllocated < 0)
                             {
-                                $.notify("Allocated and new Allocation cannot be greater than No of Devotees: "  + noOfDevotees, { globalPosition: "top centre", className:"error" });
+                                Swal.fire({
+                                    icon: 'warning',
+                                    title: 'Invalid Allocation',
+                                    text: `The total allocation cannot be greater than the number of devotees (${noOfDevotees}).`
+                                });
+                                // $.notify("Allocated and new Allocation cannot be greater than No of Devotees: "  + noOfDevotees, { globalPosition: "top centre", className:"error" });
                                 return false;
                             }
                     $.ajax({
@@ -791,7 +822,16 @@
                     dataType:"json",
                     data:JSON.stringify(reservationList),
                     success: function (response) {
-                      $.notify("Submitted Successfully", { globalPosition: "top centre", className:"Success" });
+                            Swal.fire({
+                                toast: true,
+                                position: 'top-end',
+                                icon: 'success',
+                                title: 'Submitted Successfully',
+                                showConfirmButton: false,
+                                timer: 2000,
+                                timerProgressBar: true
+                            });
+                      // $.notify("Submitted Successfully", { globalPosition: "top centre", className:"Success" });
                               window.location.reload();
                               return true;
                     },
@@ -803,7 +843,12 @@
                 }
                 else
                 {
-                      $.notify("No Details to Update", { globalPosition: "top centre", className:"Failed" });
+                         Swal.fire({
+                            icon: 'info',
+                            title: 'No Changes',
+                            text: 'No details were modified.'
+                        });
+                      // $.notify("No Details to Update", { globalPosition: "top centre", className:"Failed" });
                     return false;
                 }
                    
@@ -815,7 +860,16 @@
                     url: '/Devotee/CloseReservation',
                     data:{Id: id,DevoteeId : devoteeId},
                     success: function (response) {
-                      $.notify("Submitted Successfully", { globalPosition: "top centre", className:"Success" });
+                        Swal.fire({
+                            toast: true,
+                            position: 'top-end',
+                            icon: 'success',
+                            title: 'Submitted Successfully',
+                            showConfirmButton: false,
+                            timer: 2000,
+                            timerProgressBar: true
+                        });
+                      // $.notify("Submitted Successfully", { globalPosition: "top centre", className:"Success" });
                       window.location.reload();
                       return true;
                     },
@@ -834,7 +888,16 @@
                             url: '/Devotee/CloseReservations',
                             data:{DevoteeId : devoteeId},
                             success: function (response) {
-                              $.notify("closed all Reservations for this Devotee Successfully", { globalPosition: "top centre", className:"Success" });
+                                Swal.fire({
+                                    toast: true,
+                                    position: 'top-end',
+                                    icon: 'success',
+                                    title: 'All reservations for this devotee have been closed successfully.',
+                                    showConfirmButton: false,
+                                    timer: 2000,
+                                    timerProgressBar: true
+                                });
+                              // $.notify("closed all Reservations for this Devotee Successfully", { globalPosition: "top centre", className:"Success" });
                               window.location.reload();
                               return true;
                             },
