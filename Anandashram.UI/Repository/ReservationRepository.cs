@@ -267,9 +267,12 @@ public class ReservationRepository : IReservation
     public async Task AutoCloseReservation(DateTime dateValue)
     {
         await _context.Reservations
+            .Include(r => r.Devotee)
             .Where(r =>
                 !r.Closed &&
-                r.ToDate <= dateValue   // still active till given date
+                r.ToDate <= dateValue && // still active till given date
+                r.Devotee.DevoteeCategoryId != 1 // newly added on 03-Aug-2026 to exclude Inmates
+                
             )
             .ExecuteUpdateAsync(setters => setters
                 .SetProperty(r => r.Closed, true)
