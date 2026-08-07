@@ -133,6 +133,7 @@ builder.Services.AddSingleton<IFileBackupService, ZipFileBackupService>();
 builder.Services.AddSingleton<IBackupCleanupService, BackupCleanupService>();
 builder.Services.AddSingleton<IBackupVerificationService, SqlServerBackupVerificationService>();
 builder.Services.AddSingleton<IBackupService, BackupService>();
+builder.Services.AddSingleton<IBackupCopyService,BackupCopyService>();
 
 var app = builder.Build();
 

@@ -25,6 +25,7 @@ public class BackupService : IBackupService
     private readonly IFileBackupService _fileBackupService;
     private readonly IBackupCleanupService _backupCleanupService;
     private readonly IBackupMetadataService _backupMetadataService;
+    private readonly IBackupCopyService _backupCopyService;
     private readonly ILogger<BackupService> _logger;
 
     private readonly BackupSettings _settings;
@@ -41,6 +42,7 @@ public class BackupService : IBackupService
     IFileBackupService fileBackupService,
     IBackupCleanupService backupCleanupService,
     IBackupMetadataService backupMetadataService,
+    IBackupCopyService backupCopyService,
     ILogger<BackupService> logger)
     {
         _settings = settings.Value;
@@ -51,12 +53,20 @@ public class BackupService : IBackupService
         _fileBackupService = fileBackupService;
         _backupCleanupService = backupCleanupService;
         _backupMetadataService = backupMetadataService;
+        _backupCopyService = backupCopyService;
         _logger = logger;
     }
 
     public async Task RunBackupAsync(
 CancellationToken cancellationToken)
     {
+        List<BackupLogEntry> backupLogEntries = new();
+        backupLogEntries.Add(new BackupLogEntry
+        {
+            Time = DateTime.Now,
+            Step = "Backup Process",
+            Status = "Started"
+        });
         // 1. Prepare folders
 
         BackupFolderInfo folders = PrepareBackupFolder();
@@ -78,15 +88,22 @@ CancellationToken cancellationToken)
 
         // 3. Execute database backup
 
-       
 
         DatabaseBackupResult databaseBackupResult =
             await _databaseBackupService
-                .BackupDatabaseAsync(
-                    folders.DatabaseFolder,
+                .BackupDatabaseAsync(folders.DatabaseFolder,
                     cancellationToken);
+        backupLogEntries.Add(new BackupLogEntry
+        {
+            Time = databaseBackupResult.EndTime,
+            Step = "Database Backup",
+            Status = databaseBackupResult.IsSuccessful
+            ? "Success"
+            : "Failed",
+            Message = databaseBackupResult.ErrorMessage
 
-        BackupInfo backupInfo = new();
+        });
+
 
         // 4. Verify database backup
 
@@ -95,14 +112,60 @@ CancellationToken cancellationToken)
         //        result.DatabaseFolder,
         //        cancellationToken);
 
-
         // 5. Backup documents
+        FileBackupResult fileBackupResult = await _fileBackupService
+         .BackupFilesAsync(
+             folders.FilesFolder);
+        backupLogEntries.Add(new BackupLogEntry
+        {
+            Time = fileBackupResult.EndTime,
+            Step = "Files Backup",
+            Status = fileBackupResult.IsSuccessful
+            ? "Success"
+            :"Failed",
+            Message = fileBackupResult.ErrorMessage
+        });
+        backupLogEntries.Add(new BackupLogEntry
+        {
+            Time = DateTime.Now,
+            Step = "Backup Process",
+            Status = "Ended"
+        });
+        //6. create BackupInfo details
+        BackupInfo backupInfo = new()
+        {
+            BackupDate = DateTime.Today,
 
-        await _fileBackupService
-            .BackupFilesAsync(
-                folders.FilesFolder);
+            DatabaseBackupStartTime = databaseBackupResult.StartTime,
+            DatabaseBackupEndTime = databaseBackupResult.EndTime,
+            DatabaseBackupFile = databaseBackupResult.BackupFilePath,
+            DatabaseBackupSize = databaseBackupResult.BackupFileSize,
 
+            FileBackupStartTime = fileBackupResult.StartTime,
+            FileBackupEndTime = fileBackupResult.EndTime,
+            ZipBackupFile = fileBackupResult.BackupFilePath,
+            ZipBackupSize = fileBackupResult.BackupFileSize,
 
+            TotalBackupSize = databaseBackupResult.BackupFileSize + fileBackupResult.BackupFileSize,
+            Duration = fileBackupResult.EndTime - databaseBackupResult.StartTime,
+            ComputerName = Environment.MachineName,
+
+            Status = "Success"
+        };
+
+        
+            string backupInfoFilePath = Path.Combine(
+        folders.RootFolder,
+        "BackupInfo.json");
+        string backupLogFilePath = Path.Combine(
+        folders.RootFolder,
+        "BackupLog.json");
+        //write backupinfo file
+        await _backupMetadataService.SaveBackupInfoAsync(backupInfo, backupInfoFilePath);
+       await _backupMetadataService.SaveBackupLogAsync(backupLogEntries, backupLogFilePath);
+
+        // Copy backup
+        BackupCopyResult backupCopyResult =await _backupCopyService.CopyBackupAsync(folders.RootFolder, cancellationToken);
         // 6. Cleanup old backups
 
         //await _backupCleanupService
@@ -156,7 +219,7 @@ CancellationToken cancellationToken)
         {
             DatabaseFolder = databaseFolder,
             FilesFolder = filesFolder,
-            RootFolder = backupRootPath
+            RootFolder = backupFolderPath
         };
     }
 

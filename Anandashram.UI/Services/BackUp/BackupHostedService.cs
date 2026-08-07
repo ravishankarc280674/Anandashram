@@ -18,11 +18,13 @@ public class BackupHostedService : BackgroundService
     protected override async Task ExecuteAsync(
         CancellationToken stoppingToken)
     {
+       
         try
         {
             await _backupService.RunBackupAsync(
                 stoppingToken);
             
+
         }
         catch (OperationCanceledException)
         {
@@ -35,5 +37,6 @@ public class BackupHostedService : BackgroundService
                 ex,
                 "Backup service failed.");
         }
+
     }
 }
