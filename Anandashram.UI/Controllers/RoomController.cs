@@ -102,7 +102,6 @@ public class RoomController : Controller
 
     // POST: Room/Create
     [HttpPost]
-    [IgnoreAntiforgeryToken]
     public async Task<IActionResult> Create(Room room)
     {
         if (string.IsNullOrEmpty(room.Name))
@@ -145,7 +144,6 @@ public class RoomController : Controller
 
     // POST: Room/Edit/5
     [HttpPost]
-    [IgnoreAntiforgeryToken]
     public async Task<IActionResult> Edit(int id, Room room)
     {
         string errMessage = "";
@@ -202,7 +200,6 @@ public class RoomController : Controller
 
     // POST: Room/Delete/5
     [HttpPost]
-    [IgnoreAntiforgeryToken]
     public async Task<IActionResult> Delete(Room room)
     {
         try

@@ -38,5 +38,9 @@ public class DevoteeService : IDevoteeService
     {
         return await _devoteeRepo.Delete(devotee);
     }
+    public async Task<List<Devotee>> GetInmates()
+    {
+        return await _devoteeRepo.GetInmates();
+    }
 
 }

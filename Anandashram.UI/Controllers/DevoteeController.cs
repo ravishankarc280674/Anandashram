@@ -1,4 +1,5 @@
 ﻿using Anandashram.UI.Tools.Core.Enums;
+using DocumentFormat.OpenXml.Vml.Spreadsheet;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.Extensions.Options;
 using System.Threading.Tasks;
@@ -407,5 +408,27 @@ public class DevoteeController : Controller
     {
         Devotee devotee = new Devotee();
          return   await _devoteeService.GetDevoteeWithReservations(devoteeId);
+    }
+    public async Task<IActionResult> InmatesList()
+    {
+        try
+        {
+            var DevoteeList = await _devoteeService.GetInmates();
+
+            var DevoteeDTOList = DevoteeList.Select(d => new
+            {
+                d.Id,
+                d.Code,
+                d.Name,
+                d.Mobile,
+                d.RoomsAllocated
+            }).ToList();
+            return View(DevoteeList);
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine(ex.Message);
+        }
+        return View();
     }
 }

@@ -1,4 +1,6 @@
-﻿namespace Anandashram.Models;
+﻿using DocumentFormat.OpenXml.Office.CoverPageProps;
+
+namespace Anandashram.Models;
                            
 [Table("Devotees")]
 public partial class Devotee
@@ -82,4 +84,7 @@ public partial class Devotee
     public string? ReopenedCode { get; set; }
 
     public List<Reservation> Reservations { get; set; }
+
+    [NotMapped]
+    public string RoomsAllocated { get; set; }
 }

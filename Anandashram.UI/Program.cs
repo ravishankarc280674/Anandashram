@@ -117,15 +117,6 @@ builder.Services.AddScoped<IReportService, ReportService>();
 builder.Services.AddScoped<ICFormService, CFormService>();
 builder.Services.AddScoped<ICForm, CFormRepository>();
 
-//builder.Services.AddScoped<IBackupService, BackupService>();
-//builder.Services.AddScoped<IBackupCleanupService, BackupCleanupService>();
-//builder.Services.AddScoped<IBackupVerificationService, SqlServerBackupVerificationService>();
-//builder.Services.AddScoped<IDatabaseBackupResultService, DatabaseBackupResultService>();
-//builder.Services.AddScoped<IFileBackupService, ZipFileBackupService>();
-//builder.Services.AddScoped<IDatabaseAvailabilityService, SqlServerAvailabilityService>();
-//builder.Services.AddScoped<IDatabaseBackupService, SqlServerBackupService>();
-//builder.Services.AddScoped<IBackupMetadataService, BackupMetadataService>();
-
 builder.Services.AddSingleton<IDatabaseAvailabilityService, SqlServerAvailabilityService>();
 builder.Services.AddSingleton<IDatabaseBackupService, SqlServerBackupService>();
 builder.Services.AddSingleton<IBackupMetadataService, BackupMetadataService>();

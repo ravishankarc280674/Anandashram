@@ -1,0 +1,70 @@
+﻿@model IEnumerable<Devotee>
+@{
+    ViewData["Title"] = "Inmates - List";
+}
+
+<div class="container-fluid btn-group mb-3">
+    <div class="col-10">
+        <h3 class="mb-0 text-success">
+            <i class="fas fa-users"></i> Inmates - List
+        </h3>
+    </div>
+    
+</div>
+
+    <div class="col-12 tbl-container">
+        <table id="tblDevoteeList" class="table table-striped table-hover">
+            <thead>
+                <tr>
+                <th class="sticky-col first-col"></th>
+                    <th class="sticky-col second-col">
+                        <a class="text-white text-decoration-none fw-bold">Code</a>
+                    </th>
+                    <th>
+                        <a class="text-white text-decoration-none fw-bold">Name</a>
+                    </th>
+                <th>
+                    <a class="text-white text-decoration-none fw-bold">Room(s)</a>
+                </th>
+                    <th>
+                        <a class="text-white text-decoration-none fw-bold" style="color:white">Mobile</a>
+                    </th>
+                </tr>
+            </thead>
+            <tbody>
+                @if (Model != null)
+                {
+                    foreach (var item in Model)
+                    {
+                        string rowClass = "";
+                        if (item.Closed == true && string.IsNullOrEmpty(item.ReopenedCode))
+                        {
+                            rowClass = "bg-success";
+                        }
+                        if (item.Closed == true && !string.IsNullOrEmpty(item.ReopenedCode))
+                        {
+                            rowClass = "bg-warning";
+                        }
+                        <tr>
+                        <td class="sticky-col first-col" style="background:#133338">
+                            <img src="@Url.Action("GetImage", "Devotee", new { fileName = item.Code })"
+                                 width="35" height="35" class="rounded-circle" />
+                        </td>
+                            <td class="sticky-col second-col text-white" style="background:#133338">
+                                    <a asp-action="AddOrEdit" asp-route-id="@item.Id" class="devotee-link text-white">@item.Code</a>
+                            </td>
+                        <td class="@rowClass">@item.Name</td>
+                        <td class="@rowClass">@item.RoomsAllocated</td>
+                            <td class="@rowClass">@item.Mobile</td>
+                            
+                        </tr>
+                    }
+                }
+                else
+                {
+                    <tr><td colspan="11" class="text-center text-muted">No Records Found</td></tr>
+                }
+            </tbody>
+        </table>
+    </div>
+

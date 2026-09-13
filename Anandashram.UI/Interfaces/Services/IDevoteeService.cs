@@ -7,4 +7,5 @@ public interface IDevoteeService
     Task<Devotee> Create(Devotee devotee);
     Task<Devotee> Edit(Devotee devotee);
     Task<Devotee> Delete(Devotee devotee);
+    Task<List<Devotee>> GetInmates();
 }

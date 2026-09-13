@@ -237,5 +237,26 @@ public class DevoteeRepository : IDevotee
                 .ToListAsync();
         }
     }
+    public async Task<List<Devotee>> GetInmates()
+    {
+       // return await _context.Devotees.AsNoTracking().Where(n => n.DevoteeCategoryId == 1  && n.Closed==false).OrderBy(x => x.Name).ToListAsync();
+        var inmates = await _context.Devotees
+    .AsNoTracking()
+    .Where(d => d.DevoteeCategoryId == 1 && !d.Closed)
+    .Include(d => d.Reservations)
+        .ThenInclude(r => r.Room)
+    .OrderBy(d => d.Name)
+    .ToListAsync();
 
+        foreach (var devotee in inmates)
+        {
+            devotee.RoomsAllocated = string.Join(", ",
+                devotee.Reservations
+                    .Where(r => !r.Closed)
+                    .Select(r => r.Room.Name)
+                    .Where(name => !string.IsNullOrEmpty(name)));
+        }
+
+        return inmates;
+    }
 }

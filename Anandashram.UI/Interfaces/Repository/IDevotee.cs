@@ -11,4 +11,5 @@ public interface IDevotee
     Task<List<Devotee>> GetAllDevotees(bool Checked);
     Task<Devotee> GetDevoteeWithReservations(int devoteeId);
     Task<List<DevoteeReportDTO>> GetDevoteeSummaryByDateAsync(DateTime dateValue,string dataType);
+    Task<List<Devotee>> GetInmates();
 }
