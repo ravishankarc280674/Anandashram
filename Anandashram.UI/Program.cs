@@ -29,6 +29,7 @@ global using System.Security.Claims;
 global using Microsoft.AspNetCore.Mvc;
 using Anandashram.Services.Backup;
 using Anandashram.Interfaces.Services.Backup;
+using Microsoft.AspNetCore.DataProtection;
 
 QuestPDF.Settings.License = LicenseType.Community;
 
@@ -38,6 +39,15 @@ var builder = WebApplication.CreateBuilder(args);
 var connectionString = builder.Configuration.GetConnectionString("AnandashramDBConnection");
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
     options.UseSqlServer(connectionString));
+
+var dataProtectionKeysPath =
+    builder.Configuration["DataProtectionSettings:KeysPath"];
+builder.Services.AddDataProtection()
+    .PersistKeysToFileSystem(
+        new DirectoryInfo(
+            dataProtectionKeysPath
+            ?? throw new InvalidOperationException(
+                "DataProtectionSettings:KeysPath was not configured.")));
 
 builder.Services.AddDatabaseDeveloperPageExceptionFilter();
 builder.Services.Configure<BackupSettings>(

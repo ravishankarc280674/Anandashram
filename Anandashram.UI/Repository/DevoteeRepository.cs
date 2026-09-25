@@ -252,9 +252,8 @@ public class DevoteeRepository : IDevotee
         {
             devotee.RoomsAllocated = string.Join(", ",
                 devotee.Reservations
-                    .Where(r => !r.Closed)
-                    .Select(r => r.Room.Name)
-                    .Where(name => !string.IsNullOrEmpty(name)));
+                    .Where(r => !r.Closed && r.Room != null)
+                    .Select(r => $"{r.Room.Name} / {r.ToDate:dd-MMM-yyyy}"));
         }
 
         return inmates;

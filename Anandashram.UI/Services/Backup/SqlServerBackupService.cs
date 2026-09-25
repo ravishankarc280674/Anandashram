@@ -161,14 +161,12 @@ public class SqlServerBackupService : IDatabaseBackupService
         string backupFilePath,
         CancellationToken cancellationToken)
     {
-
         const string sql = """
-            BACKUP DATABASE [{0}]
-            TO DISK = @backupPath
-            WITH INIT, CHECKSUM, STATS = 10;
-            """;
-
-
+        BACKUP DATABASE [{0}]
+        TO DISK = @backupPath
+        WITH INIT, CHECKSUM, STATS = 10;
+        """;
+   
         using SqlConnection connection =
             new(connectionString);
 
@@ -179,12 +177,15 @@ public class SqlServerBackupService : IDatabaseBackupService
                 string.Format(sql, databaseName),
                 connection);
 
+        command.CommandTimeout = 1800; // 30 minutes
+
         command.Parameters.AddWithValue(
             "@backupPath",
             backupFilePath);
 
         await command.ExecuteNonQueryAsync(
             cancellationToken);
+
     }
     #endregion
   

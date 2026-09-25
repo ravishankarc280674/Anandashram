@@ -87,4 +87,6 @@ public partial class Devotee
 
     [NotMapped]
     public string RoomsAllocated { get; set; }
+    [NotMapped]
+    public string ReservationEndDate { get; set; }
 }
